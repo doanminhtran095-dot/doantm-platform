@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOANTM | Nền Tảng Dịch Vụ Công AI & Hệ Sinh Thái Nghiên Cứu Drone</title>
+  <meta name="description" content="Nền tảng công nghệ hỗ trợ điền mẫu Dịch Vụ Công tự động CT01, hợp đồng thuê nhà bằng QR CCCD, nghiên cứu công nghệ Drone tiên tiến và tour du lịch trải nghiệm." />
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              red: '#DC2626',
+              'red-hover': '#B91C1C',
+              'red-glow': 'rgba(220, 38, 38, 0.45)',
+              dark: '#0A0A0A',
+              surface: '#141414',
+              gray: '#1F2937'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Three.js CDN for Interactive 3D Drone Model -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- html2pdf for Direct Client-Side PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body class="bg-[#0A0A0A] text-slate-100 antialiased selection:bg-red-600 selection:text-white">
+
+  <!-- =========================================================================
+       AMBIENT MINI DRONES (2 Autonomous Flying Drones Patrolling the Web)
+       ========================================================================= -->
+  <div id="ambient-mini-drones-layer" class="fixed inset-0 pointer-events-none z-30 overflow-hidden">
+    
+    <!-- Mini Drone 1 (Alpha Patrol) - Flying in upper ambient area -->
+    <div id="web-drone-alpha" class="absolute pointer-events-auto cursor-pointer transition-transform duration-100 select-none" style="top: 26%; left: 5%;">
+      <div class="relative flex flex-col items-center group">
+        <!-- Telemetry Callout Badge on Hover -->
+        <div class="mb-1.5 px-2 py-0.5 rounded-full bg-zinc-900/90 border border-cyan-500/40 text-[9px] font-mono text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity shadow-md shadow-cyan-950/50 flex items-center gap-1 whitespace-nowrap">
+          <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+          <span>UAV-01 PATROL</span>
+        </div>
+
+        <!-- Mini Drone Quadcopter Graphic -->
+        <div class="relative w-16 h-16 flex items-center justify-center filter drop-shadow-[0_8px_14px_rgba(0,0,0,0.7)] group-hover:scale-110 transition-transform">
+          <!-- 4 Rotating Propellers -->
+          <div class="absolute top-0 left-0 w-6 h-6 mini-propeller flex items-center justify-center">
+            <div class="w-5 h-1 bg-zinc-200 rounded-full opacity-80"></div>
+          </div>
+          <div class="absolute top-0 right-0 w-6 h-6 mini-propeller flex items-center justify-center">
+            <div class="w-5 h-1 bg-zinc-200 rounded-full opacity-80"></div>
+          </div>
+          <div class="absolute bottom-0 left-0 w-6 h-6 mini-propeller flex items-center justify-center">
+            <div class="w-5 h-1 bg-zinc-200 rounded-full opacity-80"></div>
+          </div>
+          <div class="absolute bottom-0 right-0 w-6 h-6 mini-propeller flex items-center justify-center">
+            <div class="w-5 h-1 bg-zinc-200 rounded-full opacity-80"></div>
+          </div>
+
+          <!-- 4 Diagonal Arms (X-Frame) -->
+          <div class="absolute w-12 h-1 bg-zinc-700 rounded-full rotate-45"></div>
+          <div class="absolute w-12 h-1 bg-zinc-700 rounded-full -rotate-45"></div>
+
+          <!-- Central Fuselage Body -->
+          <div class="relative w-8 h-8 rounded-xl bg-gradient-to-br from-slate-100 via-slate-300 to-slate-400 border border-white/70 shadow-inner flex items-center justify-center z-10">
+            <!-- Center Red Accent Ring -->
+            <div class="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center shadow-sm">
+              <!-- Camera Lens -->
+              <div class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+            </div>
+            <!-- Front Cyan LED -->
+            <div class="absolute -top-1 w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_#06b6d4]"></div>
+            <!-- Rear Red LED -->
+            <div class="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_6px_#ef4444] animate-ping"></div>
+          </div>
+
+          <!-- Subtle Radar Scan Cone -->
+          <div class="absolute -bottom-6 w-12 h-8 bg-cyan-400/10 rounded-full blur-sm mini-drone-scan pointer-events-none"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mini Drone 2 (Beta Recon) - Patrolling in lower right ambient area -->
+    <div id="web-drone-beta" class="absolute pointer-events-auto cursor-pointer transition-transform duration-100 select-none" style="top: 62%; right: 5%;">
+      <div class="relative flex flex-col items-center group">
+        <!-- Telemetry Callout Badge on Hover -->
+        <div class="mb-1.5 px-2 py-0.5 rounded-full bg-zinc-900/90 border border-emerald-500/40 text-[9px] font-mono text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity shadow-md shadow-emerald-950/50 flex items-center gap-1 whitespace-nowrap">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+          <span>UAV-02 RECON</span>
+        </div>
+
+        <!-- Mini Drone Quadcopter Graphic -->
+        <div class="relative w-14 h-14 flex items-center justify-center filter drop-shadow-[0_8px_14px_rgba(0,0,0,0.7)] group-hover:scale-110 transition-transform">
+          <!-- 4 Rotating Propellers -->
+          <div class="absolute top-0 left-0 w-5 h-5 mini-propeller flex items-center justify-center">
+            <div class="w-4 h-1 bg-zinc-200 rounded-full opacity-80"></div>
+          </div>
+          <div class="absolute top-0 right-0 w-5 h-5 mini-propeller flex items-center justify-center">
+            <div class="w-4 h-1 bg-zinc-200 rounded-full opacity-80"></div>
+          </div>
+          <div class="absolute bottom-0 left-0 w-5 h-5 mini-propeller flex items-center justify-center">
+            <div class="w-4 h-1 bg-zinc-200 rounded-full opacity-80"></div>
+          </div>
+          <div class="absolute bottom-0 right-0 w-5 h-5 mini-propeller flex items-center justify-center">
+            <div class="w-4 h-1 bg-zinc-200 rounded-full opacity-80"></div>
+          </div>
+
+          <!-- 4 Diagonal Arms (X-Frame) -->
+          <div class="absolute w-10 h-1 bg-zinc-700 rounded-full rotate-45"></div>
+          <div class="absolute w-10 h-1 bg-zinc-700 rounded-full -rotate-45"></div>
+
+          <!-- Central Fuselage Body -->
+          <div class="relative w-7 h-7 rounded-lg bg-gradient-to-br from-slate-100 via-slate-300 to-slate-400 border border-white/70 shadow-inner flex items-center justify-center z-10">
+            <div class="w-3.5 h-3.5 rounded-full bg-slate-900 flex items-center justify-center">
+              <div class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
+            </div>
+            <!-- Front Green LED -->
+            <div class="absolute -top-1 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981]"></div>
+            <!-- Rear Red LED -->
+            <div class="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_6px_#ef4444] animate-ping"></div>
+          </div>
+
+          <!-- Radar Scan Cone -->
+          <div class="absolute -bottom-5 w-10 h-6 bg-emerald-400/10 rounded-full blur-sm mini-drone-scan pointer-events-none"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =========================================================================
+       1. HEADER (NAVIGATION BAR)
+       ========================================================================= -->
+  <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-[#0A0A0A]/85 backdrop-blur-md border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Left: Logo & High-Tech Badge -->
+      <div class="flex items-center space-x-6">
+        <a href="#" class="flex items-center space-x-3 group">
+          <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-red-600 to-red-950 flex items-center justify-center p-0.5 shadow-lg shadow-red-600/30 group-hover:shadow-red-600/60 transition duration-300">
+            <div class="w-full h-full bg-[#0D0D0D] rounded-[10px] flex items-center justify-center">
+              <i data-lucide="crosshair" class="w-6 h-6 text-red-500 group-hover:rotate-90 transition-transform duration-500"></i>
+            </div>
+          </div>
+          <div>
+            <span class="text-2xl font-extrabold tracking-wider text-white">DOAN<span class="text-red-500">TM</span></span>
+            <span class="hidden sm:inline-block ml-2 text-[10px] uppercase tracking-widest text-zinc-400 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full font-semibold">AI & Drone Lab</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden md:flex items-center space-x-1 pl-4 border-l border-zinc-800">
+          <a href="#about" class="px-3 py-2 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition">Về chúng tôi</a>
+          <a href="#all-you-need" class="px-3 py-2 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition">Dịch Vụ Công</a>
+          <a href="javascript:void(0)" onclick="openModal('modal-drone-rd')" class="px-3 py-2 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition">Nghiên cứu Drone</a>
+          <a href="javascript:void(0)" onclick="openModal('modal-dvc-guides')" class="px-3 py-2 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition">Cẩm nang</a>
+          <a href="javascript:void(0)" onclick="openModal('modal-tours')" class="px-3 py-2 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition">Tour trải nghiệm</a>
+        </nav>
+      </div>
+
+      <!-- Right: Search trigger & Glowing CTA -->
+      <div class="flex items-center space-x-3">
+        <!-- Search Trigger Button -->
+        <button class="trigger-search-modal flex items-center space-x-2 text-xs text-zinc-400 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/60 hover:border-zinc-500 px-3 py-2 rounded-lg transition duration-200 flex-shrink-0">
+          <i data-lucide="search" class="w-4 h-4 text-zinc-400"></i>
+          <span class="hidden sm:inline">Tìm kiếm...</span>
+          <kbd class="hidden sm:inline-block bg-zinc-800 text-zinc-400 border border-zinc-700 px-1.5 py-0.5 text-[10px] rounded font-mono">Ctrl K</kbd>
+        </button>
+
+        <!-- Primary CTA: Đăng ký tài khoản (Kéo dài ngang nổi bật trên cùng một dòng) -->
+        <button onclick="openModal('modal-auth')" class="relative group overflow-hidden rounded-xl p-[1px] focus:outline-none focus:ring-2 focus:ring-red-500 flex-shrink-0">
+          <span class="absolute inset-0 bg-gradient-to-r from-red-600 via-rose-500 to-red-600 rounded-xl blur-[3px] opacity-70 group-hover:opacity-100 transition duration-300"></span>
+          <span class="relative flex items-center justify-center space-x-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold text-xs sm:text-sm px-7 py-2.5 min-w-[200px] sm:min-w-[215px] rounded-xl shadow-lg shadow-red-600/40 group-hover:shadow-red-600/70 transition duration-300 whitespace-nowrap">
+            <i data-lucide="user-plus" class="w-4 h-4 flex-shrink-0"></i>
+            <span class="whitespace-nowrap tracking-wide">Đăng ký tài khoản</span>
+          </span>
+        </button>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobile-menu-btn" class="md:hidden p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg flex-shrink-0">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Nav Drawer -->
+    <div id="mobile-nav-menu" class="hidden md:hidden bg-[#0A0A0A] border-b border-zinc-800 px-4 pt-2 pb-6 space-y-2">
+      <a href="#about" class="block px-3 py-2 rounded-lg text-sm font-medium text-zinc-300 hover:bg-zinc-800">Về chúng tôi</a>
+      <a href="#all-you-need" class="block px-3 py-2 rounded-lg text-sm font-medium text-zinc-300 hover:bg-zinc-800">Dịch Vụ Công</a>
+      <a href="javascript:void(0)" onclick="openModal('modal-drone-rd')" class="block px-3 py-2 rounded-lg text-sm font-medium text-zinc-300 hover:bg-zinc-800">Nghiên cứu Drone</a>
+      <a href="javascript:void(0)" onclick="openModal('modal-dvc-guides')" class="block px-3 py-2 rounded-lg text-sm font-medium text-zinc-300 hover:bg-zinc-800">Cẩm nang hướng dẫn</a>
+      <a href="javascript:void(0)" onclick="openModal('modal-tours')" class="block px-3 py-2 rounded-lg text-sm font-medium text-zinc-300 hover:bg-zinc-800">Tour du lịch Flycam</a>
+      <button onclick="openModal('modal-auth')" class="w-full text-center mt-3 py-2.5 rounded-lg bg-red-600 text-white font-semibold text-sm">Đăng ký tài khoản ngay</button>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       2. HERO SECTION (PURE BLACK #0A0A0A & 3D INTERACTIVE DRONE CANVAS)
+       ========================================================================= -->
+  <section id="hero-section" class="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden hero-gradient-overlay border-b border-zinc-800/80">
+    
+    <!-- Background Ambient Grid Lines -->
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f293715_1px,transparent_1px),linear-gradient(to_bottom,#1f293715_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left Column: Copywriting & Dynamic Carousel -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- Announcement Pill -->
+          <div class="inline-flex items-center space-x-2.5 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-red-500/30 text-xs text-zinc-300 shadow-md">
+            <span class="flex h-2 w-2 relative">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+            </span>
+            <span class="font-medium text-zinc-200">HỆ THỐNG CÔNG NGHỆ & DỊCH VỤ CÔNG 4.0</span>
+            <span class="text-zinc-600">|</span>
+            <span class="text-red-400 font-semibold">PHIÊN BẢN 2026</span>
+          </div>
+
+          <!-- Main Dynamic Rotating Headline -->
+          <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] text-white">
+            <span id="hero-rotating-text" class="text-white typing-cursor">Tool Điền mẫu điện tử nhanh chóng</span>
+          </h1>
+
+          <!-- Subheadline -->
+          <p class="text-base sm:text-lg text-zinc-400 max-w-2xl leading-relaxed font-normal">
+            Chiến lược đột phá ứng dụng AI thông minh: Tự động hóa điền biểu mẫu Dịch Vụ Công chuẩn hóa từ mã QR Căn cước, kết hợp chữ ký số song phương và tiên phong nghiên cứu công nghệ Drone hàng không thế hệ mới.
+          </p>
+
+          <!-- Action CTA Buttons -->
+          <div class="pt-2 flex flex-wrap gap-4 items-center">
+            <!-- Primary CTA -->
+            <button onclick="openModal('modal-auth')" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold text-sm shadow-xl shadow-red-600/30 hover:shadow-red-600/60 transition duration-300 flex items-center space-x-2">
+              <i data-lucide="user-check" class="w-4 h-4"></i>
+              <span>Đăng ký tài khoản</span>
+            </button>
+
+            <!-- Secondary CTA: Drone Products -->
+            <button onclick="openModal('modal-drone-rd')" class="px-6 py-3.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700 text-zinc-200 hover:text-white font-medium text-sm transition duration-300 flex items-center space-x-2">
+              <i data-lucide="send" class="w-4 h-4 text-red-500"></i>
+              <span>Xem sản phẩm về Drone</span>
+            </button>
+
+            <!-- Quick Trigger to Form Tool -->
+            <button onclick="openModal('modal-dvc-tool')" class="px-5 py-3.5 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/40 text-emerald-300 font-medium text-sm transition duration-300 flex items-center space-x-2">
+              <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-400"></i>
+              <span>Thử Tool CT01 & Hợp Đồng</span>
+            </button>
+          </div>
+
+          <!-- Quick Trust Badges -->
+          <div class="pt-4 flex items-center space-x-6 text-xs text-zinc-400">
+            <div class="flex items-center space-x-1.5">
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+              <span>Chuẩn Thông tư 66/2023/TT-BCA</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i>
+              <span>Three.js 3D Interactive Telemetry</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <i data-lucide="pen-tool" class="w-4 h-4 text-amber-400"></i>
+              <span>Ký điện tử Dual Canvas</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Interactive 3D Drone Model Canvas Area -->
+        <div class="lg:col-span-5 relative">
+          
+          <!-- Ambient Aura behind Drone: Mystical Aurora Emerald Green & Cosmic Blue Gradient over Deep Black -->
+          <div class="absolute inset-0 -m-8 bg-gradient-to-tr from-emerald-600/20 via-cyan-500/20 to-blue-600/25 rounded-full blur-3xl pointer-events-none opacity-70 animate-pulse" style="animation-duration: 9s;"></div>
+
+          <!-- Outer Card for 3D Drone Visual: Borderless by default, shows subtle border on hover, zero text inside -->
+          <div class="relative rounded-3xl border border-transparent hover:border-cyan-500/40 hover:bg-zinc-900/30 hover:shadow-2xl hover:shadow-cyan-950/40 transition-all duration-500 p-2 overflow-hidden group">
+            
+            <!-- Canvas Container -->
+            <div id="drone-canvas-container" class="relative"></div>
+
+            <!-- Sleek Minimal Floating Action Controls (Hidden by default, smooth fade in on hover, ZERO text) -->
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-zinc-950/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-zinc-700/70 shadow-xl">
+              <button id="btn-drone-barrel" title="Lộn nhào 360°" class="p-2 rounded-full hover:bg-zinc-800 text-zinc-300 hover:text-white transition">
+                <i data-lucide="rotate-cw" class="w-4 h-4 text-cyan-400"></i>
+              </button>
+              <button id="btn-drone-turbo" title="Turbo Boost" class="p-2 rounded-full hover:bg-zinc-800 text-zinc-300 hover:text-white transition">
+                <i data-lucide="zap" class="w-4 h-4 text-emerald-400"></i>
+              </button>
+              <button id="btn-drone-radar" title="Quét 3D" class="p-2 rounded-full hover:bg-zinc-800 text-zinc-300 hover:text-white transition">
+                <i data-lucide="radar" class="w-4 h-4 text-cyan-400"></i>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       3. PARTNER & AI TOOLS MARQUEE SLIDER (COLORFUL & PROMINENT BADGES)
+       ========================================================================= -->
+  <section class="py-10 bg-[#0D0D0D] border-b border-zinc-800/80 overflow-hidden relative">
+    <div class="max-w-7xl mx-auto px-4 mb-5 text-center">
+      <span class="text-xs uppercase tracking-widest font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-cyan-400">
+        TÍCH HỢP & TƯƠNG THÍCH VỚI HỆ SINH THÁI CÔNG NGHỆ HÀNG ĐẦU
+      </span>
+    </div>
+
+    <!-- Infinite Scrolling Marquee Track -->
+    <div class="flex overflow-hidden select-none py-1">
+      <div class="animate-marquee flex items-center space-x-6 px-4">
+        
+        <!-- 1. Google Cloud AI -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-blue-500/30 hover:border-blue-400 shadow-lg shadow-blue-950/40 hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-400/40 flex items-center justify-center">
+            <i data-lucide="cpu" class="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">Google Cloud <span class="text-blue-400 font-extrabold">AI</span></span>
+        </div>
+
+        <!-- 2. OpenAI GPT-4o -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-emerald-500/30 hover:border-emerald-400 shadow-lg shadow-emerald-950/40 hover:shadow-emerald-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center">
+            <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">OpenAI <span class="text-emerald-400 font-extrabold">GPT-4o</span></span>
+        </div>
+
+        <!-- 3. Bộ Công An VNeID -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-red-500/30 hover:border-red-400 shadow-lg shadow-red-950/40 hover:shadow-red-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-red-500/20 border border-red-400/40 flex items-center justify-center">
+            <i data-lucide="shield-check" class="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">Bộ Công An <span class="text-red-400 font-extrabold">VNeID</span></span>
+        </div>
+
+        <!-- 4. Cổng DVC Quốc Gia -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-amber-500/30 hover:border-amber-400 shadow-lg shadow-amber-950/40 hover:shadow-amber-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center">
+            <i data-lucide="globe" class="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">Cổng DVC <span class="text-amber-400 font-extrabold">Quốc Gia</span></span>
+        </div>
+
+        <!-- 5. DJI Enterprise Lab -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-cyan-500/30 hover:border-cyan-400 shadow-lg shadow-cyan-950/40 hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center">
+            <i data-lucide="plane" class="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">DJI <span class="text-cyan-400 font-extrabold">Enterprise</span></span>
+        </div>
+
+        <!-- 6. Microsoft 365 Copilot -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-indigo-500/30 hover:border-indigo-400 shadow-lg shadow-indigo-950/40 hover:shadow-indigo-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-400/40 flex items-center justify-center">
+            <i data-lucide="layers" class="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">Microsoft 365 <span class="text-indigo-400 font-extrabold">Copilot</span></span>
+        </div>
+
+        <!-- 7. Anthropic Claude -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-orange-500/30 hover:border-orange-400 shadow-lg shadow-orange-950/40 hover:shadow-orange-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-orange-500/20 border border-orange-400/40 flex items-center justify-center">
+            <i data-lucide="terminal" class="w-4 h-4 text-orange-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">Anthropic <span class="text-orange-400 font-extrabold">Claude</span></span>
+        </div>
+
+        <!-- 8. Goholic Travel Partner -->
+        <a href="tours.html" target="_blank" class="flex items-center space-x-3 px-4 py-2 rounded-2xl bg-zinc-900/95 hover:bg-zinc-800 border border-sky-500/40 hover:border-sky-400 shadow-lg shadow-sky-950/50 hover:shadow-sky-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <img src="assets/goholic-logo-badge.png" alt="Goholic Travel" class="h-7 rounded-md object-contain shadow-xs border border-sky-400/30" />
+          <div class="flex flex-col text-left">
+            <span class="text-xs font-bold text-white whitespace-nowrap flex items-center gap-1">
+              Goholic <span class="text-sky-400 font-extrabold">Travel</span>
+            </span>
+            <span class="text-[9px] text-amber-400 font-medium">Thỏa chí xê dịch</span>
+          </div>
+        </a>
+
+        <!-- 9. VNPT eKYC Gateway -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-sky-500/30 hover:border-sky-400 shadow-lg shadow-sky-950/40 hover:shadow-sky-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center">
+            <i data-lucide="qr-code" class="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">VNPT <span class="text-sky-400 font-extrabold">eKYC Gateway</span></span>
+        </div>
+
+        <!-- REPEATED SET FOR SEAMLESS INFINITE LOOP -->
+        <!-- 1. Google Cloud AI -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-blue-500/30 hover:border-blue-400 shadow-lg shadow-blue-950/40 hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-400/40 flex items-center justify-center">
+            <i data-lucide="cpu" class="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">Google Cloud <span class="text-blue-400 font-extrabold">AI</span></span>
+        </div>
+
+        <!-- 2. OpenAI GPT-4o -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-emerald-500/30 hover:border-emerald-400 shadow-lg shadow-emerald-950/40 hover:shadow-emerald-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center">
+            <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">OpenAI <span class="text-emerald-400 font-extrabold">GPT-4o</span></span>
+        </div>
+
+        <!-- 3. Bộ Công An VNeID -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-red-500/30 hover:border-red-400 shadow-lg shadow-red-950/40 hover:shadow-red-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-red-500/20 border border-red-400/40 flex items-center justify-center">
+            <i data-lucide="shield-check" class="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">Bộ Công An <span class="text-red-400 font-extrabold">VNeID</span></span>
+        </div>
+
+        <!-- 4. Cổng DVC Quốc Gia -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-amber-500/30 hover:border-amber-400 shadow-lg shadow-amber-950/40 hover:shadow-amber-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center">
+            <i data-lucide="globe" class="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">Cổng DVC <span class="text-amber-400 font-extrabold">Quốc Gia</span></span>
+        </div>
+
+        <!-- 5. DJI Enterprise Lab -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-cyan-500/30 hover:border-cyan-400 shadow-lg shadow-cyan-950/40 hover:shadow-cyan-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center">
+            <i data-lucide="plane" class="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">DJI <span class="text-cyan-400 font-extrabold">Enterprise</span></span>
+        </div>
+
+        <!-- 6. Microsoft 365 Copilot -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-indigo-500/30 hover:border-indigo-400 shadow-lg shadow-indigo-950/40 hover:shadow-indigo-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-400/40 flex items-center justify-center">
+            <i data-lucide="layers" class="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">Microsoft 365 <span class="text-indigo-400 font-extrabold">Copilot</span></span>
+        </div>
+
+        <!-- 7. Anthropic Claude -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-orange-500/30 hover:border-orange-400 shadow-lg shadow-orange-950/40 hover:shadow-orange-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-orange-500/20 border border-orange-400/40 flex items-center justify-center">
+            <i data-lucide="terminal" class="w-4 h-4 text-orange-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">Anthropic <span class="text-orange-400 font-extrabold">Claude</span></span>
+        </div>
+
+        <!-- 8. Goholic Travel Partner -->
+        <a href="tours.html" target="_blank" class="flex items-center space-x-3 px-4 py-2 rounded-2xl bg-zinc-900/95 hover:bg-zinc-800 border border-sky-500/40 hover:border-sky-400 shadow-lg shadow-sky-950/50 hover:shadow-sky-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <img src="assets/goholic-logo-badge.png" alt="Goholic Travel" class="h-7 rounded-md object-contain shadow-xs border border-sky-400/30" />
+          <div class="flex flex-col text-left">
+            <span class="text-xs font-bold text-white whitespace-nowrap flex items-center gap-1">
+              Goholic <span class="text-sky-400 font-extrabold">Travel</span>
+            </span>
+            <span class="text-[9px] text-amber-400 font-medium">Thỏa chí xê dịch</span>
+          </div>
+        </a>
+
+        <!-- 9. VNPT eKYC Gateway -->
+        <div class="flex items-center space-x-3 px-5 py-2.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-sky-500/30 hover:border-sky-400 shadow-lg shadow-sky-950/40 hover:shadow-sky-500/30 transition-all duration-300 hover:scale-105 cursor-pointer flex-shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center">
+            <i data-lucide="qr-code" class="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform"></i>
+          </div>
+          <span class="text-sm font-bold text-white whitespace-nowrap">VNPT <span class="text-sky-400 font-extrabold">eKYC Gateway</span></span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4. SMOOTH THEME TRANSITION DIVIDER (DARK -> MODERN LIGHT MODE)
+       ========================================================================= -->
+  <div class="theme-wave-divider bg-[#0D0D0D]">
+    <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-12 md:h-16 text-[#F8FAFC] preserve-3d">
+      <path d="M0,0 C360,60 1080,60 1440,0 L1440,80 L0,80 Z" fill="#F8FAFC"></path>
+    </svg>
+  </div>
+
+  <!-- =========================================================================
+       5. MAIN CONTENT SECTION ("TẤT CẢ NHỮNG GÌ BẠN CẦN" - LIGHT MODE)
+       ========================================================================= -->
+  <section id="all-you-need" class="py-20 md:py-28 bg-[#F8FAFC] text-slate-800 transition-colors duration-500 relative">
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-16 animate-on-scroll">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-red-100 border border-red-200 text-xs font-semibold text-red-700 uppercase tracking-wider mb-3">
+          <i data-lucide="sparkle" class="w-3.5 h-3.5"></i>
+          <span>Hệ sinh thái công nghệ toàn diện</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
+          Tất cả những gì bạn cần
+        </h2>
+        <p class="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+          Dẫn dắt người dùng từ nền tảng hiểu biết thực tiễn đến giải pháp ứng dụng tự động hóa hành chính công quyền lực, nghiên cứu hàng không không người lái và cơ hội du lịch trải nghiệm.
+        </p>
+      </div>
+
+      <!-- 4 Core Feature Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- CARD 1: Tool Điền mẫu điện tử Dịch Vụ Công (Featured Flagship) -->
+        <div class="group relative rounded-2xl bg-white border border-slate-200/90 p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-full pointer-events-none transition-all group-hover:scale-110 z-0"></div>
+          
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-5">
+              <div class="w-14 h-14 rounded-2xl bg-red-600 text-white flex items-center justify-center shadow-lg shadow-red-600/30">
+                <i data-lucide="file-signature" class="w-7 h-7"></i>
+              </div>
+              <span class="px-3 py-1 text-xs font-bold rounded-full bg-red-100 text-red-700 uppercase tracking-wide">
+                Đột phá hành chính
+              </span>
+            </div>
+
+            <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-red-600 transition">
+              Tool Điền mẫu điện tử Dịch Vụ Công
+            </h3>
+
+            <p class="text-slate-600 text-sm leading-relaxed mb-6">
+              Giải pháp tự động hóa điền tờ khai cư trú <b>Mẫu CT01 (Thông tư 66/2023/TT-BCA)</b> và <b>Hợp đồng thuê nhà</b> bằng cách quét mã QR CCCD gắn chip. Tích hợp bảng ký điện tử Dual-Pad cảm ứng cho cả chủ nhà và người đăng ký tạm trú, hỗ trợ xuất file PDF in ấn chuẩn A4.
+            </p>
+
+            <!-- Feature Bullet Points -->
+            <ul class="space-y-2.5 text-xs text-slate-700 mb-8">
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-shrink-0"></i>
+                <span>Quét mã QR CCCD gắn chip (12 số, họ tên, ngày sinh, thường trú) tự động bóc tách</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-shrink-0"></i>
+                <span>Tự sinh hợp đồng thuê nhà theo chuẩn Bộ luật Dân sự 2015</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-shrink-0"></i>
+                <span>Dual Touch/Mouse Signature Pad cho Chủ hộ & Người kê khai</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-shrink-0"></i>
+                <span>Xuất file PDF chất lượng cao hoặc ảnh mẫu văn bản ngay tức thì</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Action Button -->
+          <button onclick="openModal('modal-dvc-tool')" class="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold text-sm shadow-md shadow-red-600/20 hover:shadow-red-600/40 transition flex items-center justify-center space-x-2">
+            <i data-lucide="qr-code" class="w-4 h-4"></i>
+            <span>Mở Tool Điền mẫu CT01 & Ký số</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- CARD 2: Nghiên cứu và phát triển về Drone -->
+        <div class="group relative rounded-2xl bg-white border border-slate-200/90 p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-cyan-50 rounded-bl-full pointer-events-none transition-all group-hover:scale-110 z-0"></div>
+
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-5">
+              <div class="w-14 h-14 rounded-2xl bg-slate-900 text-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-950/20">
+                <i data-lucide="plane" class="w-7 h-7"></i>
+              </div>
+              <span class="px-3 py-1 text-xs font-bold rounded-full bg-cyan-100 text-cyan-800 uppercase tracking-wide">
+                R&D Hàng Không
+              </span>
+            </div>
+
+            <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-cyan-700 transition">
+              Nghiên cứu và phát triển về Drone
+            </h3>
+
+            <p class="text-slate-600 text-sm leading-relaxed mb-6">
+              Hệ thống phòng thí nghiệm Drone DOANTM nghiên cứu thiết bị bay không người lái tự hành thông minh ứng dụng trong nông nghiệp chính xác, trắc địa bản đồ 3D độ phân giải cao và cứu hộ cứu nạn thiên tai.
+            </p>
+
+            <ul class="space-y-2.5 text-xs text-slate-700 mb-8">
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check" class="w-4 h-4 text-cyan-600 flex-shrink-0"></i>
+                <span>Hệ thống Drone nông nghiệp tải trọng lớn phun thuốc & bón phân tự động</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check" class="w-4 h-4 text-cyan-600 flex-shrink-0"></i>
+                <span>Trắc địa địa hình 3D kết hợp cảm biến quét LiDAR & camera đa phổ</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check" class="w-4 h-4 text-cyan-600 flex-shrink-0"></i>
+                <span>Hệ thống cứu hộ tự hành với camera tầm nhiệt FLIR nhận diện thân nhiệt</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check" class="w-4 h-4 text-cyan-600 flex-shrink-0"></i>
+                <span>AI Computer Vision nhận dạng vật thể và tự động tránh vật cản 360°</span>
+              </li>
+            </ul>
+          </div>
+
+          <button onclick="openModal('modal-drone-rd')" class="w-full py-3.5 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-md transition flex items-center justify-center space-x-2">
+            <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i>
+            <span>Xem chi tiết R&D và Thiết bị Drone</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- CARD 3: Hướng dẫn thực hiện các Dịch Vụ Công -->
+        <div class="group relative rounded-2xl bg-white border border-slate-200/90 p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-bl-full pointer-events-none transition-all group-hover:scale-110 z-0"></div>
+
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-5">
+              <div class="w-14 h-14 rounded-2xl bg-amber-600 text-white flex items-center justify-center shadow-lg shadow-amber-600/30">
+                <i data-lucide="book-open-check" class="w-7 h-7"></i>
+              </div>
+              <span class="px-3 py-1 text-xs font-bold rounded-full bg-amber-100 text-amber-800 uppercase tracking-wide">
+                Cẩm nang số
+              </span>
+            </div>
+
+            <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-amber-700 transition">
+              Hướng dẫn thực hiện các Dịch Vụ Công
+            </h3>
+
+            <p class="text-slate-600 text-sm leading-relaxed mb-6">
+              Bộ cẩm nang chuẩn hóa từng bước, trực quan hóa quy trình nộp hồ sơ trực tuyến trên Cổng DVC Quốc Gia, VNeID và Cổng DVC Bộ Công An. Giúp công dân tiết kiệm thời gian, tránh lỗi trả hồ sơ thường gặp.
+            </p>
+
+            <ul class="space-y-2.5 text-xs text-slate-700 mb-8">
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
+                <span>Đăng ký tạm trú / khai báo tạm vắng toàn trình trong 15 phút</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
+                <span>Cấp đổi Hộ chiếu phổ thông gắn chip online chuyển phát tận nhà</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
+                <span>Đổi Giấy phép lái xe trực tuyến tích hợp VNeID mức độ 2</span>
+              </li>
+              <li class="flex items-center space-x-2">
+                <i data-lucide="check" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
+                <span>Khai sinh trực tuyến, cấp thẻ BHYT và đăng ký thường trú liên thông</span>
+              </li>
+            </ul>
+          </div>
+
+          <button onclick="openModal('modal-dvc-guides')" class="w-full py-3.5 px-5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold text-sm border border-slate-300 transition flex items-center justify-center space-x-2">
+            <i data-lucide="list-checks" class="w-4 h-4 text-amber-600"></i>
+            <span>Xem cẩm nang hướng dẫn DVC</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- CARD 4: Các tour du lịch trải nghiệm -->
+        <div class="group relative rounded-2xl bg-white border border-slate-200/90 p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-full pointer-events-none transition-all group-hover:scale-110 z-0"></div>
+          <div class="relative z-10">
+            <div class="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 mb-6">
+              <div class="flex items-center gap-3 min-w-0">
+                <!-- Compass Icon with rich gradient and inner glow ring -->
+                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-600 via-teal-700 to-emerald-800 text-white flex items-center justify-center shadow-lg shadow-emerald-800/20 ring-1 ring-emerald-500/20 flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+                  <i data-lucide="compass" class="w-6 h-6 sm:w-7 sm:h-7"></i>
+                </div>
+                <!-- Prestigious Co-Branding Partner Crest -->
+                <div class="flex items-center gap-2.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-900 border border-slate-800 text-white shadow-sm hover:border-slate-700 hover:shadow-md transition-all duration-300">
+                  <img src="assets/goholic-logo-badge.png" alt="Goholic Travel" class="h-6 sm:h-7 w-auto rounded object-contain flex-shrink-0" />
+                  <div class="border-l border-slate-700/80 pl-2.5 leading-tight text-left">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-[11px] sm:text-xs font-bold text-white tracking-tight whitespace-nowrap">Liên kết bán tour cùng Goholic</span>
+                      <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" title="Đại lý xác minh"></i>
+                    </div>
+                    <span class="text-[9px] sm:text-[10px] text-slate-300 font-medium whitespace-nowrap">Đại lý chính thức • Thỏa chí xê dịch</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Elegant Category Badge with Status Indicator -->
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full bg-emerald-50 border border-emerald-200/90 text-emerald-800 uppercase tracking-wide flex-shrink-0 whitespace-nowrap shadow-2xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Affiliate Du Lịch</span>
+              </span>
+            </div>
+
+            <h3 class="text-2xl font-bold text-slate-900 mb-2.5 group-hover:text-emerald-700 transition duration-300">
+              Các tour du lịch trải nghiệm & Flycam
+            </h3>
+
+            <p class="text-slate-600 text-sm leading-relaxed mb-6">
+              Hệ thống tour du lịch sinh thái và khám phá liên kết (Affiliate Tourism) hợp tác cùng <b>Goholic Travel</b>. Kết hợp trải nghiệm bay Drone FPV quay phim điện ảnh tại các danh lam thắng cảnh Việt Nam & quốc tế với ưu đãi độc quyền.
+            </p>
+
+            <ul class="space-y-2.5 text-xs text-slate-700 mb-8">
+              <li class="flex items-center space-x-2.5">
+                <div class="w-5 h-5 rounded-md bg-emerald-50 border border-emerald-200/80 flex items-center justify-center flex-shrink-0">
+                  <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-700"></i>
+                </div>
+                <span>Đại lý liên kết chính thức Goholic Travel – Cam kết chất lượng dịch vụ 100%</span>
+              </li>
+              <li class="flex items-center space-x-2.5">
+                <div class="w-5 h-5 rounded-md bg-emerald-50 border border-emerald-200/80 flex items-center justify-center flex-shrink-0">
+                  <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-700"></i>
+                </div>
+                <span>Tour săn mây Tà Xùa - Y Tý kèm chuyên đề huấn luyện bay Flycam FPV</span>
+              </li>
+              <li class="flex items-center space-x-2.5">
+                <div class="w-5 h-5 rounded-md bg-emerald-50 border border-emerald-200/80 flex items-center justify-center flex-shrink-0">
+                  <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-700"></i>
+                </div>
+                <span>Khám phá Đèo Mã Pí Lèng - Hà Giang ghi hình 4K góc nhìn điện ảnh</span>
+              </li>
+              <li class="flex items-center space-x-2.5">
+                <div class="w-5 h-5 rounded-md bg-emerald-50 border border-emerald-200/80 flex items-center justify-center flex-shrink-0">
+                  <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-700"></i>
+                </div>
+                <span>Chính sách đối tác Affiliate hoa hồng hấp dẫn cho Creator & Pilot</span>
+              </li>
+            </ul>
+          </div>
+
+          <a href="tours.html" target="_blank" class="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 text-white font-semibold text-sm shadow-md shadow-emerald-700/20 hover:shadow-emerald-700/35 transition-all duration-300 flex items-center justify-center space-x-2 group/btn">
+            <i data-lucide="map-pin" class="w-4 h-4 text-emerald-100"></i>
+            <span>Khám phá Tour & Đăng ký trải nghiệm</span>
+            <i data-lucide="arrow-right" class="w-4 h-4 group-hover/btn:translate-x-1 transition-transform"></i>
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       6. ABOUT US & KEY METRICS SECTION
+       ========================================================================= -->
+  <section id="about" class="py-20 bg-slate-900 text-white relative overflow-hidden border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <div class="lg:col-span-6 space-y-5">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-red-950/80 border border-red-500/30 text-xs font-semibold text-red-400 uppercase tracking-wider">
+            <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+            <span>Về DOANTM Platform</span>
+          </div>
+
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">
+            Tiên phong công nghệ vì cộng đồng và tương lai hàng không
+          </h2>
+
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            Được sáng lập với tầm nhìn kết nối trí tuệ nhân tạo (AI) và tự động hóa vào đời sống thực tế, <b>DOANTM</b> cung cấp hệ công cụ hỗ trợ người dân thực hiện các thủ tục hành chính công một cách nhanh gọn, bảo mật và chính xác nhất.
+          </p>
+
+          <p class="text-slate-400 text-sm leading-relaxed">
+            Song song đó, đội ngũ kỹ sư của Đoàn tập trung nghiên cứu, thiết kế phần cứng và thuật toán điều khiển bay cho các phương tiện không người lái (UAV/Drone), ứng dụng trong nông nghiệp thông minh, khảo sát địa hình và dịch vụ ghi hình chuyên nghiệp.
+          </p>
+
+          <div class="pt-2 flex items-center space-x-4">
+            <button onclick="openModal('modal-auth')" class="px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-semibold shadow-lg shadow-red-600/30 transition">
+              Gia nhập cộng đồng DOANTM
+            </button>
+            <a href="#all-you-need" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition">
+              Tìm hiểu thêm
+            </a>
+          </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="lg:col-span-6 grid grid-cols-2 gap-6">
+          <div class="p-6 rounded-2xl bg-slate-800/80 border border-slate-700/80">
+            <div class="text-3xl sm:text-4xl font-extrabold text-red-500 mb-1">150.000+</div>
+            <div class="text-sm font-semibold text-white">Biểu mẫu đã điền</div>
+            <p class="text-xs text-slate-400 mt-1">Hồ sơ CT01 & hợp đồng thuê nhà được tạo tự động</p>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-slate-800/80 border border-slate-700/80">
+            <div class="text-3xl sm:text-4xl font-extrabold text-emerald-400 mb-1">99.8%</div>
+            <div class="text-sm font-semibold text-white">Hợp lệ lần đầu</div>
+            <p class="text-xs text-slate-400 mt-1">Đảm bảo đúng quy chuẩn Thông tư 66/2023/TT-BCA</p>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-slate-800/80 border border-slate-700/80">
+            <div class="text-3xl sm:text-4xl font-extrabold text-cyan-400 mb-1">50+</div>
+            <div class="text-sm font-semibold text-white">Dự án Drone thử nghiệm</div>
+            <p class="text-xs text-slate-400 mt-1">Bay thử nghiệm trên 12 tỉnh thành cả nước</p>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-slate-800/80 border border-slate-700/80">
+            <div class="text-3xl sm:text-4xl font-extrabold text-amber-400 mb-1">24/7</div>
+            <div class="text-sm font-semibold text-white">Hỗ trợ thông minh</div>
+            <p class="text-xs text-slate-400 mt-1">Trợ lý AI hướng dẫn thủ tục hành chính liên tục</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       7. FOOTER
+       ========================================================================= -->
+  <footer class="bg-[#0A0A0A] text-slate-400 pt-16 pb-12 border-t border-zinc-800 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-zinc-800/80">
+        
+        <!-- Brand Info -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-red-600 flex items-center justify-center text-white">
+              <i data-lucide="crosshair" class="w-5 h-5"></i>
+            </div>
+            <span class="text-xl font-extrabold text-white">DOAN<span class="text-red-500">TM</span></span>
+          </div>
+          <p class="text-zinc-400 text-xs leading-relaxed max-w-sm">
+            Nền tảng kiến trúc công nghệ tiên tiến tích hợp công cụ tự động hóa hành chính công quyền lực (Dịch Vụ Công) và trung tâm nghiên cứu giải pháp hàng không Drone thông minh.
+          </p>
+          <div class="flex items-center space-x-2 text-zinc-500 text-[11px]">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-zinc-300">Cổng DVC & Drone Lab: Hoạt động bình thường (99.98% Uptime)</span>
+          </div>
+        </div>
+
+        <!-- Col 1: Dịch Vụ Công -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Dịch Vụ Công</h4>
+          <ul class="space-y-2">
+            <li><a href="javascript:void(0)" onclick="openModal('modal-dvc-tool')" class="hover:text-red-400 transition">Tool Điền mẫu CT01</a></li>
+            <li><a href="javascript:void(0)" onclick="openModal('modal-dvc-tool')" class="hover:text-red-400 transition">Hợp đồng thuê nhà</a></li>
+            <li><a href="javascript:void(0)" onclick="openModal('modal-dvc-guides')" class="hover:text-red-400 transition">Đăng ký tạm trú online</a></li>
+            <li><a href="javascript:void(0)" onclick="openModal('modal-dvc-guides')" class="hover:text-red-400 transition">Cấp đổi Hộ chiếu online</a></li>
+            <li><a href="javascript:void(0)" onclick="openModal('modal-dvc-guides')" class="hover:text-red-400 transition">Đổi Giấy phép lái xe</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 2: Drone R&D -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Drone & Hàng Không</h4>
+          <ul class="space-y-2">
+            <li><a href="javascript:void(0)" onclick="openModal('modal-drone-rd')" class="hover:text-cyan-400 transition">Drone Nông nghiệp</a></li>
+            <li><a href="javascript:void(0)" onclick="openModal('modal-drone-rd')" class="hover:text-cyan-400 transition">Trắc địa 3D & LiDAR</a></li>
+            <li><a href="javascript:void(0)" onclick="openModal('modal-drone-rd')" class="hover:text-cyan-400 transition">Cứu hộ cứu nạn SAR</a></li>
+            <li><a href="javascript:void(0)" onclick="openModal('modal-tours')" class="hover:text-emerald-400 transition">Khóa học bay Flycam FPV</a></li>
+            <li><a href="javascript:void(0)" onclick="openModal('modal-tours')" class="hover:text-emerald-400 transition">Tour quay phim di sản</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Pháp Lý & Hỗ Trợ -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Chính Sách & Pháp Lý</h4>
+          <ul class="space-y-2">
+            <li><span class="text-zinc-500">Thông tư 66/2023/TT-BCA</span></li>
+            <li><span class="text-zinc-500">Luật Cư trú số 68/2020/QH14</span></li>
+            <li><span class="text-zinc-500">Nghị định 36/2008/NĐ-CP (Drone)</span></li>
+            <li><a href="#" class="hover:text-white transition">Chính sách bảo mật dữ liệu</a></li>
+            <li><a href="#" class="hover:text-white transition">Điều khoản sử dụng</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Bottom Disclaimer -->
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-zinc-500 text-[11px] gap-4">
+        <div>
+          &copy; 2026 DOANTM Platform. All rights reserved. Thiết kế và phát triển bởi Đoàn & Đội ngũ Kiến trúc sư Hệ thống.
+        </div>
+        <div class="text-zinc-500 text-center sm:text-right">
+          Công cụ hỗ trợ công dân phi thương mại & Tuân thủ Luật An toàn thông tin mạng Việt Nam.
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       8. MODAL 1: INTERACTIVE DVC FORM TOOL & SIGNATURE PAD (FLAGSHIP COMPONENT)
+       ========================================================================= -->
+  <div id="modal-dvc-tool" class="modal-backdrop fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    
+    <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden text-slate-800 dark:text-zinc-100 my-auto">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 bg-zinc-900 text-white flex items-center justify-between border-b border-zinc-800">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-xl bg-red-600 flex items-center justify-center">
+            <i data-lucide="qr-code" class="w-5 h-5 text-white"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-white">Tool Điền Mẫu Điện Tử Dịch Vụ Công & Ký Số Dual Pad</h3>
+            <p class="text-xs text-zinc-400">Chuẩn hóa Mẫu CT01 (TT 66/2023/TT-BCA) & Hợp đồng thuê nhà ở</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <!-- Document Switcher Tabs -->
+          <div class="hidden sm:flex bg-zinc-800 p-1 rounded-lg text-xs font-semibold">
+            <button id="tab-btn-ct01" class="px-3 py-1.5 rounded-md border-b-2 border-red-600 text-red-500 font-bold bg-zinc-700/50">Tờ khai CT01</button>
+            <button id="tab-btn-contract" class="px-3 py-1.5 rounded-md border-b-2 border-transparent text-zinc-400 hover:text-white">Hợp đồng thuê nhà</button>
+          </div>
+
+          <button onclick="closeModal('modal-dvc-tool')" class="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Two Column Split Layout) -->
+      <div class="flex-1 overflow-y-auto grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-zinc-200 dark:divide-zinc-800">
+        
+        <!-- LEFT COLUMN: INPUT CONTROLS, QR SCANNER, & DUAL SIGNATURE PADS -->
+        <div class="lg:col-span-5 p-5 space-y-5 bg-slate-50 dark:bg-zinc-900/90 overflow-y-auto max-h-[75vh]">
+          
+          <!-- Section A: QR Scanning & Presets -->
+          <div class="bg-white dark:bg-zinc-800/80 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400 flex items-center gap-1.5">
+                <i data-lucide="scan" class="w-4 h-4"></i>
+                1. Nạp dữ liệu QR Căn Cước (CCCD)
+              </span>
+              <span class="text-[10px] text-zinc-400">VNeID Compatible</span>
+            </div>
+
+            <!-- Action buttons for QR -->
+            <div class="grid grid-cols-2 gap-2">
+              <button id="btn-simulate-scan" class="px-3 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm transition">
+                <i data-lucide="camera" class="w-4 h-4"></i>
+                <span>Quét Camera AI</span>
+              </button>
+
+              <label class="px-3 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition border border-zinc-700 text-center">
+                <i data-lucide="upload" class="w-4 h-4 text-zinc-300"></i>
+                <span>Tải ảnh QR</span>
+                <input type="file" id="upload-qr-file" accept="image/*" class="hidden" />
+              </label>
+            </div>
+
+            <!-- Sample One-Click Presets -->
+            <div>
+              <p class="text-[11px] text-zinc-500 mb-1.5">Hoặc thử nhanh dữ liệu công dân mẫu:</p>
+              <div class="flex flex-wrap gap-1.5">
+                <button data-preset="preset1" class="px-2.5 py-1 rounded bg-zinc-100 dark:bg-zinc-700 hover:bg-red-50 dark:hover:bg-red-950/40 text-[11px] font-medium text-zinc-700 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-600 transition">
+                  👤 Nguyễn Văn An (HN)
+                </button>
+                <button data-preset="preset2" class="px-2.5 py-1 rounded bg-zinc-100 dark:bg-zinc-700 hover:bg-red-50 dark:hover:bg-red-950/40 text-[11px] font-medium text-zinc-700 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-600 transition">
+                  👤 Trần Thị Mai (HCM)
+                </button>
+                <button data-preset="preset3" class="px-2.5 py-1 rounded bg-zinc-100 dark:bg-zinc-700 hover:bg-red-50 dark:hover:bg-red-950/40 text-[11px] font-medium text-zinc-700 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-600 transition">
+                  👤 Lê Hoàng Long (ĐN)
+                </button>
+              </div>
+            </div>
+
+            <!-- Raw QR Code Input -->
+            <div class="pt-1">
+              <div class="flex gap-1.5">
+                <input type="text" id="input-qr-raw" placeholder="Dán chuỗi QR: 001095012345||Họ tên|..." class="flex-1 px-2.5 py-1.5 text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 font-mono" />
+                <button id="btn-apply-qr-text" class="px-3 py-1.5 bg-zinc-900 dark:bg-zinc-700 hover:bg-zinc-800 text-white text-xs font-semibold rounded-lg transition">Nạp</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section B: Applicant & Stay Details Form Inputs -->
+          <div class="bg-white dark:bg-zinc-800/80 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm space-y-3 text-xs">
+            <span class="font-bold uppercase tracking-wider text-slate-800 dark:text-white flex items-center gap-1.5">
+              <i data-lucide="user" class="w-4 h-4 text-red-500"></i>
+              2. Thông tin Người Kê Khai & Cư Trú
+            </span>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-zinc-500 text-[11px] mb-1">Họ và tên:</label>
+                <input id="input-fullName" type="text" class="dvc-sync-input w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 font-semibold uppercase" />
+              </div>
+              <div>
+                <label class="block text-zinc-500 text-[11px] mb-1">Số CCCD (12 số):</label>
+                <input id="input-idNumber" type="text" class="dvc-sync-input w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 font-mono" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="block text-zinc-500 text-[11px] mb-1">Ngày sinh:</label>
+                <input id="input-dob" type="text" class="dvc-sync-input w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700" />
+              </div>
+              <div>
+                <label class="block text-zinc-500 text-[11px] mb-1">Giới tính:</label>
+                <input id="input-gender" type="text" class="dvc-sync-input w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700" />
+              </div>
+              <div>
+                <label class="block text-zinc-500 text-[11px] mb-1">Số điện thoại:</label>
+                <input id="input-phone" type="text" class="dvc-sync-input w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 font-mono" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-zinc-500 text-[11px] mb-1">Nơi thường trú theo CCCD:</label>
+              <input id="input-permanentAddress" type="text" class="dvc-sync-input w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700" />
+            </div>
+
+            <div>
+              <label class="block text-zinc-500 text-[11px] mb-1">Địa chỉ đăng ký tạm trú / Thuê trọ:</label>
+              <input id="input-tempAddress" type="text" class="dvc-sync-input w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700" />
+            </div>
+
+            <div>
+              <label class="block text-zinc-500 text-[11px] mb-1">Công an xã/phường tiếp nhận:</label>
+              <input id="input-policeStation" type="text" class="dvc-sync-input w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700" />
+            </div>
+
+            <!-- Landlord section -->
+            <div class="pt-2 border-t border-zinc-200 dark:border-zinc-700">
+              <span class="font-bold text-zinc-700 dark:text-zinc-300 block mb-1">Thông tin Chủ nhà (Bên cho thuê):</span>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-zinc-500 text-[11px] mb-1">Họ tên chủ nhà:</label>
+                  <input id="input-landlordName" type="text" class="dvc-sync-input w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 font-semibold" />
+                </div>
+                <div>
+                  <label class="block text-zinc-500 text-[11px] mb-1">CCCD chủ nhà:</label>
+                  <input id="input-landlordId" type="text" class="dvc-sync-input w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 font-mono" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Rent details -->
+            <div class="grid grid-cols-3 gap-2 pt-1">
+              <div>
+                <label class="block text-zinc-500 text-[11px] mb-1">Giá thuê (VNĐ):</label>
+                <input id="input-rentPrice" type="text" class="dvc-sync-input w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 font-mono" />
+              </div>
+              <div>
+                <label class="block text-zinc-500 text-[11px] mb-1">Tiền cọc (VNĐ):</label>
+                <input id="input-deposit" type="text" class="dvc-sync-input w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 font-mono" />
+              </div>
+              <div>
+                <label class="block text-zinc-500 text-[11px] mb-1">Thời hạn (Tháng):</label>
+                <input id="input-contractDuration" type="text" class="dvc-sync-input w-full p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 font-mono" />
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Section C: Dual Signature Pads (Touch/Mouse Canvas) -->
+          <div class="bg-white dark:bg-zinc-800/80 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-white flex items-center gap-1.5">
+                <i data-lucide="edit-3" class="w-4 h-4 text-emerald-500"></i>
+                3. Bảng Ký Điện Tử Dual Pad
+              </span>
+              <!-- Pen Color Toggle -->
+              <div class="flex items-center space-x-1.5 text-[11px]">
+                <span class="text-zinc-400">Màu mực:</span>
+                <button id="pen-color-blue" title="Mực xanh bút bi" class="w-4 h-4 rounded-full bg-[#0038A8] border border-white/50 focus:ring-2 focus:ring-offset-1 focus:ring-blue-500"></button>
+                <button id="pen-color-black" title="Mực đen" class="w-4 h-4 rounded-full bg-black border border-white/50 focus:ring-2 focus:ring-offset-1 focus:ring-zinc-500"></button>
+              </div>
+            </div>
+
+            <!-- Signature Pad 1: Landlord -->
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Chữ ký Chủ nhà / Chủ hộ:</span>
+                <button id="btn-clear-sig-landlord" class="text-[10px] text-red-500 hover:text-red-600 font-medium flex items-center gap-0.5">
+                  <i data-lucide="trash-2" class="w-3 h-3"></i> Xóa ký lại
+                </button>
+              </div>
+              <canvas id="sig-canvas-landlord" class="signature-canvas w-full h-24 rounded-lg"></canvas>
+            </div>
+
+            <!-- Signature Pad 2: Applicant -->
+            <div class="pt-2">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Chữ ký Người kê khai (Bên thuê):</span>
+                <button id="btn-clear-sig-applicant" class="text-[10px] text-red-500 hover:text-red-600 font-medium flex items-center gap-0.5">
+                  <i data-lucide="trash-2" class="w-3 h-3"></i> Xóa ký lại
+                </button>
+              </div>
+              <canvas id="sig-canvas-applicant" class="signature-canvas w-full h-24 rounded-lg"></canvas>
+            </div>
+            
+            <p class="text-[10px] text-zinc-400 italic text-center">Ký trực tiếp bằng ngón tay trên điện thoại/tablet hoặc rê chuột trên máy tính.</p>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: LIVE DOCUMENT PREVIEW & PDF EXPORT -->
+        <div class="lg:col-span-7 p-6 flex flex-col justify-between bg-zinc-100 dark:bg-zinc-950 overflow-y-auto max-h-[75vh]">
+          
+          <div>
+            <!-- Document Toolbar Header -->
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-200 dark:border-zinc-800">
+              <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">Xem trước văn bản pháp lý thời gian thực</span>
+              </div>
+              
+              <!-- Quick Export Actions -->
+              <div class="flex items-center space-x-2">
+                <button id="btn-print-doc" class="px-3 py-1.5 rounded-lg bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-xs font-medium text-zinc-800 dark:text-zinc-200 transition flex items-center gap-1.5">
+                  <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                  <span>In trực tiếp</span>
+                </button>
+
+                <button id="btn-export-pdf" class="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold shadow-md shadow-red-600/30 transition flex items-center gap-1.5">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                  <span>Xuất file PDF</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tab 1: Mẫu CT01 Container -->
+            <div id="doc-ct01-preview" class="transition-all duration-200">
+              <!-- Rendered via js/formTool.js -->
+            </div>
+
+            <!-- Tab 2: Hợp Đồng Thuê Nhà Container -->
+            <div id="doc-contract-preview" class="hidden transition-all duration-200">
+              <!-- Rendered via js/formTool.js -->
+            </div>
+          </div>
+
+          <!-- Document Footer Info -->
+          <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-500 flex items-center justify-between">
+            <span>Mã định danh văn bản: DOANTM-DOC-2026-X8</span>
+            <span>Chuẩn ký số điện tử theo Nghị định 130/2018/NĐ-CP</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Simulated Camera Scanner Overlay Modal -->
+  <div id="camera-scan-simulation" class="fixed inset-0 z-50 bg-black/90 hidden flex flex-col items-center justify-center p-4">
+    <div class="relative w-80 h-80 rounded-2xl border-2 border-red-500 overflow-hidden bg-black flex items-center justify-center shadow-2xl shadow-red-600/50">
+      <!-- Animated Laser Scan Line -->
+      <div class="scan-laser"></div>
+      
+      <!-- CCCD Dummy Silhouette in Background -->
+      <div class="opacity-30 flex flex-col items-center text-zinc-400">
+        <i data-lucide="credit-card" class="w-24 h-24 mb-2"></i>
+        <span class="text-xs font-mono">ĐẶT MÃ QR CCCD VÀO KHUNG</span>
+      </div>
+
+      <!-- Corner Target Reticles -->
+      <div class="absolute top-2 left-2 w-5 h-5 border-t-2 border-l-2 border-white"></div>
+      <div class="absolute top-2 right-2 w-5 h-5 border-t-2 border-r-2 border-white"></div>
+      <div class="absolute bottom-2 left-2 w-5 h-5 border-b-2 border-l-2 border-white"></div>
+      <div class="absolute bottom-2 right-2 w-5 h-5 border-b-2 border-r-2 border-white"></div>
+    </div>
+
+    <div class="mt-4 text-center text-white">
+      <p class="font-bold text-sm">Hệ thống AI đang đọc dữ liệu mã QR CCCD...</p>
+      <p class="text-xs text-zinc-400 mt-1">Tự động nhận diện trong 2 giây</p>
+      <button id="btn-close-scanner" class="mt-3 px-4 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300">Hủy quét</button>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       9. MODAL 2: DRONE R&D SHOWCASE & TELEMETRY LAB
+       ========================================================================= -->
+  <div id="modal-drone-rd" class="modal-backdrop fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-zinc-900 text-white rounded-2xl shadow-2xl border border-zinc-700 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden my-auto">
+      
+      <div class="px-6 py-4 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-xl bg-cyan-600 flex items-center justify-center text-white">
+            <i data-lucide="plane" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-white">Trung Tâm Nghiên Cứu & Phát Triển Drone DOANTM</h3>
+            <p class="text-xs text-cyan-400">Autonomous UAV Research & Aerospace AI Lab</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-drone-rd')" class="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-6 text-sm">
+        
+        <!-- Drone Fleet Showcase Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <div class="p-4 rounded-xl bg-zinc-800/80 border border-zinc-700 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-400">DOANTM Agri-50</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300">Nông Nghiệp</span>
+            </div>
+            <h4 class="font-bold text-white text-base">Drone Phun Nông Nghiệp Tự Hành</h4>
+            <p class="text-xs text-zinc-400 leading-relaxed">Tải trọng bình phun 50 lít, radar vi sóng tránh vật cản đa hướng, định vị RTK sai số centimet.</p>
+            <div class="pt-2 text-[11px] text-zinc-300 space-y-1 font-mono">
+              <p>• Tốc độ bay: 12 m/s</p>
+              <p>• Hiệu suất: 18 ha/giờ</p>
+              <p>• Kháng nước: IPX6K</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-zinc-800/80 border border-zinc-700 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-cyan-400">DOANTM Mapper-3D</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300">Trắc Địa</span>
+            </div>
+            <h4 class="font-bold text-white text-base">Hệ Thống Trắc Địa & Quét LiDAR</h4>
+            <p class="text-xs text-zinc-400 leading-relaxed">Tích hợp cảm biến LiDAR Livox và camera Full-frame 61MP, tái tạo mô hình địa hình 3D kỹ thuật số.</p>
+            <div class="pt-2 text-[11px] text-zinc-300 space-y-1 font-mono">
+              <p>• Tầm bay: 15 km O3</p>
+              <p>• Thời gian bay: 55 phút</p>
+              <p>• Mật độ điểm: 240 pts/m²</p>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-zinc-800/80 border border-zinc-700 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-red-400">DOANTM SAR-Rescue</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-950 text-red-300">Cứu Hộ</span>
+            </div>
+            <h4 class="font-bold text-white text-base">Drone Cứu Hộ & Tầm Nhiệt Ban Đêm</h4>
+            <p class="text-xs text-zinc-400 leading-relaxed">Trang bị camera tầm nhiệt FLIR 640x512, đèn rọi công suất cao 100W và loa phát thanh khẩn cấp.</p>
+            <div class="pt-2 text-[11px] text-zinc-300 space-y-1 font-mono">
+              <p>• Zoom quang học: 30x</p>
+              <p>• Khả năng chịu gió: Cấp 7</p>
+              <p>• Tự động thả phao cứu sinh</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Telemetry Simulator Section -->
+        <div class="p-5 rounded-xl bg-black border border-zinc-800 space-y-3 font-mono">
+          <div class="flex items-center justify-between text-xs border-b border-zinc-800 pb-2">
+            <span class="text-emerald-400 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              TELEMETRY LOG STREAM (LIVE SIMULATION)
+            </span>
+            <span class="text-zinc-500">LAB-NODE: VN-HANOI-01</span>
+          </div>
+          <div class="text-xs text-zinc-300 space-y-1 leading-relaxed">
+            <p><span class="text-zinc-500">[22:30:15]</span> <span class="text-cyan-400">IMU Calibrated:</span> Gyro drift < 0.02 deg/s. Accelerometer OK.</p>
+            <p><span class="text-zinc-500">[22:30:16]</span> <span class="text-emerald-400">RTK Base Connected:</span> GPS Fix 3D (22 Satellites), Base Lat: 21.0378, Lon: 105.7824.</p>
+            <p><span class="text-zinc-500">[22:30:18]</span> <span class="text-amber-400">Computer Vision:</span> Object classification model loaded (Edge TPU). Target tracking standby.</p>
+            <p><span class="text-zinc-500">[22:30:20]</span> <span class="text-red-400">Mission Status:</span> Ready for autonomous agricultural payload deployment.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="px-6 py-3 bg-zinc-950 border-t border-zinc-800 flex justify-end">
+        <button onclick="closeModal('modal-drone-rd')" class="px-5 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-white">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       10. MODAL 3: STEP-BY-STEP PUBLIC SERVICE GUIDES
+       ========================================================================= -->
+  <div id="modal-dvc-guides" class="modal-backdrop fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden text-slate-800 dark:text-zinc-100 my-auto">
+      
+      <div class="px-6 py-4 bg-amber-600 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <i data-lucide="book-open" class="w-6 h-6"></i>
+          <div>
+            <h3 class="font-bold text-base">Cẩm Nang Hướng Dẫn Thực Hiện Dịch Vụ Công Trực Tuyến</h3>
+            <p class="text-xs text-amber-100">Quy trình từng bước tránh bị từ chối hồ sơ</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-dvc-guides')" class="text-white hover:text-amber-200 p-1 rounded-lg">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-6 text-sm">
+        
+        <!-- Guide 1: Đăng ký tạm trú -->
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200 dark:border-zinc-700 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-red-600 text-white text-xs flex items-center justify-center font-bold">1</span>
+              Đăng ký tạm trú trên Cổng DVC Bộ Công An & VNeID
+            </h4>
+            <span class="text-xs px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">Thời gian: 3 ngày làm việc</span>
+          </div>
+          <div class="space-y-2 text-xs text-slate-600 dark:text-zinc-300">
+            <p><strong>Bước 1:</strong> Chuẩn bị file ảnh hoặc PDF gồm: <i>Tờ khai CT01</i> (đã có chữ ký của chủ nhà) và <i>Hợp đồng thuê nhà</i> (sử dụng Tool DOANTM để tạo chuẩn trong 1 phút).</p>
+            <p><strong>Bước 2:</strong> Đăng nhập Cổng DVC Bộ Công An bằng tài khoản Định danh điện tử VNeID Mức 2.</p>
+            <p><strong>Bước 3:</strong> Chọn thủ tục <i>"Đăng ký tạm trú"</i> -> Nhập thông tin nơi tạm trú và đính kèm 2 tệp đã ký.</p>
+            <p><strong>Bước 4:</strong> Nộp phí 15.000 VNĐ qua cổng thanh toán trực tuyến và theo dõi mã hồ sơ.</p>
+          </div>
+        </div>
+
+        <!-- Guide 2: Cấp đổi hộ chiếu -->
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200 dark:border-zinc-700 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-red-600 text-white text-xs flex items-center justify-center font-bold">2</span>
+              Cấp đổi Hộ chiếu phổ thông gắn chip online nhận tại nhà
+            </h4>
+            <span class="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold">Thời gian: 8 ngày làm việc</span>
+          </div>
+          <div class="space-y-2 text-xs text-slate-600 dark:text-zinc-300">
+            <p><strong>Bước 1:</strong> Chụp ảnh chân dung 4x6 phông trắng, không đeo kính, vén tóc lộ hai tai.</p>
+            <p><strong>Bước 2:</strong> Chọn cơ quan tiếp nhận: Cục Quản lý Xuất nhập cảnh hoặc Phòng QLXNC Công an tỉnh.</p>
+            <p><strong>Bước 3:</strong> Chọn hình thức nhận kết quả: "Qua dịch vụ bưu chính công ích" và điền địa chỉ nhận.</p>
+          </div>
+        </div>
+
+        <!-- Guide 3: Đổi bằng lái xe -->
+        <div class="p-4 rounded-xl bg-slate-50 dark:bg-zinc-800/70 border border-slate-200 dark:border-zinc-700 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-red-600 text-white text-xs flex items-center justify-center font-bold">3</span>
+              Đổi Giấy phép lái xe trực tuyến toàn trình
+            </h4>
+            <span class="text-xs px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">Thời gian: 5 ngày làm việc</span>
+          </div>
+          <div class="space-y-2 text-xs text-slate-600 dark:text-zinc-300">
+            <p><strong>Điều kiện:</strong> Giấy khám sức khỏe lái xe điện tử có mã liên thông từ bệnh viện/phòng khám.</p>
+            <p><strong>Quy trình:</strong> Truy cập dvc4.gplx.gov.vn -> Nhập số GPLX hiện tại -> Điền mã giấy khám sức khỏe -> Nộp lệ phí 115.000 VNĐ.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="px-6 py-3 bg-slate-100 dark:bg-zinc-950 border-t border-slate-200 dark:border-zinc-800 flex justify-end">
+        <button onclick="closeModal('modal-dvc-guides')" class="px-5 py-2 rounded-lg bg-zinc-800 text-white text-xs font-semibold">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       11. MODAL 4: AFFILIATE TOURISM EXPERIENCES
+       ========================================================================= -->
+  <div id="modal-tours" class="modal-backdrop fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden text-slate-800 dark:text-zinc-100 my-auto">
+      
+      <div class="px-6 py-4 bg-emerald-600 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <i data-lucide="compass" class="w-6 h-6"></i>
+          <div>
+            <h3 class="font-bold text-base">Các Tour Du Lịch Trải Nghiệm & Khám Phá Flycam FPV</h3>
+            <p class="text-xs text-emerald-100">Liên kết đối tác lữ hành & Đào tạo bay thực chiến</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-tours')" class="text-white hover:text-emerald-200 p-1 rounded-lg">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-6 text-sm">
+        
+        <!-- Banner Khám phá Tour Nước Ngoài Hiện Hành (Liên kết Goholic) -->
+        <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950 via-teal-950 to-zinc-900 border border-emerald-600/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+          <div class="space-y-1.5 text-center sm:text-left">
+            <div class="flex items-center justify-center sm:justify-start gap-2.5 text-xs font-bold text-emerald-400 uppercase tracking-wider">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span>Tour Quốc Tế • Liên Kết Goholic Travel</span>
+              <img src="assets/goholic-logo-badge.png" alt="Goholic" class="h-5 rounded object-contain border border-white/20" />
+            </div>
+            <h4 class="font-bold text-sm text-white">Khám phá các Tour Nhật Bản, Hàn Quốc, Thái Lan, Trung Quốc, Châu Âu, Bali...</h4>
+            <p class="text-xs text-zinc-300">DOANTM là đối tác liên kết chính thức của Goholic Travel (Thỏa chí xê dịch). Xem bài viết chi tiết, chọn ngày đi và quét mã VietQR thanh toán tự động.</p>
+          </div>
+          <a href="tours.html" target="_blank" class="flex-shrink-0 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5 whitespace-nowrap">
+            <span>Mở trang Tour Quốc Tế</span>
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700 space-y-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">TOUR 3N2Đ TÂY BẮC</span>
+                <h4 class="font-bold text-base text-slate-900 dark:text-white">Săn Mây Tà Xùa & Huấn Luyện Flycam FPV</h4>
+              </div>
+              <span class="text-xs font-bold px-2 py-1 rounded bg-emerald-100 text-emerald-800">4.890.000 đ</span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-zinc-300 leading-relaxed">
+              Trải nghiệm bay flycam tại sống lưng khủng long, đỉnh Gió Tà Xùa. Được chuyên gia DOANTM hướng dẫn bay thủ công Acro mode, cài đặt góc camera và kỹ thuật quay footage mượt mà.
+            </p>
+            <div class="pt-2 flex items-center justify-between text-xs">
+              <span class="text-zinc-500">Bao gồm: Xe limousine, homestay, drone test</span>
+              <button onclick="showToast('Đã gửi yêu cầu đăng ký tour Tà Xùa!', 'success')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-semibold">Đăng ký tư vấn</button>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700 space-y-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">TOUR 4N3Đ ĐÔNG BẮC</span>
+                <h4 class="font-bold text-base text-slate-900 dark:text-white">Chinh Phục Mã Pí Lèng - Hẻm Tu Sản FPV</h4>
+              </div>
+              <span class="text-xs font-bold px-2 py-1 rounded bg-emerald-100 text-emerald-800">6.250.000 đ</span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-zinc-300 leading-relaxed">
+              Cung đường đèo huyền thoại nhìn xuống dòng sông Nho Quế ngọc bích. Cơ hội ghi hình các cú bổ nhào (dive) đèo Mã Pí Lèng đạt chuẩn video điện ảnh 4K 60fps.
+            </p>
+            <div class="pt-2 flex items-center justify-between text-xs">
+              <span class="text-zinc-500">Giảm ngay 10% cho thành viên DOANTM</span>
+              <button onclick="showToast('Đã gửi yêu cầu đăng ký tour Hà Giang!', 'success')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-semibold">Đăng ký tư vấn</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-900 dark:text-emerald-200">
+          <p class="font-bold mb-1">Chương trình Đối tác Tiếp thị Liên kết (Affiliate Creator):</p>
+          <p>Nhận ngay hoa hồng 8 - 12% khi giới thiệu khách hàng đặt tour du lịch hoặc mua sắm thiết bị phụ kiện Drone qua đường dẫn cá nhân của bạn.</p>
+        </div>
+
+      </div>
+
+      <div class="px-6 py-3 bg-slate-100 dark:bg-zinc-950 border-t border-slate-200 dark:border-zinc-800 flex justify-end">
+        <button onclick="closeModal('modal-tours')" class="px-5 py-2 rounded-lg bg-zinc-800 text-white text-xs font-semibold">Đóng</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       12. MODAL 5: GLOBAL SEARCH (CTRL + K)
+       ========================================================================= -->
+  <div id="modal-search" class="modal-backdrop fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-start justify-center pt-20 p-4">
+    <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 w-full max-w-2xl overflow-hidden text-slate-800 dark:text-zinc-100">
+      
+      <!-- Search Input Header -->
+      <div class="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center space-x-3">
+        <i data-lucide="search" class="w-5 h-5 text-red-500 flex-shrink-0"></i>
+        <input id="search-dialog-input" type="text" placeholder="Tìm kiếm công cụ DVC, nghiên cứu Drone, cẩm nang..." class="w-full bg-transparent border-0 focus:outline-none text-sm text-slate-900 dark:text-white placeholder-zinc-400" />
+        <button onclick="closeModal('modal-search')" class="text-xs text-zinc-400 hover:text-white px-2 py-1 rounded bg-zinc-100 dark:bg-zinc-800">ESC</button>
+      </div>
+
+      <!-- Live Search Results List -->
+      <div id="search-results-list" class="max-h-96 overflow-y-auto p-2 divide-y divide-zinc-100 dark:divide-zinc-800/60">
+        <!-- Injected via js/app.js -->
+      </div>
+
+      <!-- Search Footer -->
+      <div class="p-3 bg-slate-50 dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-400 flex items-center justify-between">
+        <span>Gõ từ khóa để lọc ngay lập tức</span>
+        <span>Phím tắt: Ctrl + K</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       13. MODAL 6: ACCOUNT SIGN UP / AUTH MODAL
+       ========================================================================= -->
+  <div id="modal-auth" class="modal-backdrop fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-zinc-900 text-white rounded-2xl shadow-2xl border border-zinc-800 w-full max-w-md overflow-hidden my-auto">
+      
+      <div class="p-6 bg-gradient-to-br from-red-950/70 via-zinc-900 to-zinc-900 border-b border-zinc-800 text-center relative">
+        <button onclick="closeModal('modal-auth')" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        <div class="w-12 h-12 rounded-xl bg-red-600 mx-auto flex items-center justify-center mb-3 shadow-lg shadow-red-600/40">
+          <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white">Đăng ký tài khoản DOANTM</h3>
+        <p class="text-xs text-zinc-400 mt-1">Truy cập toàn bộ công cụ DVC và hệ sinh thái Drone</p>
+      </div>
+
+      <div class="p-6 space-y-4 text-xs">
+        
+        <!-- VNeID Quick Login Simulation -->
+        <button onclick="showToast('Đang kết nối cổng xác thực VNeID C06 Bộ Công An...', 'info'); setTimeout(() => { closeModal('modal-auth'); showToast('Đăng nhập thành công với tài khoản VNeID!', 'success'); }, 1500);" class="w-full py-2.5 px-4 rounded-xl bg-red-900/60 hover:bg-red-900 border border-red-600/40 text-red-200 font-semibold flex items-center justify-center gap-2 transition">
+          <i data-lucide="qr-code" class="w-4 h-4 text-red-400"></i>
+          <span>Đăng nhập nhanh bằng VNeID (Khuyên dùng)</span>
+        </button>
+
+        <div class="flex items-center space-x-2 text-zinc-500 my-2">
+          <div class="flex-1 h-[1px] bg-zinc-800"></div>
+          <span class="text-[10px] uppercase tracking-wider">Hoặc tài khoản cá nhân</span>
+          <div class="flex-1 h-[1px] bg-zinc-800"></div>
+        </div>
+
+        <div>
+          <label class="block text-zinc-400 mb-1">Họ và tên của bạn:</label>
+          <input type="text" placeholder="Nguyễn Văn An" class="w-full p-2.5 rounded-lg bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-1 focus:ring-red-500 text-white" />
+        </div>
+
+        <div>
+          <label class="block text-zinc-400 mb-1">Email liên hệ:</label>
+          <input type="email" placeholder="example@gmail.com" class="w-full p-2.5 rounded-lg bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-1 focus:ring-red-500 text-white" />
+        </div>
+
+        <div>
+          <label class="block text-zinc-400 mb-1">Mật khẩu:</label>
+          <input type="password" placeholder="••••••••" class="w-full p-2.5 rounded-lg bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-1 focus:ring-red-500 text-white" />
+        </div>
+
+        <div>
+          <label class="block text-zinc-400 mb-1">Mục đích sử dụng chính:</label>
+          <select class="w-full p-2.5 rounded-lg bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-1 focus:ring-red-500 text-white">
+            <option>Công dân / Người thuê trọ (Điền DVC CT01)</option>
+            <option>Chủ nhà / Chủ nhà trọ cho thuê</option>
+            <option>Nghiên cứu công nghệ Drone / Phi công FPV</option>
+            <option>Cán bộ hỗ trợ hành chính công</option>
+          </select>
+        </div>
+
+        <button onclick="closeModal('modal-auth'); showToast('Đăng ký tài khoản DOANTM thành công!', 'success');" class="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold shadow-lg shadow-red-600/30 transition text-sm">
+          Tạo tài khoản ngay
+        </button>
+
+        <p class="text-[10px] text-zinc-500 text-center leading-normal">
+          Bằng việc đăng ký, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo vệ dữ liệu cá nhân Nghị định 13/2023/NĐ-CP.
+        </p>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       14. TOAST NOTIFICATIONS FLOATING CONTAINER
+       ========================================================================= -->
+  <div id="toast-container" class="toast-container fixed bottom-6 right-6 z-50 flex flex-col space-y-2 pointer-events-none max-w-sm"></div>
+
+  <!-- Custom Scripts -->
+  <script src="js/drone3d.js"></script>
+  <script src="js/formTool.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

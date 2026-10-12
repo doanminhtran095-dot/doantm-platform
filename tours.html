@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOANTM Travel | Danh Sách Tour Du Lịch Quốc Tế Hiện Hành & Đặt Tour Trực Tuyến</title>
+  <meta name="description" content="Khám phá các tour du lịch nước ngoài hot nhất: Nhật Bản, Hàn Quốc, Thái Lan, Trung Quốc, Châu Âu, Bali. Đặt tour trực tuyến, nhận bài viết chi tiết và thanh toán chuyển khoản VietQR nhanh chóng." />
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              red: '#DC2626',
+              dark: '#0A0A0A',
+              surface: '#141414',
+              gray: '#1F2937'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body class="bg-[#F8FAFC] text-slate-800 antialiased selection:bg-emerald-600 selection:text-white min-h-screen flex flex-col justify-between">
+
+  <!-- =========================================================================
+       1. TOP NAVIGATION BAR (BRIGHT & CRISP)
+       ========================================================================= -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200/90 shadow-sm transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Logo & Brand with Goholic Co-branding -->
+        <a href="index.html" class="flex items-center space-x-3 group">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-600/30 group-hover:scale-105 transition-transform flex-shrink-0">
+            <i data-lucide="compass" class="w-6 h-6"></i>
+          </div>
+          <div class="flex items-center gap-3">
+            <div>
+              <div class="flex items-center">
+                <span class="text-2xl font-extrabold tracking-wider text-slate-900">DOAN<span class="text-emerald-600">TM</span></span>
+                <span class="ml-2 text-[10px] uppercase tracking-widest text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">TRAVEL</span>
+              </div>
+              <p class="text-[11px] text-slate-500">Đại lý liên kết bán Tour Goholic</p>
+            </div>
+
+            <!-- Co-brand divider & Goholic Logo -->
+            <div class="hidden sm:flex items-center pl-3 border-l border-slate-200">
+              <img src="assets/goholic-logo-badge.png" alt="Goholic Travel" class="h-8 rounded-lg object-contain border border-sky-200 shadow-xs" />
+            </div>
+          </div>
+        </a>
+
+        <!-- Navigation Links -->
+        <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
+          <a href="index.html" class="hover:text-emerald-600 transition flex items-center gap-1.5">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Về Trang chủ DOANTM
+          </a>
+          <a href="#tours-section" class="text-emerald-600 font-bold transition flex items-center gap-1">
+            <i data-lucide="palmtree" class="w-4 h-4"></i> Tour Đang Mở
+          </a>
+          <button onclick="window.toursAppInstance.openLookupModal()" class="hover:text-emerald-600 transition flex items-center gap-1.5 text-slate-600 font-medium">
+            <i data-lucide="receipt" class="w-4 h-4 text-cyan-600"></i> Tra cứu đơn đặt tour
+          </button>
+        </nav>
+
+        <!-- Hotline & Call Action -->
+        <div class="flex items-center space-x-3">
+          <button onclick="window.toursAppInstance.openLookupModal()" class="md:hidden p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700">
+            <i data-lucide="receipt" class="w-5 h-5 text-cyan-600"></i>
+          </button>
+
+          <a href="tel:0988123456" class="flex items-center space-x-2.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/25 transition duration-300">
+            <i data-lucide="phone-call" class="w-4 h-4 animate-pulse"></i>
+            <span class="hidden sm:inline">Hotline:</span>
+            <span>0988 123 456</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       2. HERO SECTION & LIVE SEARCH (LIGHT & AIRY)
+       ========================================================================= -->
+  <section class="relative pt-12 pb-16 overflow-hidden border-b border-slate-200 bg-gradient-to-b from-white via-slate-50/70 to-[#F8FAFC]">
+    
+    <!-- Ambient Soft Glow Backgrounds -->
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-r from-emerald-200/40 via-teal-100/30 to-cyan-200/40 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+      
+      <!-- Goholic Partnership Endorsement Pill -->
+      <div class="inline-flex items-center space-x-2.5 px-4 py-1.5 rounded-full bg-white border border-sky-200 text-xs font-semibold text-slate-700 shadow-xs mb-5">
+        <span class="text-slate-500 text-[11px]">Hợp tác chiến lược:</span>
+        <img src="assets/goholic-logo-badge.png" alt="Goholic Travel" class="h-5 rounded object-contain border border-sky-200" />
+        <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+        <span class="text-sky-800 font-bold uppercase tracking-wider text-[11px]">Đại Lý Phân Phối Chính Thức</span>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 max-w-4xl mx-auto leading-tight">
+        Khám Phá Các <span class="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">Tour Du Lịch Nước Ngoài</span> Hiện Hành
+      </h1>
+
+      <p class="mt-4 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+        DOANTM liên kết cùng <strong>Goholic Travel (Thỏa chí xê dịch)</strong> mang đến những hành trình khám phá quốc tế trọn gói đẳng cấp. Lịch trình chọn lọc, bay thẳng hãng hàng không 4-5 sao, bảo hiểm du lịch trọn gói và bao đậu Visa đến 99%.
+      </p>
+
+      <!-- Search & Filters Container -->
+      <div class="mt-10 max-w-3xl mx-auto space-y-5">
+        
+        <!-- Live Search Bar -->
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <i data-lucide="search" class="w-5 h-5 text-slate-400"></i>
+          </div>
+          <input 
+            type="text" 
+            id="search-tour-input"
+            placeholder="Tìm theo quốc gia (Nhật Bản, Hàn Quốc, Thái Lan, Châu Âu...), mã tour hoặc điểm đến..."
+            class="w-full pl-12 pr-12 py-4 rounded-2xl bg-white border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-sm sm:text-base text-slate-900 placeholder-slate-400 shadow-md transition outline-none"
+          />
+          <button onclick="document.getElementById('search-tour-input').value=''; window.toursAppInstance.searchTours('');" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="flex items-center justify-center flex-wrap gap-2 pt-2">
+          <button data-filter="all" class="tour-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition border border-emerald-600 bg-emerald-600 text-white shadow-sm">
+            Tất cả Tour
+          </button>
+          <button data-filter="japan" class="tour-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition border border-slate-200 bg-white text-slate-700 hover:text-slate-900 hover:border-slate-300 shadow-xs">
+            🇯🇵 Nhật Bản
+          </button>
+          <button data-filter="korea" class="tour-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition border border-slate-200 bg-white text-slate-700 hover:text-slate-900 hover:border-slate-300 shadow-xs">
+            🇰🇷 Hàn Quốc
+          </button>
+          <button data-filter="china" class="tour-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition border border-slate-200 bg-white text-slate-700 hover:text-slate-900 hover:border-slate-300 shadow-xs">
+            🇨🇳 Trung Quốc
+          </button>
+          <button data-filter="thailand" class="tour-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition border border-slate-200 bg-white text-slate-700 hover:text-slate-900 hover:border-slate-300 shadow-xs">
+            🇹🇭 Thái Lan
+          </button>
+          <button data-filter="europe" class="tour-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition border border-slate-200 bg-white text-slate-700 hover:text-slate-900 hover:border-slate-300 shadow-xs">
+            🇪🇺 Châu Âu
+          </button>
+          <button data-filter="indonesia" class="tour-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition border border-slate-200 bg-white text-slate-700 hover:text-slate-900 hover:border-slate-300 shadow-xs">
+            🇮🇩 Bali (Indonesia)
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       3. TOURS LIST GRID SECTION (BRIGHT LIGHT THEME)
+       ========================================================================= -->
+  <section id="tours-section" class="py-12 bg-[#F8FAFC] flex-1">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header Info -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-8 border-b border-slate-200 gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+            <span>Danh Sách Tour Khởi Hành Gần Nhất</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+          </h2>
+          <p id="tours-count-display" class="text-xs text-slate-500 mt-0.5">Đang tải danh sách tour...</p>
+        </div>
+
+        <div class="flex items-center gap-4 text-xs text-slate-600 font-medium">
+          <span class="flex items-center gap-1.5"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Bao vé máy bay</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Khách sạn 4-5 sao</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i> Hỗ trợ Visa nhanh</span>
+        </div>
+      </div>
+
+      <!-- Tour Cards Container (Grid) -->
+      <div id="tours-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+        <!-- Rendered dynamically by js/tours.js -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       4. MODAL 1: BÀI VIẾT CHI TIẾT TOUR (LIGHT THEME)
+       ========================================================================= -->
+  <div id="modal-tour-detail" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white border border-slate-200 text-slate-800 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Header with Hero Image Banner -->
+      <div class="relative h-64 sm:h-72 overflow-hidden flex-shrink-0">
+        <img id="detail-hero-img" src="" alt="Tour Banner" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-black/50"></div>
+
+        <!-- Close button -->
+        <button onclick="window.toursAppInstance.closeTourDetail()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md text-white hover:bg-black/80 flex items-center justify-center transition border border-white/20">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Top details on Image -->
+        <div class="absolute bottom-5 left-5 right-5 space-y-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <span id="detail-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white uppercase tracking-wider shadow"></span>
+            <span id="detail-code" class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-black/70 text-zinc-200 border border-zinc-700"></span>
+            <span id="detail-duration" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/90 text-emerald-300 border border-emerald-700/60"></span>
+          </div>
+          <h2 id="detail-title" class="text-xl sm:text-2xl font-extrabold text-white leading-snug"></h2>
+        </div>
+      </div>
+
+      <!-- Quick Metadata Bar -->
+      <div class="px-6 py-3.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-600 gap-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="plane" class="w-4 h-4 text-cyan-600"></i>
+          <span>Hàng không: <strong id="detail-airline" class="text-slate-900 font-semibold"></strong></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i>
+          <span>Lịch khởi hành: <strong id="detail-schedule" class="text-slate-900 font-semibold"></strong></span>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-slate-500">Giá trọn gói:</span>
+          <span id="detail-price" class="text-lg font-extrabold text-emerald-600"></span>
+          <span id="detail-original-price" class="text-xs text-slate-400 line-through"></span>
+        </div>
+      </div>
+
+      <!-- Tabs Navigation -->
+      <div class="px-6 pt-3 bg-white border-b border-slate-200 flex gap-6 text-xs sm:text-sm font-semibold">
+        <button data-tab="highlights" class="detail-tab-btn pb-3 border-b-2 border-emerald-600 text-emerald-700 transition">
+          Tổng quan & Điểm nhấn
+        </button>
+        <button data-tab="itinerary" class="detail-tab-btn pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-900 transition">
+          Lịch trình chi tiết
+        </button>
+        <button data-tab="services" class="detail-tab-btn pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-900 transition">
+          Dịch vụ & Thủ tục Visa
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable Article) -->
+      <div class="p-6 overflow-y-auto flex-1 space-y-6 text-sm">
+        
+        <!-- PANE 1: HIGHLIGHTS & GIỚI THIỆU -->
+        <div id="tab-pane-highlights" class="detail-tab-pane space-y-5">
+          <!-- Goholic Partner Endorsement Box -->
+          <div class="p-3.5 rounded-2xl bg-gradient-to-r from-sky-50 via-teal-50/40 to-emerald-50 border border-sky-200 flex items-center gap-3.5 shadow-xs">
+            <img src="assets/goholic-logo-badge.png" alt="Goholic Travel" class="h-10 rounded-lg object-contain border border-sky-200 shadow-xs flex-shrink-0" />
+            <div class="text-xs">
+              <span class="font-bold text-sky-950 block">Tour được tổ chức & bảo trợ chất lượng bởi Goholic Travel</span>
+              <span class="text-slate-600">DOANTM là đối tác liên kết bán tour chính thức của Goholic Travel (Thỏa chí xê dịch). Cam kết tiêu chuẩn lữ hành quốc tế, hướng dẫn viên chuyên nghiệp và hỗ trợ Visa trọn gói.</span>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2">Giới thiệu chuyến đi</h4>
+            <p id="detail-short-desc" class="text-sm text-slate-700 leading-relaxed"></p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+            <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <i data-lucide="award" class="w-4 h-4 text-amber-500"></i>
+              Những trải nghiệm vượt trội chỉ có trong tour
+            </h4>
+            <ul id="detail-highlights-list" class="space-y-2.5">
+              <!-- Rendered by js/tours.js -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- PANE 2: LỊCH TRÌNH CHI TIẾT TỪNG NGÀY -->
+        <div id="tab-pane-itinerary" class="detail-tab-pane hidden space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-200 text-xs text-slate-500">
+            <span>Chi tiết lộ trình theo từng ngày khởi hành</span>
+            <span class="text-emerald-700 font-semibold">Chuẩn khách sạn 4 sao quốc tế</span>
+          </div>
+          <div id="detail-itinerary-list" class="space-y-2 pt-2">
+            <!-- Rendered by js/tours.js -->
+          </div>
+        </div>
+
+        <!-- PANE 3: DỊCH VỤ BAO GỒM / VISA -->
+        <div id="tab-pane-services" class="detail-tab-pane hidden space-y-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div class="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-3">
+              <h5 class="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+                Giá tour đã bao gồm
+              </h5>
+              <ul id="detail-inclusions-list" class="space-y-2"></ul>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+              <h5 class="text-xs font-bold text-rose-600 uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="alert-circle" class="w-4 h-4 text-rose-500"></i>
+                Chưa bao gồm
+              </h5>
+              <ul id="detail-exclusions-list" class="space-y-2"></ul>
+            </div>
+
+          </div>
+
+          <!-- Visa Guide Notice -->
+          <div class="p-5 rounded-2xl bg-amber-50 border border-amber-200 space-y-2">
+            <h5 class="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="shield-check" class="w-4 h-4 text-amber-600"></i>
+              Hướng dẫn thủ tục Visa
+            </h5>
+            <p id="detail-visa-guide" class="text-xs text-slate-700 leading-relaxed"></p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Action -->
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-4">
+        <button onclick="window.toursAppInstance.closeTourDetail()" class="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-300 transition shadow-xs">
+          Đóng
+        </button>
+
+        <button onclick="window.toursAppInstance.openBookingModal()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-md shadow-emerald-600/25 transition flex items-center gap-2">
+          <i data-lucide="calendar-check" class="w-4 h-4"></i>
+          <span>Đặt Tour Này Ngay & Nhận Ưu Đãi</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       5. MODAL 2: FORM ĐẶT TOUR (LIGHT THEME)
+       ========================================================================= -->
+  <div id="modal-booking" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white border border-slate-200 text-slate-800 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Header -->
+      <div class="px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+            <i data-lucide="file-text" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base">Đăng Ký Đặt Tour Trực Tuyến</h3>
+            <p class="text-xs text-emerald-100">Điền thông tin và thanh toán cọc giữ chỗ 24/7</p>
+          </div>
+        </div>
+        <button onclick="window.toursAppInstance.closeBookingModal()" class="text-white hover:text-emerald-100 p-1">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- Form Body -->
+      <form id="booking-form" class="p-6 overflow-y-auto flex-1 space-y-5 text-xs sm:text-sm">
+        
+        <!-- Selected Tour Summary Card -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex gap-4 items-center">
+          <img id="booking-tour-img" src="" alt="Tour" class="w-20 h-20 rounded-xl object-cover flex-shrink-0" />
+          <div class="space-y-1">
+            <span id="booking-tour-code" class="text-[10px] font-mono text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded font-bold"></span>
+            <h4 id="booking-tour-name" class="font-bold text-sm text-slate-900 line-clamp-1"></h4>
+            <div class="flex items-center gap-2 text-xs">
+              <span id="booking-tour-price" class="text-emerald-600 font-extrabold"></span>
+              <span class="text-slate-300">•</span>
+              <span id="booking-tour-schedule" class="text-slate-500"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 1: Customer Contact Info -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="user" class="w-4 h-4"></i>
+            Thông tin người đặt tour
+          </h4>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-slate-700 text-xs mb-1 font-semibold">Họ và tên quý khách <span class="text-rose-500">*</span></label>
+              <input type="text" id="book-fullname" required placeholder="Ví dụ: Nguyễn Văn An" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none" />
+            </div>
+
+            <div>
+              <label class="block text-slate-700 text-xs mb-1 font-semibold">Số điện thoại / Zalo <span class="text-rose-500">*</span></label>
+              <input type="tel" id="book-phone" required placeholder="Ví dụ: 0988 123 456" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-slate-700 text-xs mb-1 font-semibold">Email nhận vé & xác nhận</label>
+              <input type="email" id="book-email" placeholder="email@example.com" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none" />
+            </div>
+
+            <div>
+              <label class="block text-slate-700 text-xs mb-1 font-semibold">Ngày dự kiến khởi hành</label>
+              <input type="date" id="book-date" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Passengers count -->
+        <div class="space-y-3 pt-2 border-t border-slate-200">
+          <h4 class="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="users" class="w-4 h-4"></i>
+            Số lượng khách tham gia
+          </h4>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+              <div>
+                <span class="block text-xs font-bold text-slate-900">Người lớn</span>
+                <span class="text-[11px] text-slate-500">Từ 12 tuổi trở lên</span>
+              </div>
+              <input type="number" id="book-adults-count" min="1" max="50" value="1" class="w-16 py-1.5 text-center rounded-lg bg-white border border-slate-300 text-slate-900 font-bold" />
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+              <div>
+                <span class="block text-xs font-bold text-slate-900">Trẻ em</span>
+                <span class="text-[11px] text-slate-500">2 - 11 tuổi (85% giá)</span>
+              </div>
+              <input type="number" id="book-children-count" min="0" max="50" value="0" class="w-16 py-1.5 text-center rounded-lg bg-white border border-slate-300 text-slate-900 font-bold" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Payment Type Selection -->
+        <div class="space-y-3 pt-2 border-t border-slate-200">
+          <h4 class="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="credit-card" class="w-4 h-4"></i>
+            Phương thức thanh toán chuyển khoản
+          </h4>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="relative flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-500 cursor-pointer transition">
+              <input type="radio" name="payment-type" value="deposit" checked class="mt-1 text-emerald-600 focus:ring-emerald-500" />
+              <div>
+                <span class="block font-bold text-xs text-slate-900">Đặt cọc 50% giữ chỗ</span>
+                <span class="text-[11px] text-slate-500">Số tiền còn lại thanh toán trước khi khởi hành 7 ngày.</span>
+              </div>
+            </label>
+
+            <label class="relative flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-500 cursor-pointer transition">
+              <input type="radio" name="payment-type" value="full" class="mt-1 text-emerald-600 focus:ring-emerald-500" />
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="font-bold text-xs text-slate-900">Thanh toán 100%</span>
+                  <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">-200.000 đ</span>
+                </div>
+                <span class="text-[11px] text-slate-500">Được tặng gói Flycam ghi hình kỷ niệm trọn chuyến.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Special Request Note -->
+        <div>
+          <label class="block text-slate-700 text-xs mb-1 font-semibold">Ghi chú yêu cầu đặc biệt (tùy chọn)</label>
+          <textarea id="book-note" rows="2" placeholder="Ví dụ: Ăn chay, yêu cầu phòng ngủ riêng, có người cao tuổi, cần hỗ trợ làm visa gấp..." class="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-slate-900 focus:border-emerald-500 focus:outline-none"></textarea>
+        </div>
+
+        <!-- Dynamic Price Summary Box -->
+        <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
+          <div class="flex justify-between text-xs text-slate-600">
+            <span>Tiền vé người lớn:</span>
+            <span id="calc-adults-total" class="text-slate-900 font-semibold">0 đ</span>
+          </div>
+          <div class="flex justify-between text-xs text-slate-600">
+            <span>Tiền vé trẻ em:</span>
+            <span id="calc-children-total" class="text-slate-900 font-semibold">0 đ</span>
+          </div>
+          <div id="calc-discount-badge" class="hidden flex justify-between text-xs text-emerald-700 font-bold">
+            <span>Khuyến mãi trả toàn bộ:</span>
+            <span>-200.000 đ</span>
+          </div>
+          <div class="pt-2 border-t border-emerald-200 flex justify-between items-baseline">
+            <div>
+              <span class="text-xs text-slate-600 block font-medium">Số tiền cần chuyển khoản ngay:</span>
+              <span id="calc-pay-amount" class="text-2xl font-black text-emerald-600">0 đ</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[11px] text-slate-500 block">Tổng giá trị tour:</span>
+              <span id="calc-total-amount" class="text-sm font-bold text-slate-700">0 đ</span>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2">
+          <i data-lucide="qr-code" class="w-5 h-5"></i>
+          <span>Xác Nhận & Nhận Thông Tin Chuyển Khoản Ngân Hàng</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       6. MODAL 3: THANH TOÁN CHUYỂN KHOẢN VIETQR (LIGHT THEME)
+       ========================================================================= -->
+  <div id="modal-payment-qr" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white border border-slate-200 text-slate-800 rounded-3xl shadow-2xl w-full max-w-xl max-h-[95vh] flex flex-col overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Header -->
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white">
+            <i data-lucide="scan-line" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-slate-900">Chuyển Khoản Ngân Hàng Tức Thì</h3>
+            <p class="text-xs text-slate-500">Quét mã VietQR bằng ứng dụng mọi ngân hàng</p>
+          </div>
+        </div>
+        <button onclick="window.toursAppInstance.closePaymentModal()" class="text-slate-400 hover:text-slate-700 p-1">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- Payment Body -->
+      <div class="p-6 overflow-y-auto flex-1 space-y-5 text-xs sm:text-sm">
+        
+        <!-- Booking Code & Tour Header -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+          <div>
+            <span class="text-[11px] text-slate-500 block">Mã đơn đặt tour:</span>
+            <span id="pay-booking-code" class="text-sm font-mono font-extrabold text-emerald-700"></span>
+          </div>
+          <span id="pay-type-badge" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"></span>
+        </div>
+
+        <!-- VietQR Dynamic Image Card -->
+        <div class="p-5 rounded-2xl bg-white text-slate-900 flex flex-col items-center justify-center shadow-md border border-slate-200">
+          <div class="flex items-center justify-between w-full mb-3 px-2">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">VietQR Napas 24/7</span>
+            </div>
+            <span class="text-[11px] font-mono text-slate-500">Miễn phí chuyển khoản</span>
+          </div>
+
+          <!-- Dynamic VietQR Image -->
+          <div class="relative p-2 bg-white rounded-xl border border-slate-200 shadow-inner">
+            <img 
+              id="vietqr-image" 
+              src="" 
+              alt="Mã QR Chuyển Khoản VietQR" 
+              class="w-56 h-56 sm:w-64 sm:h-64 object-contain"
+            />
+          </div>
+
+          <div class="mt-3 text-center">
+            <span class="text-xs text-slate-500 block">Số tiền cần chuyển:</span>
+            <span id="pay-amount-display" class="text-2xl font-black text-emerald-600 block">0 đ</span>
+          </div>
+        </div>
+
+        <!-- Bank Details Table with Fast Copy Buttons -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+          <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Thông tin tài khoản nhận tiền:</h4>
+          
+          <!-- Bank Name -->
+          <div class="flex items-center justify-between py-1.5 border-b border-slate-200">
+            <span class="text-slate-500">Ngân hàng:</span>
+            <span id="pay-bank-name" class="font-bold text-slate-900 text-right">MB Bank (Quân Đội)</span>
+          </div>
+
+          <!-- Account Number -->
+          <div class="flex items-center justify-between py-1.5 border-b border-slate-200">
+            <span class="text-slate-500">Số tài khoản:</span>
+            <div class="flex items-center gap-2">
+              <span id="pay-account-num" class="font-mono font-extrabold text-emerald-600 text-base">0988123456</span>
+              <button type="button" onclick="window.toursAppInstance.copyText('pay-account-num', 'Đã chép số tài khoản!')" class="px-2.5 py-1 rounded-md bg-white hover:bg-slate-100 text-slate-700 text-[10px] font-semibold border border-slate-300 shadow-xs">
+                Sao chép
+              </button>
+            </div>
+          </div>
+
+          <!-- Account Owner -->
+          <div class="flex items-center justify-between py-1.5 border-b border-slate-200">
+            <span class="text-slate-500">Chủ tài khoản:</span>
+            <span id="pay-account-owner" class="font-bold text-slate-900">TRAN MINH DOAN</span>
+          </div>
+
+          <!-- Transfer Memo -->
+          <div class="flex items-center justify-between py-1.5">
+            <span class="text-slate-500">Nội dung chuyển tiền:</span>
+            <div class="flex items-center gap-2">
+              <span id="pay-transfer-memo" class="font-mono font-extrabold text-amber-600 text-sm"></span>
+              <button type="button" onclick="window.toursAppInstance.copyText('pay-transfer-memo', 'Đã chép nội dung chuyển khoản!')" class="px-2.5 py-1 rounded-md bg-white hover:bg-slate-100 text-slate-700 text-[10px] font-semibold border border-slate-300 shadow-xs">
+                Sao chép
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Summary -->
+        <div class="text-[11px] text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
+          <div>Người đặt: <strong id="pay-customer-name" class="text-slate-900"></strong> - <span id="pay-customer-phone"></span></div>
+          <div>Tour: <span id="pay-booking-title" class="text-slate-800 font-medium"></span></div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <button onclick="window.toursAppInstance.closePaymentModal()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-300 shadow-xs">
+          Quay lại chỉnh sửa
+        </button>
+
+        <button onclick="window.toursAppInstance.confirmPaymentDone()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/25 flex items-center justify-center gap-2">
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
+          <span>Tôi Đã Chuyển Khoản Thành Công</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       7. MODAL 4: XÁC NHẬN ĐẶT TOUR THÀNH CÔNG (LIGHT THEME)
+       ========================================================================= -->
+  <div id="modal-booking-success" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white border border-slate-200 text-slate-800 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden my-auto p-6 sm:p-8 text-center space-y-5 animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Success Icon -->
+      <div class="w-20 h-20 mx-auto rounded-full bg-emerald-100 border-2 border-emerald-500 flex items-center justify-center text-emerald-600">
+        <i data-lucide="check" class="w-10 h-10 animate-bounce"></i>
+      </div>
+
+      <div>
+        <h3 class="text-2xl font-extrabold text-slate-900">Đăng Ký Đặt Tour Thành Công!</h3>
+        <p class="text-xs text-slate-500 mt-1">Cảm ơn quý khách đã tin tưởng dịch vụ lữ hành DOANTM Travel.</p>
+      </div>
+
+      <!-- Receipt Card -->
+      <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-2.5 text-xs">
+        <div class="flex justify-between border-b border-slate-200 pb-2">
+          <span class="text-slate-500">Mã phiếu đặt chỗ:</span>
+          <span id="succ-booking-code" class="font-mono font-bold text-emerald-700 text-sm"></span>
+        </div>
+        <div class="flex justify-between border-b border-slate-200 pb-2">
+          <span class="text-slate-500">Tour đã đăng ký:</span>
+          <span id="succ-tour-title" class="font-bold text-slate-900 text-right line-clamp-1 max-w-[240px]"></span>
+        </div>
+        <div class="flex justify-between border-b border-slate-200 pb-2">
+          <span class="text-slate-500">Khách hàng:</span>
+          <span id="succ-customer-info" class="text-slate-800"></span>
+        </div>
+        <div class="flex justify-between border-b border-slate-200 pb-2">
+          <span class="text-slate-500">Ngày dự kiến đi:</span>
+          <span id="succ-departure-date" class="text-slate-800 font-semibold"></span>
+        </div>
+        <div class="flex justify-between pt-1">
+          <span class="text-slate-600 font-semibold">Số tiền thanh toán:</span>
+          <span id="succ-amount" class="text-base font-extrabold text-emerald-600"></span>
+        </div>
+      </div>
+
+      <!-- Process Instruction -->
+      <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-left text-xs text-emerald-950 flex items-start gap-2.5">
+        <i data-lucide="phone-incoming" class="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5"></i>
+        <span>Nhân viên điều hành tour DOANTM Travel sẽ gọi điện thoại / liên hệ qua Zalo cho quý khách trong vòng <strong>15 phút</strong> để gửi hợp đồng du lịch, phiếu xác nhận thu tiền và hướng dẫn hoàn tất hồ sơ Visa.</span>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 pt-2">
+        <button onclick="window.print()" class="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold transition flex items-center justify-center gap-1.5 border border-slate-300 shadow-xs">
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>In / Lưu biên nhận</span>
+        </button>
+        <button onclick="window.toursAppInstance.closeSuccessModal()" class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/25">
+          <i data-lucide="compass" class="w-4 h-4"></i>
+          <span>Xem các tour khác</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       8. MODAL 5: TRA CỨU LỊCH SỬ ĐƠN TOUR (LIGHT THEME)
+       ========================================================================= -->
+  <div id="modal-lookup-bookings" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white border border-slate-200 text-slate-800 rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
+      
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <i data-lucide="history" class="w-5 h-5 text-cyan-600"></i>
+          <h3 class="font-bold text-base text-slate-900">Lịch Sử Đơn Đặt Tour Của Bạn</h3>
+        </div>
+        <button onclick="window.toursAppInstance.closeLookupModal()" class="text-slate-400 hover:text-slate-700 p-1">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto flex-1 space-y-3">
+        <p class="text-xs text-slate-500">Danh sách các tour bạn đã tiến hành đăng ký và chuyển khoản trên thiết bị này:</p>
+        <div id="lookup-history-container" class="space-y-3">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <button onclick="window.toursAppInstance.closeLookupModal()" class="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-300 shadow-xs">
+          Đóng
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       9. FOOTER (LIGHT THEME)
+       ========================================================================= -->
+  <footer class="bg-white border-t border-slate-200 py-12 text-slate-600 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        
+        <div class="space-y-3 md:col-span-2">
+          <div class="flex items-center space-x-3">
+            <span class="text-xl font-black text-slate-900">DOAN<span class="text-emerald-600">TM</span> TRAVEL</span>
+            <span class="text-slate-300">✕</span>
+            <img src="assets/goholic-logo-badge.png" alt="Goholic Travel" class="h-6 rounded object-contain border border-sky-200" />
+          </div>
+          <p class="text-slate-600 text-xs leading-relaxed max-w-md">
+            Đại lý liên kết phân phối tour du lịch chính thức của <strong>Goholic Travel</strong> (Thỏa chí xê dịch). Chuyên tổ chức tour du lịch quốc tế cao cấp, liên kết bay Flycam chuyên nghiệp, tư vấn Visa các nước phát triển với tỷ lệ đậu cao.
+          </p>
+          <div class="flex items-center gap-4 pt-2 text-slate-700 font-medium">
+            <span><i data-lucide="phone" class="w-3.5 h-3.5 inline text-emerald-600 mr-1"></i> 0988 123 456</span>
+            <span><i data-lucide="mail" class="w-3.5 h-3.5 inline text-cyan-600 mr-1"></i> contact@doantm.vn</span>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-900 uppercase tracking-wider text-xs">Thị Trường Tour</h4>
+          <ul class="space-y-1.5 text-slate-600">
+            <li><a href="javascript:void(0)" onclick="window.toursAppInstance.filterTours('japan')" class="hover:text-emerald-600">Tour Nhật Bản Mùa Hoa</a></li>
+            <li><a href="javascript:void(0)" onclick="window.toursAppInstance.filterTours('korea')" class="hover:text-emerald-600">Tour Hàn Quốc 5N4Đ</a></li>
+            <li><a href="javascript:void(0)" onclick="window.toursAppInstance.filterTours('china')" class="hover:text-emerald-600">Trương Gia Giới - Phượng Hoàng</a></li>
+            <li><a href="javascript:void(0)" onclick="window.toursAppInstance.filterTours('thailand')" class="hover:text-emerald-600">Thái Lan Bangkok Pattaya</a></li>
+            <li><a href="javascript:void(0)" onclick="window.toursAppInstance.filterTours('europe')" class="hover:text-emerald-600">Châu Âu 3 Nước Pháp Thụy Sĩ Ý</a></li>
+          </ul>
+        </div>
+
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-900 uppercase tracking-wider text-xs">Chính Sách & Cam Kết</h4>
+          <ul class="space-y-1.5 text-slate-600">
+            <li>Bảo hiểm du lịch quốc tế tối đa</li>
+            <li>Hỗ trợ hoàn tiền nếu trượt Visa</li>
+            <li>Hãng bay 4-5 sao uy tín</li>
+            <li>Thanh toán an toàn VietQR 24/7</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
+        <p>© 2026 DOANTM Platform & DOANTM Travel. Bản quyền được bảo lưu.</p>
+        <div class="flex items-center space-x-6">
+          <a href="index.html" class="hover:text-slate-800">Quay lại Trang chủ</a>
+          <a href="javascript:void(0)" onclick="window.toursAppInstance.openLookupModal()" class="hover:text-slate-800">Tra cứu đặt tour</a>
+          <a href="tel:0988123456" class="hover:text-slate-800">Tổng đài hỗ trợ 24/7</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/tours.js"></script>
+
+</body>
+</html>
