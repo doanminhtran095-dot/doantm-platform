@@ -1,0 +1,204 @@
+/* ==========================================================================
+   DOANTM Platform - High-Tech Design System & Core Styles
+   Author: DOANTM Architecture Team
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
+
+:root {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --color-primary: #DC2626;
+  --color-primary-glow: rgba(220, 38, 38, 0.45);
+  --color-dark-bg: #0A0A0A;
+  --color-dark-surface: #141414;
+  --color-light-bg: #F8FAFC;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--color-dark-bg);
+  color: #F3F4F6;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0F172A;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #DC2626;
+}
+
+/* Glow Effects & Accents */
+.glow-primary {
+  box-shadow: 0 0 25px var(--color-primary-glow);
+}
+.glow-primary-sm {
+  box-shadow: 0 0 12px rgba(220, 38, 38, 0.35);
+}
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);
+}
+.glow-text-red {
+  text-shadow: 0 0 15px rgba(220, 38, 38, 0.6);
+}
+
+/* Glassmorphism */
+.glass-dark {
+  background: rgba(18, 18, 18, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.glass-light {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* Marquee Infinite Animation */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Text Rotation / Typing Cursor */
+.typing-cursor::after {
+  content: '|';
+  display: inline-block;
+  color: #DC2626;
+  font-weight: 700;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Hero Radial Gradients: Mystical Aurora Emerald Green & Cosmic Blue on Deep Black */
+.hero-gradient-overlay {
+  background: 
+    radial-gradient(circle at 80% 45%, rgba(6, 182, 212, 0.16) 0%, rgba(16, 185, 129, 0.12) 32%, transparent 65%),
+    radial-gradient(circle at 15% 30%, rgba(30, 41, 59, 0.5) 0%, transparent 50%),
+    radial-gradient(circle at 50% 10%, rgba(15, 23, 42, 0.7) 0%, transparent 60%);
+}
+
+/* Web Mini Drones Ambient Flight Styles */
+@keyframes spinPropeller {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.mini-propeller {
+  animation: spinPropeller 0.1s linear infinite;
+  transform-origin: center center;
+}
+
+@keyframes droneScanPulse {
+  0% { opacity: 0.15; transform: scale(0.9); }
+  50% { opacity: 0.45; transform: scale(1.1); }
+  100% { opacity: 0.15; transform: scale(0.9); }
+}
+
+.mini-drone-scan {
+  animation: droneScanPulse 2.4s ease-in-out infinite;
+}
+
+/* Smooth Theme Wave Transition */
+.theme-wave-divider {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+  transform: translateY(1px);
+}
+
+/* Signature Canvas Styling */
+.signature-canvas {
+  touch-action: none;
+  cursor: crosshair;
+  background-color: #FAFAFA;
+  border: 2px dashed #CBD5E1;
+  border-radius: 0.5rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.signature-canvas:hover, .signature-canvas:focus {
+  border-color: #DC2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Scanner Animation */
+@keyframes scanline {
+  0% { top: 0%; opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { top: 95%; opacity: 0.8; }
+}
+
+.scan-laser {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #DC2626, #EF4444, transparent);
+  box-shadow: 0 0 15px #DC2626;
+  animation: scanline 2.2s ease-in-out infinite alternate;
+}
+
+/* 3D Canvas Container */
+#drone-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 480px;
+  max-height: 520px;
+}
+@media (min-width: 1024px) {
+  #drone-canvas-container {
+    height: 580px;
+    max-height: 640px;
+  }
+}
+
+/* Print Styling for A4 Government Document Forms */
+@media print {
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+  }
+  .no-print, header, footer, #drone-canvas-container, .modal-backdrop, .toast-container {
+    display: none !important;
+  }
+  .printable-document {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    font-size: 13pt !important;
+    line-height: 1.5 !important;
+    color: #000 !important;
+  }
+}
