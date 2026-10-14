@@ -103,6 +103,10 @@ function initHeroTextCarousel() {
 function setupModalHandlers(formEngine, droneEngine) {
   // Helper to open/close modal
   window.openModal = function(modalId) {
+    if (modalId === 'modal-dvc-tool') {
+      window.location.href = 'ct01.html';
+      return;
+    }
     const modal = document.getElementById(modalId);
     if (!modal) return;
     modal.classList.remove('hidden');
@@ -110,13 +114,6 @@ function setupModalHandlers(formEngine, droneEngine) {
     
     // Refresh icons inside modal
     if (window.lucide) lucide.createIcons();
-
-    // If opening form modal, refresh canvas sizes
-    if (modalId === 'modal-dvc-tool' && formEngine) {
-      setTimeout(() => {
-        formEngine.setupSignaturePads();
-      }, 150);
-    }
   };
 
   window.closeModal = function(modalId) {

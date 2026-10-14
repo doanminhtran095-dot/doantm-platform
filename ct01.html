@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOANTM | Điền Hồ Sơ Đăng Ký Tạm Trú (Mẫu CT01) & Hợp Đồng Cư Trú A4</title>
+  <meta name="description" content="Công cụ điền hồ sơ đăng ký tạm trú Mẫu CT01, Hợp đồng cho thuê mượn ở nhờ, Đơn cớ mất, Xác nhận hạnh kiểm bằng mã QR CCCD và ký điện tử song phương trên nền tảng DOANTM." />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- jsQR for Real-Time Camera & Image CCCD QR Decoding -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
+  <!-- html2canvas for High-Resolution A4 PDF & Dual JPG Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <!-- JSZip for Client-Side ZIP Packaging -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <!-- Tesseract.js for Offline/Client-side OCR from CCCD Photos -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+  <!-- CT01 Portal Stylesheet (DOANTM Bright Light Mode) -->
+  <link rel="stylesheet" href="css/ct01.css" />
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="capan-toast-container" class="no-print"></div>
+
+  <main class="capan-app-root">
+
+    <!-- =====================================================================
+         1. TOP HEADER (DOANTM BRIGHT LIGHT MODE + CAPAN NAVIGATION)
+         ===================================================================== -->
+    <header class="capan-header no-print">
+      <div class="capan-header-top-bar"></div>
+      <div class="capan-header-container">
+
+        <!-- Brand Left -->
+        <a href="index.html" class="capan-brand" title="Quay về Trang chủ DOANTM Platform">
+          <div class="capan-emblem-wrap">
+            <div class="capan-emblem-inner">
+              <i data-lucide="crosshair" style="width:22px;height:22px;"></i>
+            </div>
+          </div>
+          <div class="capan-brand-text">
+            <span class="capan-brand-sub">CỔNG DỊCH VỤ CÔNG TRỰC TUYẾN • AI LAB</span>
+            <h1 class="capan-brand-title">
+              <span>DOAN<span class="brand-tm">TM</span> PLATFORM</span>
+              <span class="capan-brand-badge">CT01 &amp; Hợp đồng</span>
+            </h1>
+          </div>
+        </a>
+
+        <!-- Center Navigation Pills -->
+        <nav class="capan-nav" aria-label="Điều hướng cổng dịch vụ công">
+          <button type="button" class="capan-nav-item" data-main-tab="utilities" onclick="switchMainTab('utilities', 'ct01')">
+            <i data-lucide="file-Spreadsheet" class="capan-nav-icon"></i>
+            <span>BIỂU MẪU CT01</span>
+          </button>
+          <button type="button" class="capan-nav-item" data-main-tab="declaration" onclick="switchMainTab('declaration')">
+            <i data-lucide="qr-code" class="capan-nav-icon"></i>
+            <span>KHAI BÁO CƯ TRÚ</span>
+          </button>
+          <a href="huong-dan-nop-ho-so.html" class="capan-nav-item" title="Cẩm nang hướng dẫn nộp hồ sơ dịch vụ công">
+            <i data-lucide="book-open" class="capan-nav-icon"></i>
+            <span>HƯỚNG DẪN</span>
+          </a>
+          <button type="button" class="capan-nav-item active" data-main-tab="utilities-all" onclick="switchMainTab('utilities')">
+            <i data-lucide="wrench" class="capan-nav-icon"></i>
+            <span>TIỆN ÍCH</span>
+          </button>
+        </nav>
+
+        <!-- Right Actions -->
+        <div class="capan-header-actions">
+          <a href="index.html" class="capan-auth-btn">
+            <i data-lucide="arrow-left" style="width:15px;height:15px;"></i>
+            <span>Về Web DOANTM</span>
+          </a>
+        </div>
+
+        <!-- Mobile Hamburger Button -->
+        <button type="button" class="capan-hamburger-btn" id="mobile-drawer-toggle" aria-label="Mở menu">
+          <i data-lucide="menu" style="width:20px;height:20px;color:#dc2626;"></i>
+        </button>
+
+      </div>
+
+      <!-- Mobile Navigation Drawer -->
+      <div class="capan-mobile-drawer" id="mobile-drawer">
+        <nav class="capan-mobile-drawer-nav">
+          <button type="button" class="capan-drawer-item active" data-mobile-tab="utilities" onclick="switchMainTab('utilities')">
+            <i data-lucide="wrench" style="width:18px;height:18px;"></i>
+            <span>Tiện ích &amp; Biểu mẫu CT01</span>
+          </button>
+          <button type="button" class="capan-drawer-item" data-mobile-tab="declaration" onclick="switchMainTab('declaration')">
+            <i data-lucide="qr-code" style="width:18px;height:18px;"></i>
+            <span>Khai báo cư trú nhanh</span>
+          </button>
+          <a href="huong-dan-nop-ho-so.html" class="capan-drawer-item">
+            <i data-lucide="book-open" style="width:18px;height:18px;"></i>
+            <span>Cẩm nang Hướng dẫn nộp hồ sơ</span>
+          </a>
+          <a href="index.html" class="capan-drawer-item" style="border-top:1px solid #e2e8f0;margin-top:4px;padding-top:12px;color:#dc2626;">
+            <i data-lucide="arrow-left" style="width:18px;height:18px;"></i>
+            <span>Quay về Trang chủ DOANTM</span>
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- =====================================================================
+         2. MAIN CONTENT AREA
+         ===================================================================== -->
+    <div class="capan-main-content">
+
+      <!-- ===================================================================
+           VIEW A: TIỆN ÍCH (KÊ KHAI MẪU ĐƠN & HƯỚNG DẪN NỘP HỒ SƠ)
+           =================================================================== -->
+      <div id="view-utilities" class="capan-utilities-container">
+
+        <!-- Utility Sub-Tabs Bar -->
+        <div class="capan-utility-nav-bar no-print">
+          <div class="capan-utility-tabs">
+            <button type="button" class="capan-tab-btn active" id="util-tab-ct01" onclick="switchUtilityTab('ct01')">
+              <i data-lucide="file-text" style="width:17px;height:17px;"></i>
+              <span class="tab-label-desktop">Kê khai mẫu đơn</span>
+              <span class="tab-label-mobile">Kê khai mẫu đơn</span>
+            </button>
+            <a href="huong-dan-nop-ho-so.html" class="capan-tab-btn capan-btn-guide-gradient" title="Xem hướng dẫn chi tiết nộp hồ sơ Dịch vụ công từng mục cụ thể">
+              <i data-lucide="book-open" style="width:17px;height:17px;"></i>
+              <span class="tab-label-desktop">Hướng dẫn nộp hồ sơ</span>
+              <span class="tab-label-mobile">Hướng dẫn nộp hồ sơ</span>
+              <i data-lucide="sparkles" style="width:14px;height:14px;opacity:0.9;"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- -----------------------------------------------------------------
+             SUB-VIEW A1: KÊ KHAI MẪU ĐƠN (5 FORM CARDS + WORKSPACE)
+             ----------------------------------------------------------------- -->
+        <div id="subview-ct01" class="capan-forms-container">
+
+          <!-- 5-Card Forms Selector Navigation Card -->
+          <div class="capan-forms-nav-card no-print">
+            <div class="capan-forms-nav-header">
+              <div class="title-area">
+                <span class="capan-forms-tag">
+                  <i data-lucide="sparkles" style="width:12px;height:12px;"></i>
+                  BIỂU MẪU DỊCH VỤ CÔNG DÂN
+                </span>
+                <h3>
+                  <span class="text-desktop">Điền hồ sơ và mẫu đơn trực tuyến</span>
+                  <span class="text-mobile">Điền hồ sơ và mẫu đơn</span>
+                </h3>
+                <p class="forms-nav-desc">Chọn hồ sơ đăng ký tạm trú hoặc điền đơn cớ mất, xác nhận hạnh kiểm và tải file Word / PDF A4.</p>
+              </div>
+            </div>
+
+            <div class="capan-forms-selector-grid">
+              <!-- Card 1: CT01 -->
+              <button type="button" class="capan-form-tab-card active" data-form-key="ct01" onclick="selectFormCard('ct01')">
+                <div class="form-tab-badge-row">
+                  <span class="form-code-badge">Điền hồ sơ Đăng kí Tạm trú</span>
+                  <span class="form-status-ready">Sẵn sàng</span>
+                </div>
+              </button>
+
+              <!-- Card 2: CT02 (Đơn cớ mất) -->
+              <button type="button" class="capan-form-tab-card" data-form-key="ct02" onclick="selectFormCard('ct02')">
+                <div class="form-tab-badge-row">
+                  <span class="form-code-badge">Điền Đơn Cớ Mất</span>
+                  <span class="form-status-ready">Sẵn sàng</span>
+                </div>
+              </button>
+
+              <!-- Card 3: CT03 (Xác nhận hạnh kiểm) -->
+              <button type="button" class="capan-form-tab-card" data-form-key="ct03" onclick="selectFormCard('ct03')">
+                <div class="form-tab-badge-row">
+                  <span class="form-code-badge">Điền Xác Nhận Hạnh Kiểm</span>
+                  <span class="form-status-ready">Sẵn sàng</span>
+                </div>
+              </button>
+
+              <!-- Card 4: Điền hồ sơ Đăng kí Thường Trú -->
+              <button type="button" class="capan-form-tab-card" data-form-key="ct04" onclick="selectFormCard('ct04')">
+                <div class="form-tab-badge-row">
+                  <span class="form-code-badge">Điền hồ sơ Đăng kí Thường Trú</span>
+                  <span class="form-status-ready">Sẵn sàng</span>
+                </div>
+              </button>
+
+              <!-- Card 5: Điền hồ sơ tạm trú theo số lượng -->
+              <button type="button" class="capan-form-tab-card" data-form-key="ct07" onclick="selectFormCard('ct07')">
+                <div class="form-tab-badge-row">
+                  <span class="form-code-badge">Điền hồ sơ tạm trú theo số lượng</span>
+                  <span class="form-status-star">
+                    <i data-lucide="star" style="width:13px;height:13px;fill:#f59e0b;color:#f59e0b;"></i>
+                    ★ Có phí
+                  </span>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- ===============================================================
+               FORM WORKSPACE 1: CT01 & HỢP ĐỒNG CƯ TRÚ (TẠM TRÚ & THƯỜNG TRÚ)
+               =============================================================== -->
+          <div id="form-workspace-ct01" class="capan-ct01-workspace">
+
+            <!-- Steps Intro & 3-Step Progress Card -->
+            <div class="capan-steps-card no-print">
+              <div class="capan-steps-intro">
+                <h3>
+                  <span class="text-desktop" id="workspace-steps-title-desktop">Điền hồ sơ Đăng kí Tạm trú</span>
+                  <span class="text-mobile" id="workspace-steps-title-mobile">Điền hồ sơ Đăng kí Tạm trú</span>
+                </h3>
+                <p class="steps-desc-text" id="workspace-steps-desc">Quét mã QR trên thẻ CCCD để tự động điền nhanh dữ liệu và xuất file A4.</p>
+              </div>
+
+              <div class="capan-steps-bar">
+                <div class="capan-step-item done">
+                  <span class="step-badge">✓</span>
+                  <span>Quét QR thẻ CCCD</span>
+                </div>
+                <div class="step-divider"></div>
+                <div class="capan-step-item active">
+                  <span class="step-badge">2</span>
+                  <span>Ký điện tử 2 bên</span>
+                </div>
+                <div class="step-divider"></div>
+                <div class="capan-step-item">
+                  <span class="step-badge">3</span>
+                  <span>Xuất file A4</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dual QR Action Panel (Chủ nhà Bên A & Người kê khai Bên B) -->
+            <div class="capan-qr-action-panel no-print">
+
+              <!-- Left Card: Chủ nhà (Bên A) -->
+              <div class="capan-qr-card landlord-card">
+                <div>
+                  <div class="qr-card-header">
+                    <div class="qr-header-title">
+                      <div class="qr-icon text-amber">
+                        <i data-lucide="qr-code" style="width:22px;height:22px;"></i>
+                      </div>
+                      <div>
+                        <h4>Chủ nhà (Bên A)</h4>
+                        <span class="qr-sub-text">Tự động điền Bên A &amp; Mục 9 CT01</span>
+                      </div>
+                    </div>
+                    <div class="qr-card-actions">
+                      <button type="button" class="capan-btn-manual-edit" onclick="toggleManualDrawer('landlord')" title="Nhập tay hoặc sửa thông tin Chủ nhà">
+                        <i data-lucide="pencil" style="width:13px;height:13px;"></i>
+                        <span>Nhập tay</span>
+                      </button>
+                      <button type="button" class="capan-btn-scan-amber" onclick="openQrScannerModal('landlord')">
+                        <i data-lucide="qr-code" style="width:15px;height:15px;"></i>
+                        <span>Quét thẻ CCCD</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="qr-card-body" id="landlord-card-summary">
+                    <div class="qr-empty-hint">
+                      Chưa quét thẻ CCCD Chủ nhà. Bấm "Quét thẻ CCCD" để camera nhận diện tự động hoặc bấm "Nhập tay".
+                    </div>
+                  </div>
+
+                  <!-- Optional Inline Manual Input Drawer for Landlord -->
+                  <div id="manual-drawer-landlord" class="qr-manual-drawer" hidden>
+                    <div>
+                      <label for="manual-landlordName">Họ tên Chủ nhà (Bên A)</label>
+                      <input type="text" id="manual-landlordName" placeholder="VD: TRẦN VĂN HÙNG" oninput="updateFormField('landlordName', this.value)" />
+                    </div>
+                    <div>
+                      <label for="manual-landlordId">Số CCCD Chủ nhà (12 số)</label>
+                      <input type="text" id="manual-landlordId" maxlength="12" placeholder="VD: 079075009876" oninput="updateFormField('landlordId', this.value)" />
+                    </div>
+                    <div>
+                      <label for="manual-landlordBirthYear">Ngày / Năm sinh</label>
+                      <input type="text" id="manual-landlordBirthYear" placeholder="VD: 12/05/1975" oninput="updateFormField('landlordBirthYear', this.value)" />
+                    </div>
+                    <div>
+                      <label for="manual-landlordAddress">Nơi thường trú Chủ nhà</label>
+                      <input type="text" id="manual-landlordAddress" placeholder="Số nhà, đường, phường, TP..." oninput="updateFormField('landlordAddress', this.value)" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Card: Người kê khai (Bên B) -->
+              <div class="capan-qr-card tenant-card">
+                <div>
+                  <div class="qr-card-header">
+                    <div class="qr-header-title">
+                      <div class="qr-icon text-teal">
+                        <i data-lucide="qr-code" style="width:22px;height:22px;"></i>
+                      </div>
+                      <div>
+                        <h4>Người kê khai (Bên B)</h4>
+                        <span class="qr-sub-text">Tự động điền Bên B &amp; Mục 1–8 CT01</span>
+                      </div>
+                    </div>
+                    <div class="qr-card-actions">
+                      <button type="button" class="capan-btn-manual-edit" onclick="toggleManualDrawer('tenant')" title="Nhập tay hoặc sửa thông tin Người kê khai">
+                        <i data-lucide="pencil" style="width:13px;height:13px;"></i>
+                        <span>Nhập tay</span>
+                      </button>
+                      <button type="button" class="capan-btn-scan-primary" onclick="openQrScannerModal('tenant')">
+                        <i data-lucide="qr-code" style="width:15px;height:15px;"></i>
+                        <span>Quét thẻ CCCD</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="qr-card-body" id="tenant-card-summary">
+                    <div class="qr-empty-hint">
+                      Chưa quét thẻ CCCD Người kê khai. Bấm "Quét thẻ CCCD" để camera nhận diện tự động hoặc bấm "Nhập tay".
+                    </div>
+                  </div>
+
+                  <!-- Optional Inline Manual Input Drawer for Tenant -->
+                  <div id="manual-drawer-tenant" class="qr-manual-drawer" hidden>
+                    <div>
+                      <label for="manual-fullName">Họ và tên Người kê khai (Bên B)</label>
+                      <input type="text" id="manual-fullName" placeholder="VD: NGUYỄN VĂN AN" oninput="updateFormField('fullName', this.value)" />
+                    </div>
+                    <div>
+                      <label for="manual-citizenId">Số ĐDCN / CCCD (12 số)</label>
+                      <input type="text" id="manual-citizenId" maxlength="12" placeholder="VD: 079095012345" oninput="updateFormField('citizenId', this.value)" />
+                    </div>
+                    <div>
+                      <label for="manual-birthDate">Ngày, tháng, năm sinh</label>
+                      <input type="text" id="manual-birthDate" placeholder="VD: 15/08/1995" oninput="updateFormField('birthDate', this.value)" />
+                    </div>
+                    <div>
+                      <label for="manual-gender">Giới tính</label>
+                      <select id="manual-gender" onchange="updateFormField('gender', this.value)">
+                        <option value="">-- Chọn --</option>
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                        <option value="Khác">Khác</option>
+                      </select>
+                    </div>
+                    <div class="full-col">
+                      <label for="manual-permanentAddress">Nơi thường trú (Bên B)</label>
+                      <input type="text" id="manual-permanentAddress" placeholder="Nhập địa chỉ thường trú trên CCCD..." oninput="updateFormField('permanentAddress', this.value)" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Main Preview & Editor Card -->
+            <div class="capan-preview-card">
+
+              <!-- Card Header -->
+              <div class="capan-preview-card-head no-print">
+                <div class="capan-panel-header">
+                  <i data-lucide="file-check-2" class="panel-icon"></i>
+                  <span class="preview-title-desktop" id="preview-title-desktop">Xem trước văn bản A4 (Mẫu CT01 &amp; Hợp đồng cư trú)</span>
+                  <span class="preview-title-mobile" id="preview-title-mobile">Xem trước văn bản A4</span>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  <button type="button" class="capan-btn-outline" onclick="resetAllFormData()" title="Xóa trắng toàn bộ dữ liệu">
+                    <i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>
+                    <span>Làm mới</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card Body -->
+              <div class="capan-preview-card-body">
+
+                <!-- Fieldset 10: Nội dung đề nghị -->
+                <fieldset class="ct01-fieldset no-print">
+                  <legend>10. Nội dung đề nghị</legend>
+
+                  <div class="ct01-radio-group" role="radiogroup" aria-label="10. Nội dung đề nghị">
+                    <label class="ct01-radio-label">
+                      <input type="radio" id="radio-req-register" name="ct01-request-content" value="Đăng ký tạm trú" checked onchange="updateFormField('requestContent', this.value)" />
+                      <span id="radio-req-register-label">Đăng ký tạm trú</span>
+                    </label>
+                    <label class="ct01-radio-label">
+                      <input type="radio" id="radio-req-delete" name="ct01-request-content" value="Xoá đăng kí tạm trú do không còn chỗ ở hợp pháp tại căn nhà địa chỉ" onchange="updateFormField('requestContent', this.value)" />
+                      <span id="radio-req-delete-label">Xoá đăng kí tạm trú do không còn chỗ ở hợp pháp</span>
+                    </label>
+                  </div>
+
+                  <div class="ct01-address-inputs-grid">
+                    <div class="ct01-address-input-field">
+                      <label for="ct01-house-no">Số nhà</label>
+                      <input type="text" id="ct01-house-no" class="capan-input" placeholder="Ví dụ: 123/45" oninput="updateFormField('houseNo', this.value)" />
+                    </div>
+                    <div class="ct01-address-input-field">
+                      <label for="ct01-street">Tên đường</label>
+                      <input type="text" id="ct01-street" class="capan-input" placeholder="Ví dụ: Đường Nguyễn Văn Nghi" oninput="updateFormField('street', this.value)" />
+                    </div>
+                  </div>
+
+                  <div class="ct01-extra-inputs-grid">
+                    <div class="ct01-address-input-field">
+                      <label for="ct01-ward">Phường / Xã (Nơi nộp)</label>
+                      <input type="text" id="ct01-ward" class="capan-input" value="Phường An Nhơn" placeholder="VD: Phường An Nhơn" oninput="updateFormField('ward', this.value)" />
+                    </div>
+                    <div class="ct01-address-input-field">
+                      <label for="ct01-city">Tỉnh / Thành phố</label>
+                      <input type="text" id="ct01-city" class="capan-input" value="TP. Hồ Chí Minh" placeholder="VD: TP. Hồ Chí Minh" oninput="updateFormField('city', this.value)" />
+                    </div>
+                    <div class="ct01-address-input-field">
+                      <label for="ct01-phone">5. Số điện thoại liên hệ</label>
+                      <input type="tel" id="ct01-phone" class="capan-input" placeholder="VD: 0909 123 456" oninput="updateFormField('phone', this.value)" />
+                    </div>
+                    <div class="ct01-address-input-field">
+                      <label for="ct01-email">6. Email liên hệ</label>
+                      <input type="email" id="ct01-email" class="capan-input" placeholder="VD: congdan@gmail.com" oninput="updateFormField('email', this.value)" />
+                    </div>
+                  </div>
+
+                  <div class="ct01-address-input-field ct01-contract-datetime-field">
+                    <label for="ct01-contract-datetime">Ngày, giờ bắt đầu hợp đồng</label>
+                    <input type="datetime-local" id="ct01-contract-datetime" class="capan-input" onchange="updateFormField('moveInDate', this.value)" />
+                  </div>
+                </fieldset>
+
+                <!-- Fieldset 11: Những thành viên trong hộ gia đình cùng thay đổi -->
+                <fieldset class="ct01-members-editor no-print">
+                  <legend>11. Những thành viên trong hộ gia đình cùng thay đổi</legend>
+                  <p>Quét QR CCCD hoặc nhập tay. Trẻ chưa có CCCD có thể để trống số định danh.</p>
+                  <button type="button" class="capan-btn-outline" id="btn-add-member" onclick="openMemberModal()">
+                    <i data-lucide="plus" style="width:15px;height:15px;"></i>
+                    <span id="btn-add-member-label">Thêm thành viên (0/9)</span>
+                  </button>
+                  <div id="members-summary-list"></div>
+                </fieldset>
+
+                <!-- ===========================================================
+                     LIVE A4 DOCUMENT PREVIEW WRAPPER (2 A4 PAGES + SIG PADS)
+                     =========================================================== -->
+                <div class="doc-preview-wrapper" id="doc-preview-wrapper">
+
+                  <!-- Responsive Scale Toolbar (Shown on mobile/narrow viewports) -->
+                  <div class="doc-mobile-toolbar no-print" id="doc-scale-toolbar" hidden>
+                    <div class="doc-mobile-toolbar-info">
+                      <span class="doc-mobile-badge" id="doc-scale-badge">📄 Bản xem trước chuẩn A4 (100%)</span>
+                    </div>
+                    <div class="doc-mobile-toolbar-actions">
+                      <button type="button" class="doc-toolbar-btn active" id="btn-scale-fit" onclick="setPreviewFitMode('fit')">Vừa màn hình</button>
+                      <button type="button" class="doc-toolbar-btn" id="btn-scale-actual" onclick="setPreviewFitMode('actual')">100% Gốc</button>
+                    </div>
+                  </div>
+
+                  <!-- A4 Scaler Container -->
+                  <div class="a4-page-scaler" id="a4-page-scaler">
+
+                    <!-- =======================================================
+                         PAGE 1: MẪU CT01 - TỜ KHAI THAY ĐỔI THÔNG TIN CƯ TRÚ
+                         ======================================================= -->
+                    <article class="a4-page ct01-doc-page" id="ct01-doc-page-print">
+                      <div class="ct01-sub-header">
+                        <p>Mẫu CT01 ban hành kèm theo Thông tư số 116/2026/TT-BCA</p>
+                        <p>ngày 29 tháng 6 năm 2026 của Bộ trưởng Bộ Công an</p>
+                      </div>
+
+                      <div class="ct01-national-header">
+                        <h3 class="national-country">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h3>
+                        <h4 class="national-motto">Độc lập – Tự do – Hạnh phúc</h4>
+                        <div class="national-underline"></div>
+                      </div>
+
+                      <h2 class="ct01-main-title">TỜ KHAI THAY ĐỔI THÔNG TIN CƯ TRÚ</h2>
+
+                      <p class="ct01-recipient">
+                        Kính gửi<sup>(1)</sup>: <strong class="ct01-recipient-value" id="a4-ct01-recipient">Công an Phường An Nhơn - TP. Hồ Chí Minh</strong>
+                      </p>
+
+                      <div class="ct01-body-content">
+                        <div class="ct01-line">
+                          1. Họ, chữ đệm và tên khai sinh: <strong class="text-uppercase" id="a4-ct01-fullName"></strong>
+                        </div>
+
+                        <div class="ct01-flex-line">
+                          <div class="flex-item">
+                            2. Ngày, tháng, năm sinh: <strong id="a4-ct01-birthDate"></strong>
+                          </div>
+                          <div class="flex-item">
+                            3. Giới tính: <strong class="ct01-gender-value" id="a4-ct01-gender"></strong>
+                          </div>
+                        </div>
+
+                        <div class="ct01-id-line">
+                          <span class="id-label">4. Số định danh cá nhân:</span>
+                          <div class="ct01-boxes-group" id="a4-ct01-tenant-id-boxes">
+                            <!-- 12 Digit Cells Rendered by JS -->
+                          </div>
+                        </div>
+
+                        <div class="ct01-flex-line">
+                          <div class="flex-item">
+                            5. Số điện thoại liên hệ: <strong id="a4-ct01-phone"></strong>
+                          </div>
+                          <div class="flex-item">
+                            6. Email: <strong id="a4-ct01-email"></strong>
+                          </div>
+                        </div>
+
+                        <div class="ct01-flex-line ct01-household-line">
+                          <div class="flex-item">
+                            7. Họ, chữ đệm và tên chủ hộ: <strong class="text-uppercase" id="a4-ct01-headName"></strong>
+                          </div>
+                          <div class="flex-item">
+                            8. Mối quan hệ với chủ hộ: <span id="a4-ct01-relationship"></span>
+                          </div>
+                        </div>
+
+                        <div class="ct01-id-line">
+                          <span class="id-label">9. Số định danh cá nhân của chủ hộ:</span>
+                          <div class="ct01-boxes-group" id="a4-ct01-landlord-id-boxes">
+                            <!-- 12 Digit Cells Rendered by JS -->
+                          </div>
+                        </div>
+
+                        <div class="ct01-line ct01-request-line">
+                          <span class="ct01-request-label">10. Nội dung đề nghị<sup>(2)</sup>: </span>
+                          <span class="ct01-request-content" id="a4-ct01-requestContent">Đăng ký tạm trú</span>
+                          <span class="ct01-request-prefix" id="a4-ct01-requestPrefix"> vào nhà địa chỉ: </span>
+                          <span class="ct01-request-address" id="a4-ct01-requestAddress">.</span>
+                        </div>
+
+                        <div class="ct01-members-section">
+                          <p class="members-title">11. Những thành viên trong hộ gia đình cùng thay đổi:</p>
+                          <table class="ct01-table-members">
+                            <thead>
+                              <tr>
+                                <th style="width: 6%;"><span>TT</span></th>
+                                <th style="width: 28%;"><span>Họ, chữ đệm<br />và tên</span></th>
+                                <th style="width: 18%;"><span>Ngày, tháng,<br />năm sinh</span></th>
+                                <th style="width: 12%;"><span>Giới<br />tính</span></th>
+                                <th style="width: 20%;"><span>Số định danh<br />cá nhân</span></th>
+                                <th style="width: 16%;"><span>Mối quan hệ<br />với chủ hộ</span></th>
+                              </tr>
+                            </thead>
+                            <tbody id="a4-ct01-members-tbody">
+                              <!-- 9 Rows Rendered by JS -->
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <!-- 4-Column Signatures Container -->
+                        <div class="ct01-signatures-container">
+                          <!-- Col 1: Ý KIẾN CỦA CHỦ HỘ (3) -->
+                          <div class="ct01-sig-col">
+                            <div class="sig-header-zone">
+                              <p class="sig-date-placeholder" id="a4-sig-date-1">An Nhơn, ngày.......tháng....năm.......</p>
+                              <p class="sig-heading">Ý KIẾN CỦA CHỦ HỘ<sup>(3)</sup></p>
+                            </div>
+                            <div class="sig-space" id="a4-ct01-sig-head"></div>
+                            <div class="sig-name-zone">
+                              <p class="sig-signer-name text-uppercase" id="a4-ct01-sig-head-name"></p>
+                            </div>
+                            <div class="sig-notes-zone empty"></div>
+                          </div>
+
+                          <!-- Col 2: Ý KIẾN CỦA CHỦ SỞ HỮU CHỖ Ở HỢP PHÁP (4) -->
+                          <div class="ct01-sig-col">
+                            <div class="sig-header-zone">
+                              <p class="sig-date-placeholder" id="a4-sig-date-2">An Nhơn, ngày.....tháng....năm...</p>
+                              <p class="sig-heading">Ý KIẾN CỦA CHỦ SỞ<br />HỮU CHỖ Ở HỢP PHÁP<sup>(4)</sup></p>
+                            </div>
+                            <div class="sig-space" id="a4-ct01-sig-landlord"></div>
+                            <div class="sig-name-zone">
+                              <p class="sig-signer-name text-uppercase" id="a4-ct01-sig-landlord-name"></p>
+                            </div>
+                            <div class="sig-notes-zone">
+                              <p class="sig-sub-note">(7) Họ và tên:.................................</p>
+                              <p class="sig-sub-note">(7) Số định danh cá nhân:..............</p>
+                            </div>
+                          </div>
+
+                          <!-- Col 3: Ý KIẾN CỦA CHA HOẶC MẸ HOẶC NGƯỜI GIÁM HỘ (5) -->
+                          <div class="ct01-sig-col">
+                            <div class="sig-header-zone">
+                              <p class="sig-date-placeholder" id="a4-sig-date-3">An Nhơn, ngày.......tháng....năm...</p>
+                              <p class="sig-heading">Ý KIẾN CỦA CHA HOẶC<br />MẸ HOẶC NGƯỜI GIÁM<br />HỘ<sup>(5)</sup></p>
+                            </div>
+                            <div class="sig-space empty"></div>
+                            <div class="sig-name-zone empty"></div>
+                            <div class="sig-notes-zone">
+                              <p class="sig-sub-note">(7) Họ và tên:</p>
+                              <p class="sig-sub-note">(7) Số định danh cá nhân:</p>
+                            </div>
+                          </div>
+
+                          <!-- Col 4: NGƯỜI KÊ KHAI (6) -->
+                          <div class="ct01-sig-col">
+                            <div class="sig-header-zone">
+                              <p class="sig-date-placeholder" id="a4-sig-date-4">An Nhơn, ngày....tháng...năm...</p>
+                              <p class="sig-heading">NGƯỜI KÊ KHAI<sup>(6)</sup></p>
+                            </div>
+                            <div class="sig-space" id="a4-ct01-sig-declarant"></div>
+                            <div class="sig-name-zone">
+                              <p class="sig-signer-name text-uppercase" id="a4-ct01-sig-declarant-name"></p>
+                            </div>
+                            <div class="sig-notes-zone empty"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+
+                    <!-- =======================================================
+                         PAGE 2: HỢP ĐỒNG CHO THUÊ, MƯỢN, Ở NHỜ
+                         ======================================================= -->
+                    <article class="a4-page contract-doc-page" id="contract-doc-page-print">
+                      <div class="contract-national-header">
+                        <h3 class="national-country">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h3>
+                        <h4 class="national-motto">Độc lập – Tự do – Hạnh phúc</h4>
+                        <div class="national-underline"></div>
+                      </div>
+
+                      <h2 class="contract-main-title">HỢP ĐỒNG CHO THUÊ, MƯỢN, Ở NHỜ</h2>
+
+                      <div class="contract-body-content">
+                        <p class="contract-intro-line">
+                          Vào hồi <span id="a4-contract-hours">10</span> giờ <span id="a4-contract-minutes">00</span> phút, Ngày <span id="a4-contract-date"></span>. Tại số nhà : <span id="a4-contract-address-top"></span>.
+                        </p>
+                        <p class="contract-intro-line">Chúng tôi gồm:</p>
+
+                        <!-- BÊN A -->
+                        <div class="contract-party-block">
+                          <p class="party-role-head"><strong>I. ĐẠI DIỆN BÊN CHO THUÊ, MƯỢN, Ở NHỜ (Gọi tắt là bên A).</strong></p>
+                          <div class="party-flex-row">
+                            <span class="party-name">Ông (bà): <span class="text-uppercase" id="a4-contract-landlordName"></span></span>
+                            <span class="party-birth">Sinh năm: <span id="a4-contract-landlordBirthYear"></span></span>
+                          </div>
+                          <p class="party-info-row">CCCD/CMND: <span id="a4-contract-landlordId"></span></p>
+                          <p class="party-info-row">Hiện thường trú: <span class="contract-long-value" id="a4-contract-landlordAddress"></span></p>
+                          <p class="party-info-row">Là chủ sở hữu của căn nhà: <span class="contract-long-value" id="a4-contract-propertyAddress">.</span></p>
+                        </div>
+
+                        <!-- BÊN B -->
+                        <div class="contract-party-block">
+                          <p class="party-role-head"><strong>II.ĐẠI DIỆN BÊN THUÊ, MƯỢN, Ở NHỜ (Gọi tắt là bên B).</strong></p>
+                          <div class="party-flex-row">
+                            <span class="party-name">Ông (bà): <span class="text-uppercase" id="a4-contract-tenantName"></span></span>
+                            <span class="party-birth">Sinh năm: <span id="a4-contract-tenantBirth"></span></span>
+                          </div>
+                          <p class="party-info-row">CCCD/CMND: <span id="a4-contract-tenantId"></span></p>
+                          <p class="party-info-row">Hiện thường trú: <span class="contract-long-value" id="a4-contract-tenantAddress"></span></p>
+                          <div id="a4-contract-members-list"></div>
+                        </div>
+
+                        <p class="contract-clause-intro">Hai bên tự nguyện giao kết hợp đồng cho ở nhờ với các nội dung sau:</p>
+
+                        <div class="contract-clauses-list">
+                          <p>
+                            <strong>Điều 1.</strong> Bên A đồng ý cho bên B ở nhờ và <span id="a4-contract-clause1-purpose">đăng kí tam trú</span> tại căn nhà số: <span class="contract-long-value" id="a4-contract-clause1-addr"></span>. Với mục đích để ở trong thời gian là: 36 tháng từ <span id="a4-contract-clause1-date"></span>
+                          </p>
+                          <p><strong>Điều 2.</strong> Giá cả ở nhờ nhà được hai bên thỏa thuận.</p>
+                          <p><strong>Điều 3.</strong> Trách nhiệm Bên A: giao phòng và trang thiết bị tiện nghi trong phòng cho bên B kể từ ngày kí hợp đồng.</p>
+                          <p><strong>Điều 4.</strong> Trách nhiệm bên B: sử dụng phòng để ở đúng mục đích, nội dung và có trách nhiệm bảo quản, giữ nguyên cấu trúc của phòng, bảo đảm vệ sinh, an ninh trật tự.</p>
+                          <p><strong>Điều 5.</strong> Hai bên cam kết thực hiện đầy đủ các điều khoản đã thỏa thuận, trường hợp một trong hai bên không thực hiện theo đúng các nội dung trong hợp đồng đã thỏa thuận thì phải có trách nhiệm bồi thường mọi thiệt hại gây ra.</p>
+                          <p>Hợp đồng này lập thành 02 bản có giá trị tương đương, có hiệu lực kể từ ngày kí và chấm dứt khi hai bên cùng thỏa thuận. Mỗi bên giữ 01 bản để thực hiện.</p>
+                        </div>
+
+                        <!-- Contract Signatures -->
+                        <div class="contract-signature-table">
+                          <div class="contract-sig-cell">
+                            <strong class="sig-head-title">ĐẠI DIỆN BÊN A</strong>
+                            <div class="sig-space-contract" id="a4-contract-sig-landlord"></div>
+                            <p class="sig-signer-name text-uppercase" id="a4-contract-sig-landlord-name"></p>
+                          </div>
+                          <div class="contract-sig-cell">
+                            <strong class="sig-head-title">ĐẠI DIỆN BÊN B</strong>
+                            <div class="sig-space-contract" id="a4-contract-sig-tenant"></div>
+                            <p class="sig-signer-name text-uppercase" id="a4-contract-sig-tenant-name"></p>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+
+                  </div>
+
+                  <!-- =========================================================
+                       INTERACTIVE DUAL SIGNATURE PADS PANEL
+                       ========================================================= -->
+                  <div class="interactive-signatures-panel no-print">
+                    <h3>Ký trực tuyến văn bản A4</h3>
+                    <div class="sig-pads-grid">
+
+                      <!-- Pad A: Bên A - Chủ nhà -->
+                      <div class="sig-block">
+                        <div class="sig-label">
+                          <i data-lucide="pen-tool" style="width:16px;height:16px;color:#dc2626;"></i>
+                          <span>Bên A – Chủ nhà</span>
+                        </div>
+                        <div class="sig-subtext">Chữ ký chủ nhà (Tự động chèn vào Mục (4) CT01 &amp; Đại diện Bên A Hợp đồng)</div>
+                        <div class="sig-canvas-wrapper" id="sig-wrapper-landlord">
+                          <canvas id="sig-canvas-landlord"></canvas>
+                          <div class="sig-placeholder" id="sig-placeholder-landlord">Ký trực tiếp bằng ngón tay / chuột / bút tại đây</div>
+                        </div>
+                        <div class="sig-actions">
+                          <button type="button" class="sig-btn" id="btn-undo-landlord" onclick="undoSignature('landlord')" disabled>
+                            <i data-lucide="undo-2" style="width:14px;height:14px;"></i>
+                            <span>Hoàn tác nét</span>
+                          </button>
+                          <button type="button" class="sig-btn danger" id="btn-clear-landlord" onclick="clearSignature('landlord')" disabled>
+                            <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+                            <span>Ký lại</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Pad B: Bên B - Người kê khai -->
+                      <div class="sig-block">
+                        <div class="sig-label">
+                          <i data-lucide="pen-tool" style="width:16px;height:16px;color:#0284c7;"></i>
+                          <span>Bên B – Người kê khai</span>
+                        </div>
+                        <div class="sig-subtext">Chữ ký người kê khai (Tự động chèn vào Mục (3), (6) CT01 &amp; Đại diện Bên B Hợp đồng)</div>
+                        <div class="sig-canvas-wrapper" id="sig-wrapper-tenant">
+                          <canvas id="sig-canvas-tenant"></canvas>
+                          <div class="sig-placeholder" id="sig-placeholder-tenant">Ký trực tiếp bằng ngón tay / chuột / bút tại đây</div>
+                        </div>
+                        <div class="sig-actions">
+                          <button type="button" class="sig-btn" id="btn-undo-tenant" onclick="undoSignature('tenant')" disabled>
+                            <i data-lucide="undo-2" style="width:14px;height:14px;"></i>
+                            <span>Hoàn tác nét</span>
+                          </button>
+                          <button type="button" class="sig-btn danger" id="btn-clear-tenant" onclick="clearSignature('tenant')" disabled>
+                            <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+                            <span>Ký lại</span>
+                          </button>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Bottom Export Actions Bar -->
+                <div class="capan-preview-bottom-actions no-print" id="bottom-export-bar">
+                  <div class="capan-output-copy">
+                    <strong>Hồ sơ đã sẵn sàng</strong>
+                    <span>Chọn PDF để in hoặc lưu hồ sơ A4 (Gồm 2 trang: Tờ khai CT01 &amp; Hợp đồng cư trú).</span>
+                  </div>
+                  <div class="capan-output-buttons">
+                    <button type="button" class="capan-btn-coral-large" id="btn-download-pdf" onclick="exportTwoPagePdf()">
+                      <i data-lucide="printer" style="width:18px;height:18px;"></i>
+                      <span>Tải PDF A4</span>
+                    </button>
+                    <button type="button" class="capan-btn-coral-large-outline" id="btn-download-jpg" onclick="exportBothJpg()">
+                      <i data-lucide="download" style="width:18px;height:18px;"></i>
+                      <span>Tải ảnh JPG</span>
+                    </button>
+                    <button type="button" class="capan-btn-coral-large-outline" onclick="window.print()" title="Mở hộp thoại In A4 trực tiếp của trình duyệt">
+                      <i data-lucide="file-output" style="width:18px;height:18px;"></i>
+                      <span>In trực tiếp</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ===============================================================
+               FORM WORKSPACE 2: CT02 (ĐƠN CỚ MẤT) & CT03 (XÁC NHẬN HẠNH KIỂM)
+               =============================================================== -->
+          <div id="form-workspace-citizen-app" class="citizen-application-workspace" hidden>
+            <div class="citizen-application-toolbar no-print">
+              <div class="citizen-application-toolbar-content">
+                <div>
+                  <strong id="citizen-app-toolbar-title">Điền Đơn Cớ Mất</strong>
+                  <span>Nhập thông tin trực tuyến, quét nhanh từ mã QR CCCD và xuất văn bản A4.</span>
+                </div>
+                <div class="citizen-application-toolbar-actions">
+                  <button type="button" class="capan-btn-coral-large" style="height:38px;padding:0 16px;font-size:13px;" onclick="openCitizenAppModal()">
+                    <i data-lucide="edit-3" style="width:15px;height:15px;"></i>
+                    <span>Nhập thông tin</span>
+                  </button>
+                  <button type="button" class="capan-btn-outline" style="height:38px;" onclick="openQrScannerModal('citizen-app')">
+                    <i data-lucide="qr-code" style="width:15px;height:15px;"></i>
+                    <span>Quét QR CCCD</span>
+                  </button>
+                  <button type="button" class="capan-btn-outline" style="height:38px;" onclick="downloadCitizenAppWord()">
+                    <i data-lucide="file-text" style="width:15px;height:15px;"></i>
+                    <span>Tải Word (.doc)</span>
+                  </button>
+                  <button type="button" class="capan-btn-outline" style="height:38px;" onclick="window.print()">
+                    <i data-lucide="printer" style="width:15px;height:15px;"></i>
+                    <span>In / Lưu PDF A4</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="capan-preview-card">
+              <div class="capan-preview-card-head no-print">
+                <div class="capan-panel-header">
+                  <i data-lucide="file-text" class="panel-icon"></i>
+                  <span>Xem trước nội dung đơn A4</span>
+                </div>
+              </div>
+              <div class="capan-preview-card-body">
+                <div class="doc-preview-wrapper">
+                  <article class="a4-page citizen-application-page" id="citizen-app-a4-page">
+                    <!-- Populated dynamically by JS -->
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===============================================================
+               FORM WORKSPACE 4: ĐIỀN HỒ SƠ TẠM TRÚ THEO SỐ LƯỢNG (BATCH)
+               =============================================================== -->
+          <div id="form-workspace-batch" class="capan-batch-workspace" hidden>
+
+            <!-- Top Hero Banner Card -->
+            <div class="capan-batch-hero-card no-print">
+              <div class="batch-hero-header">
+                <div class="batch-hero-badge-wrap">
+                  <span class="batch-hero-badge">
+                    <i data-lucide="star" style="width:13px;height:13px;fill:#f59e0b;color:#f59e0b;"></i>
+                    CÓ PHÍ • XUẤT TẬP TIN HỒ SƠ (.ZIP) TỰ ĐỘNG
+                  </span>
+                  <span class="batch-hero-counter" id="batch-progress-stat">Đã điền: 0 / 3 người</span>
+                </div>
+                <h3>Điền hồ sơ tạm trú theo số lượng (Chủ nhà trọ &amp; Doanh nghiệp)</h3>
+                <p>Khai báo thông tin chủ nhà và địa chỉ căn nhà một lần. Quét hoặc tải ảnh CCCD của từng người thuê. Hệ thống sẽ tự động ghép từng cặp hình (CT01 + Hợp đồng) vào thư mục riêng mang tên người thuê và đóng gói tải về file .ZIP.</p>
+              </div>
+            </div>
+
+            <!-- STEP 1: CHỌN SỐ LƯỢNG NGƯỜI ĐĂNG KÝ TẠM TRÚ -->
+            <div class="capan-batch-card no-print">
+              <div class="batch-card-head">
+                <div class="batch-step-badge">1</div>
+                <div>
+                  <h4 class="batch-card-title">Chọn số lượng người đăng ký tạm trú</h4>
+                  <p class="batch-card-sub">Nhập số lượng hoặc chọn nhanh các mốc số lượng người thuê cần lập hồ sơ.</p>
+                </div>
+              </div>
+
+              <div class="batch-card-body">
+                <div class="batch-qty-control-row">
+                  <div class="batch-qty-input-group">
+                    <button type="button" class="batch-qty-btn" onclick="adjustBatchTenantCount(-1)" title="Giảm 1 người">
+                      <i data-lucide="minus" style="width:16px;height:16px;"></i>
+                    </button>
+                    <input type="number" id="batch-tenant-count" min="1" max="50" value="3" class="batch-qty-input" onchange="setBatchTenantCount(parseInt(this.value) || 1)" />
+                    <button type="button" class="batch-qty-btn" onclick="adjustBatchTenantCount(1)" title="Tăng 1 người">
+                      <i data-lucide="plus" style="width:16px;height:16px;"></i>
+                    </button>
+                    <span class="batch-qty-unit">người</span>
+                  </div>
+
+                  <!-- Quick Chips -->
+                  <div class="batch-qty-chips" id="batch-qty-chips">
+                    <button type="button" class="batch-chip-btn" onclick="setBatchTenantCount(1)">1 người</button>
+                    <button type="button" class="batch-chip-btn" onclick="setBatchTenantCount(2)">2 người</button>
+                    <button type="button" class="batch-chip-btn active" onclick="setBatchTenantCount(3)">3 người</button>
+                    <button type="button" class="batch-chip-btn" onclick="setBatchTenantCount(5)">5 người</button>
+                    <button type="button" class="batch-chip-btn" onclick="setBatchTenantCount(10)">10 người</button>
+                    <button type="button" class="batch-chip-btn" onclick="setBatchTenantCount(15)">15 người</button>
+                    <button type="button" class="batch-chip-btn" onclick="setBatchTenantCount(20)">20 người</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 2: THÔNG TIN CHỦ NHÀ (BÊN A) & CĂN NHÀ CHO THUÊ -->
+            <div class="capan-batch-card no-print">
+              <div class="batch-card-head">
+                <div class="batch-step-badge">2</div>
+                <div>
+                  <h4 class="batch-card-title">Thông tin Chủ nhà (Bên A) &amp; Căn nhà cho thuê</h4>
+                  <p class="batch-card-sub">Thông tin này dùng chung cho tất cả các bản CT01 và hợp đồng của những người thuê bên dưới.</p>
+                </div>
+                <div class="batch-head-actions">
+                  <button type="button" class="capan-btn-outline" onclick="openQrScannerModal('batch-landlord')">
+                    <i data-lucide="qr-code" style="width:15px;height:15px;color:#dc2626;"></i>
+                    <span>Quét / Tải ảnh CCCD Chủ nhà</span>
+                  </button>
+                  <button type="button" class="capan-btn-outline" onclick="fillBatchLandlordSample()" title="Nạp nhanh mẫu thử chủ nhà">
+                    <i data-lucide="wand-2" style="width:14px;height:14px;color:#0284c7;"></i>
+                    <span>Mẫu thử</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="batch-card-body">
+                <!-- Landlord Fields Grid -->
+                <div class="batch-form-grid">
+                  <div class="ct01-address-input-field">
+                    <label>Họ, chữ đệm và tên Chủ nhà <span style="color:#dc2626;">*</span></label>
+                    <input type="text" id="batch-landlord-name" class="capan-input text-uppercase" placeholder="VD: NGUYỄN VĂN HÙNG" oninput="updateBatchLandlordField('fullName', this.value)" />
+                  </div>
+                  <div class="ct01-address-input-field">
+                    <label>Năm sinh / Ngày sinh <span style="color:#dc2626;">*</span></label>
+                    <input type="text" id="batch-landlord-birth" class="capan-input" placeholder="VD: 1975 hoặc 15/05/1975" oninput="updateBatchLandlordField('birthYear', this.value)" />
+                  </div>
+                  <div class="ct01-address-input-field">
+                    <label>Số định danh CCCD (12 số) <span style="color:#dc2626;">*</span></label>
+                    <input type="text" id="batch-landlord-id" class="capan-input" maxlength="12" placeholder="VD: 079075001234" oninput="updateBatchLandlordField('citizenId', this.value)" />
+                  </div>
+                  <div class="ct01-address-input-field">
+                    <label>Nơi thường trú của Chủ nhà <span style="color:#dc2626;">*</span></label>
+                    <input type="text" id="batch-landlord-address" class="capan-input" placeholder="VD: 45 Lê Duẩn, P. Bến Nghé, Quận 1, TP. HCM" oninput="updateBatchLandlordField('permanentAddress', this.value)" />
+                  </div>
+                </div>
+
+                <div class="batch-divider"></div>
+
+                <!-- House Address Fields Grid -->
+                <h5 class="batch-subhead">
+                  <i data-lucide="home" style="width:15px;height:15px;color:#059669;"></i>
+                  <span>Địa chỉ căn nhà / phòng trọ cho thuê (Nơi đăng ký tạm trú):</span>
+                </h5>
+                <div class="batch-form-grid" style="margin-top:8px;">
+                  <div class="ct01-address-input-field">
+                    <label>Tỉnh / Thành phố <span style="color:#dc2626;">*</span></label>
+                    <input type="text" id="batch-house-city" class="capan-input" placeholder="VD: TP. Hồ Chí Minh" oninput="updateBatchHouseField('city', this.value)" />
+                  </div>
+                  <div class="ct01-address-input-field">
+                    <label>Quận / Huyện / Thị xã <span style="color:#dc2626;">*</span></label>
+                    <input type="text" id="batch-house-district" class="capan-input" placeholder="VD: Quận 1" oninput="updateBatchHouseField('district', this.value)" />
+                  </div>
+                  <div class="ct01-address-input-field">
+                    <label>Phường / Xã / Thị trấn <span style="color:#dc2626;">*</span></label>
+                    <input type="text" id="batch-house-ward" class="capan-input" placeholder="VD: Phường Bến Nghé" oninput="updateBatchHouseField('ward', this.value)" />
+                  </div>
+                  <div class="ct01-address-input-field">
+                    <label>Số nhà, ngõ/ngách, đường, khu phố <span style="color:#dc2626;">*</span></label>
+                    <input type="text" id="batch-house-street" class="capan-input" placeholder="VD: 123 Nguyễn Huệ" oninput="updateBatchHouseField('street', this.value)" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 3: QUÉT CCCD TỪNG NGƯỜI THUÊ THEO SỐ LƯỢNG -->
+            <div class="capan-batch-card no-print">
+              <div class="batch-card-head">
+                <div class="batch-step-badge">3</div>
+                <div>
+                  <h4 class="batch-card-title">Quét CCCD của từng người thuê</h4>
+                  <p class="batch-card-sub">Quét mã QR hoặc tải hình chụp thẻ CCCD để tự động bóc tách dữ liệu vào hồ sơ người thuê.</p>
+                </div>
+                <div class="batch-head-actions">
+                  <button type="button" class="capan-btn-outline" onclick="fillAllBatchTenantsSample()" title="Nạp mẫu dữ liệu thử nghiệm cho toàn bộ người thuê">
+                    <i data-lucide="sparkles" style="width:14px;height:14px;color:#10b981;"></i>
+                    <span>Nạp dữ liệu mẫu thử</span>
+                  </button>
+                  <button type="button" class="capan-btn-outline" onclick="addNewBatchTenant()">
+                    <i data-lucide="user-plus" style="width:14px;height:14px;"></i>
+                    <span>+ Thêm 1 người</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="batch-card-body">
+                <!-- Tenants Dynamic Container -->
+                <div id="batch-tenants-list-container" class="batch-tenants-grid">
+                  <!-- Rendered dynamically by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 4: XUẤT VÀ TẢI VỀ FILE .ZIP -->
+            <div class="capan-batch-card batch-export-card no-print">
+              <div class="batch-card-head" style="border-bottom:none;padding-bottom:0;">
+                <div class="batch-step-badge" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%);">4</div>
+                <div>
+                  <h4 class="batch-card-title">Xuất và Tải về toàn bộ hồ sơ (.ZIP)</h4>
+                  <p class="batch-card-sub">Tự động sinh từng cặp hình (01_CT01 &amp; 02_HopDongCuTru) đặt trong thư mục con mang tên người thuê và nén thành 1 file ZIP duy nhất.</p>
+                </div>
+              </div>
+
+              <div class="batch-card-body">
+                <!-- Export Progress Indicator (Hidden by default) -->
+                <div id="batch-export-progress-wrap" class="batch-progress-box" hidden>
+                  <div class="batch-progress-bar-bg">
+                    <div id="batch-progress-bar-fill" class="batch-progress-bar-fill" style="width: 0%;"></div>
+                  </div>
+                  <p id="batch-progress-text" class="batch-progress-status">Đang chuẩn bị dữ liệu xuất hồ sơ...</p>
+                </div>
+
+                <!-- Action Button -->
+                <div class="batch-export-action-row">
+                  <button type="button" id="btn-export-batch-zip" class="capan-btn-coral-large batch-big-btn" onclick="exportBatchZip()">
+                    <i data-lucide="archive" style="width:20px;height:20px;"></i>
+                    <span id="btn-export-batch-zip-label">Xuất &amp; Tải về toàn bộ hồ sơ (.ZIP)</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ===============================================================
+               FORM WORKSPACE 3: DEVELOPING (CT04 / CT07)
+               =============================================================== -->
+          <div id="form-workspace-developing" class="capan-form-developing-card" hidden>
+            <div class="developing-inner-card">
+              <div class="developing-content">
+                <div class="developing-icon-wrap">
+                  <i data-lucide="file-clock" style="width:32px;height:32px;"></i>
+                </div>
+                <span class="developing-badge">TÍNH NĂNG ĐANG PHÁT TRIỂN</span>
+                <h3 id="developing-form-heading">Mẫu CT04: Phiếu tiếp nhận hồ sơ &amp; hẹn trả kết quả</h3>
+                <p id="developing-form-desc" style="color:#475569;margin:0;">
+                  Hệ thống dịch vụ công đang số hóa và kết nối biểu mẫu điện tử theo quy chuẩn mới nhất của Bộ Công An.
+                </p>
+                <div class="developing-hints">
+                  <p style="margin:4px 0;">• Quý công dân có nhu cầu đăng ký thường trú, tạm trú hoặc thay đổi thông tin cư trú có thể sử dụng ngay <strong>Điền hồ sơ Đăng kí Tạm trú (Mẫu CT01 &amp; Hợp đồng)</strong>.</p>
+                  <p style="margin:4px 0;">• Hoặc tham khảo cẩm nang <strong><a href="huong-dan-nop-ho-so.html" style="color:#0284c7;text-decoration:underline;">Hướng dẫn nộp hồ sơ</a></strong> để nắm rõ chi tiết quy trình nộp trực tuyến.</p>
+                </div>
+                <button type="button" class="capan-btn-coral-large" onclick="selectFormCard('ct01')">
+                  <span>Điền hồ sơ Đăng kí Tạm trú (Mẫu CT01)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- -----------------------------------------------------------------
+             SUB-VIEW A2: TRA CỨU TIẾN ĐỘ HỒ SƠ
+             ----------------------------------------------------------------- -->
+        <div id="subview-lookup" class="capan-lookup-workspace" hidden>
+          <div class="capan-lookup-card">
+            <div class="capan-lookup-header">
+              <div class="capan-lookup-icon-wrap">
+                <i data-lucide="search" style="width:26px;height:26px;"></i>
+              </div>
+              <div>
+                <h3 style="margin:0 0 4px;font-size:18px;font-weight:800;color:#0f172a;">Tra cứu tiến độ giải quyết hồ sơ hành chính</h3>
+                <p style="margin:0;font-size:13.5px;color:#64748b;">Nhập Mã hồ sơ dịch vụ công hoặc Số định danh cá nhân (12 số CCCD) để kiểm tra tiến độ tiếp nhận và xử lý.</p>
+              </div>
+            </div>
+
+            <div class="capan-lookup-search-bar">
+              <input type="text" id="lookup-code-input" class="capan-input" style="height:42px;font-size:14px;" value="HS-2026-AN-0892" placeholder="VD: HS-2026-AN-0892 hoặc 079094001234" />
+              <button type="button" class="capan-btn-coral-large" onclick="handleLookupSearch()">Tra cứu ngay</button>
+            </div>
+
+            <div id="lookup-result-container"></div>
+          </div>
+        </div>
+
+        <!-- -----------------------------------------------------------------
+             SUB-VIEW A3: LIÊN HỆ CSKV (31 KHU VỰC)
+             ----------------------------------------------------------------- -->
+        <div id="subview-appointment" hidden>
+          <div class="capan-officer-header-box">
+            <div class="capan-officer-search-inputs">
+              <div class="ct01-address-input-field">
+                <label for="cskv-search-input">Tìm kiếm cán bộ / khu vực</label>
+                <input type="text" id="cskv-search-input" class="capan-input" placeholder="Nhập tên cán bộ, số ĐT hoặc khu vực (ví dụ: KV1, 0909...)" oninput="renderCskvDirectory()" />
+              </div>
+              <div class="ct01-address-input-field">
+                <label for="cskv-area-input">Tra cứu nhanh theo khu vực (KV1 – KV31)</label>
+                <input type="text" id="cskv-area-input" class="capan-input" placeholder="Ví dụ: khu vực 3 hoặc KV5" oninput="renderCskvDirectory()" />
+              </div>
+            </div>
+            <div id="cskv-match-banner" style="margin-top:12px;" hidden></div>
+          </div>
+
+          <div class="capan-officer-grid" id="cskv-cards-grid"></div>
+        </div>
+
+      </div>
+
+      <!-- ===================================================================
+           VIEW B: KHAI BÁO CƯ TRÚ NHANH
+           =================================================================== -->
+      <div id="view-declaration" hidden>
+        <div style="max-width:780px;margin:0 auto;">
+          <button type="button" class="btn-link" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;font-size:14px;" onclick="switchMainTab('utilities', 'ct01')">
+            <i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
+            <span>Quay lại Biểu mẫu CT01 &amp; Hợp đồng</span>
+          </button>
+
+          <div class="capan-lookup-card">
+            <div style="border-bottom:1px solid #f1f5f9;padding-bottom:18px;margin-bottom:22px;">
+              <span class="capan-forms-tag">DỊCH VỤ CÔNG TRỰC TUYẾN</span>
+              <h2 style="margin:6px 0 8px;font-size:24px;font-weight:800;color:#0f172a;">Khai báo cư trú trực tuyến</h2>
+              <p style="margin:0;font-size:14px;color:#64748b;">Quét mã QR trên thẻ CCCD, kiểm tra thông tin rồi nhập địa chỉ cư trú cần khai báo.</p>
+            </div>
+
+            <div style="margin-bottom:22px;">
+              <h4 style="display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:15.5px;color:#0f172a;">
+                <i data-lucide="qr-code" style="width:18px;height:18px;color:#dc2626;"></i>
+                <span>1. Thông tin Căn cước công dân</span>
+              </h4>
+              <div style="background:#fffafa;border:2px dashed #fecaca;border-radius:14px;padding:22px;text-align:center;">
+                <p style="margin:0 0 14px;font-size:13.5px;color:#475569;">Sử dụng camera hoặc tải ảnh CCCD để tự động điền thông tin công dân.</p>
+                <button type="button" class="capan-btn-coral-large" onclick="openQrScannerModal('tenant')">
+                  <i data-lucide="qr-code" style="width:18px;height:18px;"></i>
+                  <span>Bắt đầu quét CCCD</span>
+                </button>
+              </div>
+            </div>
+
+            <div style="margin-bottom:22px;">
+              <h4 style="display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:15.5px;color:#0f172a;">
+                <i data-lucide="map-pin" style="width:18px;height:18px;color:#dc2626;"></i>
+                <span>2. Địa chỉ cư trú hiện tại</span>
+              </h4>
+              <input type="text" id="decl-address-input" class="capan-input" style="height:42px;" placeholder="Nhập số nhà, tên đường, khu phố, phường/xã..." />
+            </div>
+
+            <button type="button" class="capan-btn-coral-large" style="width:100%;height:48px;font-size:15px;" onclick="submitQuickDeclaration()">
+              <span>XÁC NHẬN GỬI KHAI BÁO CƯ TRÚ</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================
+           VIEW C: SỔ TAY HƯỚNG DẪN SỬ DỤNG
+           =================================================================== -->
+      <div id="view-guide" class="capan-guide" hidden>
+        <div class="capan-guide-intro">
+          <span>SỔ TAY HƯỚNG DẪN CÔNG DÂN &amp; CÁN BỘ</span>
+          <h2>Hướng dẫn sử dụng Hệ thống Biểu mẫu CT01 &amp; Hợp đồng</h2>
+          <p style="margin:0;color:#475569;">Các bước thao tác quét mã QR CCCD, ký điện tử 2 bên và xuất hồ sơ A4 chuẩn quy định.</p>
+        </div>
+
+        <div class="capan-guide-layout">
+          <nav class="capan-guide-toc" aria-label="Mục lục hướng dẫn">
+            <strong style="display:block;margin-bottom:8px;color:#0f172a;">Mục lục</strong>
+            <a href="#guide-1">1. Tổng quan công cụ</a>
+            <a href="#guide-2">2. Quét mã QR CCCD</a>
+            <a href="#guide-3">3. Điền mục 10 &amp; 11</a>
+            <a href="#guide-4">4. Ký điện tử 2 bên</a>
+            <a href="#guide-5">5. Xuất PDF &amp; Ảnh A4</a>
+          </nav>
+
+          <article class="capan-guide-content">
+            <section id="guide-1">
+              <h3 style="margin:0 0 10px;color:#0f172a;">1. Tổng quan công cụ Biểu mẫu cư trú DOANTM</h3>
+              <p style="margin:0 0 10px;color:#334155;line-height:1.6;">
+                Phân hệ <strong>Biểu mẫu Dịch vụ công DOANTM</strong> hỗ trợ công dân và chủ nhà trọ lập nhanh hồ sơ đăng ký tạm trú gồm <strong>Tờ khai thay đổi thông tin cư trú (Mẫu CT01)</strong> và <strong>Hợp đồng cho thuê, mượn, ở nhờ</strong> trên chuẩn khổ giấy A4.
+              </p>
+            </section>
+            <section id="guide-2">
+              <h3 style="margin:0 0 10px;color:#0f172a;">2. Quét mã QR thẻ CCCD tự động</h3>
+              <p style="margin:0 0 10px;color:#334155;line-height:1.6;">
+                • Bấm nút <strong>Quét thẻ CCCD</strong> ở khung <strong>Chủ nhà (Bên A)</strong> và <strong>Người kê khai (Bên B)</strong>.<br />
+                • Bạn có thể dùng Camera trực tiếp hoặc tải ảnh chụp thẻ CCCD lên và kéo chuột khoanh vùng mã QR để hệ thống bóc tách chính xác 12 số định danh, họ tên, ngày sinh, giới tính và địa chỉ thường trú.
+              </p>
+            </section>
+            <section id="guide-3">
+              <h3 style="margin:0 0 10px;color:#0f172a;">3. Điền nội dung đề nghị (Mục 10) &amp; Thành viên cùng thay đổi (Mục 11)</h3>
+              <p style="margin:0 0 10px;color:#334155;line-height:1.6;">
+                • Nhập số nhà, tên đường nơi đăng ký tạm trú và chọn thời gian bắt đầu hợp đồng.<br />
+                • Nếu có thêm thành viên trong hộ gia đình cùng đăng ký tạm trú (tối đa 9 người), bấm <strong>+ Thêm thành viên</strong> để quét QR hoặc nhập thông tin vào bảng Mục 11.
+              </p>
+            </section>
+            <section id="guide-4">
+              <h3 style="margin:0 0 10px;color:#0f172a;">4. Ký điện tử trực tiếp 2 bên (Dual Signature Pads)</h3>
+              <p style="margin:0 0 10px;color:#334155;line-height:1.6;">
+                • Chủ nhà (Bên A) và Người kê khai (Bên B) ký trực tiếp bằng ngón tay trên màn hình cảm ứng hoặc chuột máy tính tại khung <strong>Ký trực tuyến văn bản A4</strong>.<br />
+                • Chữ ký mực xanh sẽ tự động hiển thị đồng bộ vào cả Tờ khai CT01 và Hợp đồng cho thuê, mượn, ở nhờ.
+              </p>
+            </section>
+            <section id="guide-5">
+              <h3 style="margin:0 0 10px;color:#0f172a;">5. Xuất file PDF A4 &amp; Tải ảnh JPG</h3>
+              <p style="margin:0;color:#334155;line-height:1.6;">
+                • Bấm <strong>Tải PDF A4</strong> để lưu tệp PDF gồm 2 trang A4 sắc nét, hoặc bấm <strong>Tải ảnh JPG</strong> để tải 2 tệp ảnh riêng biệt đính kèm lên cổng dịch vụ công trực tuyến VNeID / Bộ Công An.
+              </p>
+            </section>
+          </article>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- =====================================================================
+         3. FOOTER
+         ===================================================================== -->
+    <footer class="capan-footer-wrap no-print">
+      <div style="max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;">
+        <div>
+          <strong>DOANTM PLATFORM</strong> — Hệ thống Hỗ trợ Điền Biểu mẫu Dịch Vụ Công Điện Tử &amp; Hợp đồng Cư trú A4
+        </div>
+        <div style="display:flex;gap:16px;">
+          <a href="index.html" style="color:#dc2626;font-weight:700;text-decoration:none;">← Quay về Trang chủ DOANTM</a>
+          <a href="tours.html" style="color:#0284c7;font-weight:600;text-decoration:none;">Tour Trải Nghiệm</a>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- =======================================================================
+       MODAL 1: QUÉT MÃ QR THẺ CCCD (CAMERA + KHOANH VÙNG ẢNH + DỮ LIỆU MẪU)
+       ======================================================================= -->
+  <div class="capan-modal-backdrop no-print" id="qr-scanner-modal" hidden>
+    <div class="capan-modal-box">
+
+      <!-- Modal Header -->
+      <div class="capan-modal-header">
+        <div class="qr-scanner-heading">
+          <span class="qr-scanner-title-icon">
+            <i data-lucide="qr-code" style="width:24px;height:24px;"></i>
+          </span>
+          <div>
+            <div class="qr-scanner-title" id="qr-modal-title">Quét mã QR thẻ Căn cước công dân (CCCD)</div>
+            <p>Quét bằng camera, tải ảnh CCCD để khoanh vùng QR, hoặc chọn nhanh dữ liệu mẫu.</p>
+          </div>
+        </div>
+        <button type="button" class="capan-modal-close" onclick="closeQrScannerModal()" aria-label="Đóng">
+          <i data-lucide="x" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="capan-modal-body">
+
+        <!-- Live Camera Viewport -->
+        <div class="camera-viewport-wrapper" id="qr-camera-wrapper">
+          <div class="camera-viewport" id="qr-camera-viewport" title="Chạm để lấy nét vào mã QR">
+            <video id="qr-camera-video" playsinline muted class="camera-video"></video>
+            <div class="scanner-laser-overlay">
+              <div class="scanner-frame">
+                <div class="corner corner-tl"></div>
+                <div class="corner corner-tr"></div>
+                <div class="corner corner-bl"></div>
+                <div class="corner corner-br"></div>
+                <div class="scanner-laser-line"></div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center;">
+            <p style="margin:0;font-size:13px;font-weight:700;color:#1e293b;">Đặt mã QR trên CCCD vào khung quét</p>
+            <p style="margin:2px 0 0;font-size:12px;color:#64748b;" id="qr-camera-status-text">Giữ thẻ ổn định trước camera hoặc tải ảnh CCCD bên dưới.</p>
+          </div>
+        </div>
+
+        <!-- Camera Warning Box (if camera unavailable) -->
+        <div id="qr-camera-warning" style="background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:12px 14px;border-radius:10px;font-size:13px;" hidden></div>
+
+        <!-- Image Cropper Panel (When user uploads an image) -->
+        <div class="qr-upload-crop-panel" id="qr-crop-panel" hidden>
+          <div>
+            <h3 style="margin:0;font-size:14.5px;font-weight:700;color:#0f172a;">Khoanh vùng mã QR trên ảnh CCCD</h3>
+            <p style="margin:2px 0 0;font-size:12.5px;color:#64748b;">Kéo chuột hoặc chạm từ góc này sang góc đối diện của mã QR để chọn vùng quét chính xác.</p>
+          </div>
+
+          <button type="button" class="qr-upload-cropper" id="qr-cropper-area" aria-label="Khoanh vùng mã QR trên ảnh CCCD">
+            <img id="qr-uploaded-img" src="" alt="Ảnh CCCD đã tải lên" draggable="false" />
+            <span class="qr-upload-crop-selection" id="qr-crop-selection-box" hidden></span>
+          </button>
+
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <button type="button" class="capan-btn-coral-large" style="height:36px;padding:0 14px;font-size:12.5px;" id="btn-scan-cropped" onclick="scanUploadedImage(true)" disabled>
+              <i data-lucide="scan" style="width:14px;height:14px;"></i>
+              <span>Quét vùng đã khoanh</span>
+            </button>
+            <button type="button" class="capan-btn-outline" style="height:36px;font-size:12.5px;" onclick="scanUploadedImage(false)">
+              <span>Quét toàn ảnh</span>
+            </button>
+            <label class="capan-btn-outline" style="height:36px;font-size:12.5px;cursor:pointer;">
+              <i data-lucide="image" style="width:14px;height:14px;"></i>
+              <span>Chọn ảnh khác</span>
+              <input type="file" accept="image/*" hidden onchange="handleQrImageUpload(event)" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Upload Option Box -->
+        <div class="qr-upload-option" id="qr-upload-option-box">
+          <div>
+            <h3 style="margin:0;font-size:14.5px;font-weight:700;color:#0f172a;">Quét từ ảnh CCCD</h3>
+            <p style="margin:2px 0 0;font-size:12.5px;color:#64748b;">Chọn ảnh rõ mã QR trên máy tính hoặc điện thoại để khoanh vùng và quét.</p>
+          </div>
+          <label class="capan-btn-outline" style="cursor:pointer;flex-shrink:0;">
+            <i data-lucide="upload" style="width:15px;height:15px;color:#dc2626;"></i>
+            <span>Tải ảnh CCCD</span>
+            <input type="file" id="qr-file-input" accept="image/*" hidden onchange="handleQrImageUpload(event)" />
+          </label>
+        </div>
+
+        <!-- Quick Raw QR String & Preset Selector -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;">
+          <div style="font-size:12px;font-weight:700;color:#334155;margin-bottom:8px;">
+            Hoặc dán chuỗi mã QR CCCD / Chọn nhanh công dân mẫu để thử nghiệm:
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <input type="text" id="qr-raw-string-input" class="capan-input" style="height:34px;font-size:12px;font-family:monospace;" placeholder="079095012345|025123456|NGUYỄN VĂN AN|15081995|Nam|123 Nguyễn Huệ, Q1, TP.HCM|10052022" />
+            <button type="button" class="capan-btn-outline" style="height:34px;font-size:12px;flex-shrink:0;" onclick="parseRawQrInput()">Nhận diện</button>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <button type="button" class="sig-btn" onclick="applySampleQrPreset('landlord_sample')">👤 Mẫu Chủ nhà: Trần Văn Hùng (1975)</button>
+            <button type="button" class="sig-btn" onclick="applySampleQrPreset('tenant_sample_1')">👤 Mẫu Người thuê 1: Nguyễn Văn An (1995)</button>
+            <button type="button" class="sig-btn" onclick="applySampleQrPreset('tenant_sample_2')">👤 Mẫu Người thuê 2: Lê Thị Ngọc Mai (1998)</button>
+          </div>
+        </div>
+
+        <!-- Scanned Result Card -->
+        <section class="scanned-card" id="qr-scanned-result-card" hidden aria-live="polite">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <i data-lucide="check-circle-2" style="width:22px;height:22px;color:#16a34a;"></i>
+            <div>
+              <h3 style="margin:0;font-size:15px;font-weight:800;color:#14532d;">Thông tin CCCD đã quét</h3>
+              <p style="margin:1px 0 0;font-size:12px;color:#15803d;">Kiểm tra thông tin trước khi bấm Áp dụng dữ liệu.</p>
+            </div>
+          </div>
+          <dl class="scanned-grid">
+            <div>
+              <dt>Số định danh cá nhân (CCCD)</dt>
+              <dd id="scanned-res-id" style="color:#dc2626;font-family:monospace;"></dd>
+            </div>
+            <div>
+              <dt>Họ và tên</dt>
+              <dd id="scanned-res-name" style="text-transform:uppercase;"></dd>
+            </div>
+            <div>
+              <dt>Ngày sinh</dt>
+              <dd id="scanned-res-dob"></dd>
+            </div>
+            <div>
+              <dt>Giới tính</dt>
+              <dd id="scanned-res-gender"></dd>
+            </div>
+            <div class="full-width">
+              <dt>Địa chỉ thường trú</dt>
+              <dd id="scanned-res-address"></dd>
+            </div>
+          </dl>
+        </section>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="capan-modal-footer">
+        <button type="button" class="capan-btn-outline" onclick="closeQrScannerModal()">Hủy bỏ</button>
+        <button type="button" class="capan-btn-coral-large" style="height:38px;padding:0 18px;font-size:13.5px;" id="btn-apply-qr-data" onclick="confirmApplyScannedQr()" disabled>
+          <i data-lucide="check-circle" style="width:16px;height:16px;"></i>
+          <span>Áp dụng dữ liệu</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 2: THÊM / SỬA THÀNH VIÊN CÙNG THAY ĐỔI (MỤC 11 CT01)
+       ======================================================================= -->
+  <div class="capan-modal-backdrop no-print" id="member-modal" hidden>
+    <div class="capan-modal-box" style="max-width:520px;">
+      <div class="capan-modal-header">
+        <div class="qr-scanner-heading">
+          <span class="qr-scanner-title-icon">
+            <i data-lucide="users" style="width:22px;height:22px;"></i>
+          </span>
+          <div>
+            <div class="qr-scanner-title" id="member-modal-title">Thêm thành viên</div>
+            <p>Mục 11: Thành viên trong hộ gia đình cùng thay đổi cư trú</p>
+          </div>
+        </div>
+        <button type="button" class="capan-modal-close" onclick="closeMemberModal()">
+          <i data-lucide="x" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+
+      <form id="member-form" onsubmit="saveMemberForm(event)">
+        <div class="capan-modal-body">
+          <div>
+            <button type="button" class="capan-btn-outline" onclick="openQrScannerModal('member')">
+              <i data-lucide="qr-code" style="width:15px;height:15px;color:#dc2626;"></i>
+              <span>Quét thẻ CCCD thành viên</span>
+            </button>
+          </div>
+
+          <div class="ct01-address-input-field">
+            <label for="member-fullName">Họ, chữ đệm và tên <span style="color:#dc2626;">*</span></label>
+            <input type="text" id="member-fullName" class="capan-input" required maxlength="100" placeholder="VD: NGUYỄN MINH KHÔI" />
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="ct01-address-input-field">
+              <label for="member-birthDate">Ngày sinh <span style="color:#dc2626;">*</span></label>
+              <input type="date" id="member-birthDate" class="capan-input" required />
+            </div>
+            <div class="ct01-address-input-field">
+              <label for="member-gender">Giới tính <span style="color:#dc2626;">*</span></label>
+              <select id="member-gender" class="capan-input" required>
+                <option value="">-- Chọn --</option>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+                <option value="Khác">Khác</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="ct01-address-input-field">
+            <label for="member-citizenId">Số định danh cá nhân (12 số, trẻ em có thể để trống)</label>
+            <input type="text" id="member-citizenId" class="capan-input" maxlength="12" pattern="\d{12}" placeholder="Nhập 12 chữ số hoặc để trống" />
+          </div>
+
+          <div class="ct01-address-input-field">
+            <label for="member-relationship">Mối quan hệ với chủ hộ <span style="color:#dc2626;">*</span></label>
+            <input type="text" id="member-relationship" class="capan-input" required maxlength="40" placeholder="VD: Vợ, Con, Em ruột, Ở nhờ..." />
+          </div>
+        </div>
+
+        <div class="capan-modal-footer">
+          <button type="button" class="capan-btn-outline" onclick="closeMemberModal()">Hủy</button>
+          <button type="submit" class="capan-btn-coral-large" style="height:38px;padding:0 18px;font-size:13.5px;">Lưu thành viên</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 3: NHẬP THÔNG TIN ĐƠN CỚ MẤT (CT02) / XÁC NHẬN HẠNH KIỂM (CT03)
+       ======================================================================= -->
+  <div class="capan-modal-backdrop no-print" id="citizen-app-modal" hidden>
+    <div class="capan-modal-box" style="max-width:760px;">
+      <div class="capan-modal-header">
+        <div class="qr-scanner-heading">
+          <span class="qr-scanner-title-icon">
+            <i data-lucide="file-edit" style="width:22px;height:22px;"></i>
+          </span>
+          <div>
+            <div class="qr-scanner-title" id="citizen-app-modal-title">Nhập thông tin Đơn Cớ Mất</div>
+            <p>Điền các trường bên dưới để cập nhật trực tiếp vào mẫu đơn A4.</p>
+          </div>
+        </div>
+        <button type="button" class="capan-modal-close" onclick="closeCitizenAppModal()">
+          <i data-lucide="x" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+
+      <div class="capan-modal-body">
+        <div id="citizen-app-fields-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;">
+          <!-- Dynamic fields rendered by JS -->
+        </div>
+      </div>
+
+      <div class="capan-modal-footer">
+        <button type="button" class="capan-btn-outline" onclick="closeCitizenAppModal()">Đóng</button>
+        <button type="button" class="capan-btn-coral-large" style="height:38px;padding:0 18px;font-size:13.5px;" onclick="closeCitizenAppModal()">Hoàn tất</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Controller Script -->
+  <script src="js/ct01.js"></script>
+</body>
+</html>

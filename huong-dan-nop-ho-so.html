@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cẩm Nang Hướng Dẫn Nộp Hồ Sơ Dịch Vụ Công Trực Tuyến | DOANTM</title>
+  <meta name="description" content="Hướng dẫn chi tiết từng bước nộp hồ sơ Đăng ký Tạm trú, Thường trú, Đơn cớ mất, Giấy xác nhận hạnh kiểm trên Cổng Dịch vụ công Bộ Công An và VNeID bằng biểu mẫu chuẩn DOANTM." />
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              red: '#DC2626',
+              'red-hover': '#B91C1C',
+              'red-glow': 'rgba(220, 38, 38, 0.45)',
+              dark: '#0A0A0A',
+              surface: '#141414',
+              gray: '#1F2937'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom CSS files -->
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/ct01.css" />
+
+  <style>
+    /* Specific styles for Guide Page */
+    .guide-page-bg {
+      background:
+        radial-gradient(circle at 4% 15%, rgba(251, 146, 60, 0.09) 0%, rgba(253, 224, 71, 0.05) 28%, transparent 55%),
+        radial-gradient(circle at 96% 15%, rgba(14, 165, 233, 0.09) 0%, rgba(16, 185, 129, 0.07) 30%, transparent 58%),
+        linear-gradient(180deg, #ffffff 0%, #f8fafc 40%, #ffffff 100%);
+      min-height: 100vh;
+      color: #0f172a;
+    }
+
+    .guide-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.08) 0%, rgba(14, 165, 233, 0.08) 100%);
+      border: 1px solid rgba(220, 38, 38, 0.18);
+      color: #dc2626;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.08);
+    }
+
+    .guide-filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 16px;
+      border-radius: 9999px;
+      border: 1.5px solid #e2e8f0;
+      background: #ffffff;
+      color: #475569;
+      font-size: 13.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .guide-filter-btn:hover {
+      border-color: #38bdf8;
+      color: #0284c7;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.12);
+    }
+
+    .guide-filter-btn.active {
+      background: linear-gradient(135deg, #0284c7 0%, #0d9488 50%, #10b981 100%);
+      border-color: transparent;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);
+    }
+
+    .guide-article-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 10px 30px -6px rgba(15, 23, 42, 0.05), 0 2px 8px -2px rgba(15, 23, 42, 0.03);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s ease;
+    }
+
+    .guide-article-card:hover {
+      box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.08);
+      border-color: #cbd5e1;
+    }
+
+    .guide-card-accent-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .accent-gradient-blue {
+      background: linear-gradient(90deg, #0284c7 0%, #06b6d4 100%);
+    }
+
+    .accent-gradient-emerald {
+      background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    }
+
+    .accent-gradient-amber {
+      background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .accent-gradient-purple {
+      background: linear-gradient(90deg, #8b5cf6 0%, #6366f1 100%);
+    }
+
+    .accent-gradient-red {
+      background: linear-gradient(90deg, #dc2626 0%, #e11d48 100%);
+    }
+
+    .guide-step-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 18px 20px;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .guide-step-card:hover {
+      background: #ffffff;
+      border-color: #94a3b8;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .guide-step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+    }
+
+    .guide-step-number.red {
+      background: linear-gradient(135deg, #dc2626 0%, #e11d48 100%);
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
+    }
+
+    .guide-step-number.amber {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+    }
+
+    .guide-step-number.emerald {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+    }
+
+    .guide-callout {
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 13.5px;
+      line-height: 1.55;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .callout-info {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      color: #0369a1;
+    }
+
+    .callout-warn {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #b45309;
+    }
+
+    .callout-success {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #047857;
+    }
+
+    .callout-danger {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+    }
+
+    .guide-checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px dashed #f1f5f9;
+      font-size: 14px;
+      color: #334155;
+    }
+
+    .guide-checklist-item:last-child {
+      border-bottom: none;
+    }
+
+    .guide-check-icon {
+      color: #10b981;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .guide-search-input {
+      width: 100%;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 9999px;
+      padding: 14px 22px 14px 48px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #0f172a;
+      outline: none;
+      box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.06);
+      transition: all 0.2s ease;
+    }
+
+    .guide-search-input:focus {
+      border-color: #0284c7;
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+    }
+  </style>
+</head>
+
+<body class="guide-page-bg text-slate-800 antialiased selection:bg-red-600 selection:text-white">
+
+  <!-- =======================================================================
+       1. GLOBAL PLATFORM HEADER (CONSISTENT WITH DOANTM DVC)
+       ======================================================================= -->
+  <header class="capan-header no-print">
+    <div class="capan-header-container">
+
+      <!-- Left Branding -->
+      <a href="index.html" class="capan-brand" aria-label="DOANTM Dịch Vụ Công">
+        <div class="capan-logo-box">
+          <i data-lucide="shield-check" class="capan-logo-icon"></i>
+        </div>
+        <div class="capan-brand-text">
+          <span class="capan-brand-sub">NỀN TẢNG CÔNG DÂN SỐ</span>
+          <h1 class="capan-brand-title">
+            DOAN<span class="brand-tm">TM</span>
+            <span class="capan-brand-badge">HƯỚNG DẪN DVC</span>
+          </h1>
+        </div>
+      </a>
+
+      <!-- Center Navigation Items -->
+      <nav class="capan-nav" aria-label="Điều hướng">
+        <a href="ct01.html" class="capan-nav-item">
+          <i data-lucide="file-spreadsheet" class="capan-nav-icon"></i>
+          <span>KÊ KHAI CT01</span>
+        </a>
+        <a href="huong-dan-nop-ho-so.html" class="capan-nav-item active">
+          <i data-lucide="book-open" class="capan-nav-icon"></i>
+          <span>HƯỚNG DẪN NỘP HỒ SƠ</span>
+        </a>
+        <a href="index.html" class="capan-nav-item">
+          <i data-lucide="home" class="capan-nav-icon"></i>
+          <span>TRANG CHỦ</span>
+        </a>
+        <a href="tours.html" class="capan-nav-item">
+          <i data-lucide="compass" class="capan-nav-icon"></i>
+          <span>TOURS</span>
+        </a>
+      </nav>
+
+      <!-- Right Header Actions -->
+      <div class="capan-header-actions">
+        <a href="ct01.html" class="capan-btn-coral-large" style="height:38px;padding:0 16px;font-size:13.5px;text-decoration:none;">
+          <i data-lucide="edit-3" style="width:15px;height:15px;"></i>
+          <span>Kê khai hồ sơ ngay</span>
+        </a>
+      </div>
+
+      <!-- Mobile Hamburger Button -->
+      <button type="button" class="capan-hamburger-btn" id="mobile-drawer-toggle" aria-label="Mở menu">
+        <i data-lucide="menu" style="width:20px;height:20px;color:#dc2626;"></i>
+      </button>
+
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="capan-mobile-drawer" id="mobile-drawer">
+      <nav class="capan-mobile-drawer-nav">
+        <a href="ct01.html" class="capan-drawer-item">
+          <i data-lucide="file-spreadsheet" style="width:18px;height:18px;"></i>
+          <span>Kê khai biểu mẫu CT01</span>
+        </a>
+        <a href="huong-dan-nop-ho-so.html" class="capan-drawer-item active">
+          <i data-lucide="book-open" style="width:18px;height:18px;"></i>
+          <span>Cẩm nang Hướng dẫn nộp hồ sơ</span>
+        </a>
+        <a href="index.html" class="capan-drawer-item">
+          <i data-lucide="home" style="width:18px;height:18px;"></i>
+          <span>Về Trang chủ DOANTM</span>
+        </a>
+        <a href="tours.html" class="capan-drawer-item">
+          <i data-lucide="compass" style="width:18px;height:18px;"></i>
+          <span>Khám phá Tour du lịch</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- =======================================================================
+       2. HERO BANNER & SEARCH BAR
+       ======================================================================= -->
+  <section class="max-w-6xl mx-auto px-4 pt-10 pb-6 text-center">
+    <!-- Breadcrumb -->
+    <div class="flex items-center justify-center gap-2 text-xs font-semibold text-slate-500 mb-4">
+      <a href="index.html" class="hover:text-red-600 transition-colors">Trang chủ</a>
+      <i data-lucide="chevron-right" style="width:13px;height:13px;"></i>
+      <a href="ct01.html" class="hover:text-red-600 transition-colors">Dịch vụ công CT01</a>
+      <i data-lucide="chevron-right" style="width:13px;height:13px;"></i>
+      <span class="text-slate-800">Hướng dẫn nộp hồ sơ</span>
+    </div>
+
+    <!-- Badge -->
+    <div class="guide-hero-badge mb-4">
+      <i data-lucide="shield-check" style="width:14px;height:14px;"></i>
+      CẨM NANG HƯỚNG DẪN DỊCH VỤ CÔNG QUỐC GIA & VNeID
+    </div>
+
+    <!-- Headline -->
+    <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight max-w-4xl mx-auto mb-4">
+      Hướng dẫn nộp hồ sơ Dịch vụ công <br class="hidden sm:inline" />
+      <span class="bg-clip-text text-transparent bg-gradient-to-r from-red-600 via-rose-600 to-sky-600">
+        Trực Tuyến Chuẩn Xác 100%
+      </span>
+    </h1>
+
+    <p class="text-base md:text-lg text-slate-600 max-w-3xl mx-auto mb-8 font-medium leading-relaxed">
+      Tổng hợp các bài viết hướng dẫn từng bước chi tiết kèm lưu ý thực tế khi nộp hồ sơ Đăng ký Tạm trú, Thường trú, Đơn cớ mất, Giấy xác nhận hạnh kiểm trên Cổng DVC Bộ Công An và VNeID bằng file xuất từ <strong>DOANTM</strong>.
+    </p>
+
+    <!-- Interactive Search Bar -->
+    <div class="max-w-2xl mx-auto relative mb-8">
+      <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" style="width:20px;height:20px;"></i>
+      <input
+        type="text"
+        id="guide-search-box"
+        class="guide-search-input"
+        placeholder="Tìm kiếm thủ tục (ví dụ: tạm trú, thường trú, cớ mất, hạnh kiểm, nộp online...)"
+        oninput="handleGuideSearch(this.value)"
+      />
+      <button
+        type="button"
+        id="guide-clear-search"
+        class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
+        style="display:none;"
+        onclick="clearGuideSearch()"
+      >
+        <i data-lucide="x" style="width:18px;height:18px;"></i>
+      </button>
+    </div>
+
+    <!-- Category Filter Pills -->
+    <div class="flex items-center justify-center gap-2.5 flex-wrap">
+      <button type="button" class="guide-filter-btn active" data-category="all" onclick="filterGuideCategory('all')">
+        <i data-lucide="layers" style="width:15px;height:15px;"></i>
+        <span>Tất cả hướng dẫn</span>
+      </button>
+      <button type="button" class="guide-filter-btn" data-category="tam-tru" onclick="filterGuideCategory('tam-tru')">
+        <i data-lucide="home" style="width:15px;height:15px;"></i>
+        <span>Đăng ký Tạm trú</span>
+      </button>
+      <button type="button" class="guide-filter-btn" data-category="thuong-tru" onclick="filterGuideCategory('thuong-tru')">
+        <i data-lucide="building-2" style="width:15px;height:15px;"></i>
+        <span>Đăng ký Thường trú</span>
+      </button>
+      <button type="button" class="guide-filter-btn" data-category="co-mat" onclick="filterGuideCategory('co-mat')">
+        <i data-lucide="file-question" style="width:15px;height:15px;"></i>
+        <span>Đơn cớ mất (CT02)</span>
+      </button>
+      <button type="button" class="guide-filter-btn" data-category="hanh-kiem" onclick="filterGuideCategory('hanh-kiem')">
+        <i data-lucide="file-check" style="width:15px;height:15px;"></i>
+        <span>Xác nhận hạnh kiểm</span>
+      </button>
+      <button type="button" class="guide-filter-btn" data-category="so-luong" onclick="filterGuideCategory('so-luong')">
+        <i data-lucide="users" style="width:15px;height:15px;"></i>
+        <span>Tạm trú số lượng lớn ★</span>
+      </button>
+      <button type="button" class="guide-filter-btn" data-category="luu-y" onclick="filterGuideCategory('luu-y')">
+        <i data-lucide="alert-triangle" style="width:15px;height:15px;"></i>
+        <span>Lưu ý & Lỗi thường gặp</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- =======================================================================
+       3. MAIN GUIDE ARTICLES CONTAINER
+       ======================================================================= -->
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-12" id="guides-container">
+
+    <!-- -------------------------------------------------------------------
+         ARTICLE 1: ĐĂNG KÝ TẠM TRÚ TRỰC TUYẾN (CT01 + HỢP ĐỒNG CƯ TRÚ)
+         ------------------------------------------------------------------- -->
+    <article class="guide-article-card" id="article-tam-tru" data-category="tam-tru">
+      <div class="guide-card-accent-bar accent-gradient-blue"></div>
+
+      <!-- Article Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-sky-50 text-sky-700 border border-sky-200">
+              MỤC 1 • PHỔ BIẾN NHẤT
+            </span>
+            <span class="text-xs text-slate-500 font-semibold flex items-center gap-1">
+              <i data-lucide="clock" style="width:13px;height:13px;"></i> Thời gian giải quyết: 03 ngày làm việc
+            </span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Hướng dẫn Đăng ký Tạm trú trực tuyến trên Cổng DVC Bộ Công An / VNeID
+          </h2>
+          <p class="text-slate-600 text-sm md:text-base mt-1">
+            Áp dụng cho người dân đi thuê nhà, trọ, ở nhờ muốn đăng ký tạm trú hợp pháp bằng file <strong>Mẫu CT01 và Hợp đồng cư trú</strong> xuất từ DOANTM.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <a
+            href="ct01.html"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold text-sm shadow-md shadow-red-600/25 hover:from-red-700 hover:to-rose-700 transition-all hover:-translate-y-0.5"
+          >
+            <i data-lucide="file-plus" style="width:16px;height:16px;"></i>
+            <span>Điền mẫu CT01 ngay</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Article Body -->
+      <div class="mt-6 space-y-6">
+
+        <!-- Info Callout -->
+        <div class="guide-callout callout-info">
+          <i data-lucide="info" style="width:20px;height:20px;flex-shrink:0;color:#0284c7;"></i>
+          <div>
+            <strong class="font-bold text-sky-900">Chuẩn bị trước khi nộp:</strong> Bạn cần có tài khoản Định danh điện tử VNeID Mức 2 (đã kích hoạt) và bộ hồ sơ đã hoàn thiện từ DOANTM gồm: Tờ khai CT01 (Trang 1) và Hợp đồng cư trú có chữ ký 2 bên (Trang 2).
+          </div>
+        </div>
+
+        <!-- Steps Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <!-- Step 1 -->
+          <div class="guide-step-card">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="guide-step-number">1</div>
+              <h3 class="font-bold text-slate-900 text-base">Chuẩn bị hồ sơ từ DOANTM</h3>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed mb-3">
+              Truy cập trang <strong>Kê khai CT01</strong> của DOANTM, quét mã QR CCCD của bạn và chủ nhà để tự động điền đầy đủ dữ liệu. Sử dụng bảng vẽ chữ ký trực tiếp trên màn hình cho Bên A và Bên B.
+            </p>
+            <ul class="text-xs text-slate-500 space-y-1">
+              <li class="flex items-center gap-1.5"><i data-lucide="check" style="width:13px;height:13px;color:#10b981;"></i> Bấm "Tải file PDF A4" hoặc "Tải ảnh hồ sơ" về máy.</li>
+              <li class="flex items-center gap-1.5"><i data-lucide="check" style="width:13px;height:13px;color:#10b981;"></i> Hồ sơ bao gồm: Tờ khai CT01 và Hợp đồng cư trú hợp pháp.</li>
+            </ul>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="guide-step-card">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="guide-step-number">2</div>
+              <h3 class="font-bold text-slate-900 text-base">Đăng nhập Cổng Dịch vụ công</h3>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed mb-3">
+              Mở trình duyệt truy cập: <a href="https://dichvucong.bocongan.gov.vn" target="_blank" rel="noopener noreferrer" class="text-sky-600 font-semibold underline">dichvucong.bocongan.gov.vn</a> hoặc mở ứng dụng <strong>VNeID</strong> trên điện thoại.
+            </p>
+            <ul class="text-xs text-slate-500 space-y-1">
+              <li class="flex items-center gap-1.5"><i data-lucide="check" style="width:13px;height:13px;color:#10b981;"></i> Chọn đăng nhập bằng "Tài khoản Định danh điện tử VNeID".</li>
+              <li class="flex items-center gap-1.5"><i data-lucide="check" style="width:13px;height:13px;color:#10b981;"></i> Xác thực bằng mã OTP gửi về điện thoại hoặc vân tay/FaceID.</li>
+            </ul>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="guide-step-card">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="guide-step-number">3</div>
+              <h3 class="font-bold text-slate-900 text-base">Tìm thủ tục & Khai báo cơ quan</h3>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed mb-3">
+              Tại ô tìm kiếm, gõ từ khóa <strong>"Đăng ký tạm trú"</strong> và chọn thủ tục cấp Xã/Phường.
+            </p>
+            <ul class="text-xs text-slate-500 space-y-1">
+              <li class="flex items-center gap-1.5"><i data-lucide="check" style="width:13px;height:13px;color:#10b981;"></i> Chọn Cơ quan thực hiện: Tỉnh/TP &rarr; Quận/Huyện &rarr; Phường/Xã nơi bạn dự kiến tạm trú.</li>
+              <li class="flex items-center gap-1.5"><i data-lucide="check" style="width:13px;height:13px;color:#10b981;"></i> Trường hợp: Chọn <em>"Nhân khẩu từ ngoài tỉnh/huyện đến thuê, mượn, ở nhờ"</em>.</li>
+            </ul>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="guide-step-card">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="guide-step-number">4</div>
+              <h3 class="font-bold text-slate-900 text-base">Đính kèm tệp & Gửi hồ sơ</h3>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed mb-3">
+              Tải lên các file hồ sơ thành phần theo đúng ô yêu cầu của Cổng DVC:
+            </p>
+            <ul class="text-xs text-slate-600 space-y-1 font-medium">
+              <li class="flex items-start gap-1.5"><i data-lucide="paperclip" style="width:13px;height:13px;color:#0284c7;margin-top:2px;"></i> <span><strong>Mục Tờ khai CT01:</strong> Đính kèm Trang 1 xuất từ DOANTM.</span></li>
+              <li class="flex items-start gap-1.5"><i data-lucide="paperclip" style="width:13px;height:13px;color:#0284c7;margin-top:2px;"></i> <span><strong>Mục Giấy tờ chứng minh chỗ ở hợp pháp:</strong> Đính kèm Hợp đồng cư trú (Trang 2) + Sổ hồng nhà chủ trọ (nếu có).</span></li>
+              <li class="flex items-start gap-1.5"><i data-lucide="paperclip" style="width:13px;height:13px;color:#0284c7;margin-top:2px;"></i> <span><strong>Mục Giấy tờ tùy thân:</strong> Đính kèm ảnh 2 mặt CCCD của bạn.</span></li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- Fees & Output Notice -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs md:text-sm text-slate-700">
+          <div class="flex items-center gap-2">
+            <i data-lucide="credit-card" style="width:18px;height:18px;color:#059669;"></i>
+            <span><strong>Lệ phí đăng ký:</strong> 15.000 VNĐ (nộp trực tuyến qua VietQR, VNPT Money).</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i data-lucide="badge-check" style="width:18px;height:18px;color:#0284c7;"></i>
+            <span><strong>Kết quả:</strong> Nhận Thông báo CT08 điện tử và tự động cập nhật trên VNeID.</span>
+          </div>
+        </div>
+
+      </div>
+    </article>
+
+    <!-- -------------------------------------------------------------------
+         ARTICLE 2: ĐĂNG KÝ THƯỜNG TRÚ TRỰC TUYẾN
+         ------------------------------------------------------------------- -->
+    <article class="guide-article-card" id="article-thuong-tru" data-category="thuong-tru">
+      <div class="guide-card-accent-bar accent-gradient-emerald"></div>
+
+      <!-- Article Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-emerald-50 text-emerald-700 border border-emerald-200">
+              MỤC 2 • THỦ TỤC THƯỜNG TRÚ
+            </span>
+            <span class="text-xs text-slate-500 font-semibold flex items-center gap-1">
+              <i data-lucide="clock" style="width:13px;height:13px;"></i> Thời gian giải quyết: 07 ngày làm việc
+            </span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Hướng dẫn Đăng ký Thường trú trực tuyến
+          </h2>
+          <p class="text-slate-600 text-sm md:text-base mt-1">
+            Áp dụng khi mua nhà mới, chuyển hộ khẩu về ở cùng người thân, bố mẹ, vợ chồng hoặc chuyển đến chỗ ở hợp pháp mới.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <a
+            href="ct01.html"
+            onclick="localStorage.setItem('openFormTab', 'ct04')"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-sm shadow hover:bg-slate-800 transition-all hover:-translate-y-0.5"
+          >
+            <i data-lucide="file-text" style="width:16px;height:16px;"></i>
+            <span>Mẫu Đăng ký Thường Trú</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Article Body -->
+      <div class="mt-6 space-y-6">
+
+        <!-- Conditions Checklist -->
+        <div class="bg-emerald-50/60 border border-emerald-200 rounded-xl p-5">
+          <h3 class="font-bold text-emerald-950 text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i data-lucide="check-circle-2" style="width:16px;height:16px;color:#10b981;"></i>
+            Điều kiện đăng ký thường trú theo Luật Cư Trú:
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-emerald-900">
+            <div class="flex items-start gap-2">
+              <i data-lucide="check" class="guide-check-icon"></i>
+              <span>Có chỗ ở hợp pháp thuộc quyền sở hữu của mình (Sổ đỏ, Sổ hồng, Hợp đồng mua bán căn hộ).</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <i data-lucide="check" class="guide-check-icon"></i>
+              <span>Được chủ hộ và chủ sở hữu chỗ ở hợp pháp đồng ý (trường hợp về ở cùng vợ, chồng, cha mẹ, con).</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <i data-lucide="check" class="guide-check-icon"></i>
+              <span>Nhà thuê, mượn, ở nhờ: Được chủ nhà đồng ý bằng văn bản và diện tích nhà đạt chuẩn quy định của HĐND cấp tỉnh.</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <i data-lucide="check" class="guide-check-icon"></i>
+              <span>Tờ khai CT01 có đầy đủ chữ ký của Người kê khai, Chủ hộ và Chủ sở hữu chỗ ở hợp pháp.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step-by-Step -->
+        <div class="space-y-4">
+          <div class="guide-step-card">
+            <div class="flex items-center gap-3 mb-1.5">
+              <div class="guide-step-number emerald">1</div>
+              <h4 class="font-bold text-slate-900 text-base">Tạo Tờ khai CT01 Đăng ký Thường trú</h4>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed">
+              Tại DOANTM, bấm chọn thẻ <strong>"Điền hồ sơ Đăng kí Thường Trú"</strong>. Hệ thống sẽ tự động cấu hình nội dung đề nghị là "Đăng ký thường trú" và thiết lập mối quan hệ với chủ hộ chính xác.
+            </p>
+          </div>
+
+          <div class="guide-step-card">
+            <div class="flex items-center gap-3 mb-1.5">
+              <div class="guide-step-number emerald">2</div>
+              <h4 class="font-bold text-slate-900 text-base">Chuẩn bị tệp giấy tờ chứng minh</h4>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed">
+              Scan hoặc chụp ảnh rõ nét: Giấy chứng nhận quyền sử dụng đất / quyền sở hữu nhà ở; Giấy tờ chứng minh quan hệ nhân thân (Giấy đăng ký kết hôn, Giấy khai sinh) nếu về chung hộ gia đình.
+            </p>
+          </div>
+
+          <div class="guide-step-card">
+            <div class="flex items-center gap-3 mb-1.5">
+              <div class="guide-step-number emerald">3</div>
+              <h4 class="font-bold text-slate-900 text-base">Nộp hồ sơ trực tuyến</h4>
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed">
+              Truy cập Cổng DVC Bộ Công An &rarr; Tìm thủ tục <strong>"Đăng ký thường trú"</strong> &rarr; Tải toàn bộ tệp đính kèm lên &rarr; Chờ tiếp nhận và thẩm định trong 07 ngày làm việc.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </article>
+
+    <!-- -------------------------------------------------------------------
+         ARTICLE 3: HƯỚNG DẪN ĐIỀN & NỘP ĐƠN CỚ MẤT (CT02)
+         ------------------------------------------------------------------- -->
+    <article class="guide-article-card" id="article-co-mat" data-category="co-mat">
+      <div class="guide-card-accent-bar accent-gradient-amber"></div>
+
+      <!-- Article Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-amber-50 text-amber-700 border border-amber-200">
+              MẪU CT02 • TRÌNH BÁO MẤT TÀI SẢN
+            </span>
+            <span class="text-xs text-slate-500 font-semibold flex items-center gap-1">
+              <i data-lucide="clock" style="width:13px;height:13px;"></i> Tiếp nhận & xác nhận: Trong ngày
+            </span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Hướng dẫn Điền & Nộp Đơn Cớ Mất Giấy Tờ, Tài Sản
+          </h2>
+          <p class="text-slate-600 text-sm md:text-base mt-1">
+            Bảo vệ công dân khi bị mất CCCD, Giấy phép lái xe, Cà vẹt xe, Thẻ ngân hàng, Điện thoại, tránh bị kẻ xấu lợi dụng thông tin.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <a
+            href="ct01.html"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 text-white font-bold text-sm shadow hover:bg-amber-700 transition-all hover:-translate-y-0.5"
+          >
+            <i data-lucide="edit" style="width:16px;height:16px;"></i>
+            <span>Điền Đơn Cớ Mất</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Article Body -->
+      <div class="mt-6 space-y-6">
+
+        <div class="guide-callout callout-warn">
+          <i data-lucide="alert-circle" style="width:20px;height:20px;flex-shrink:0;color:#d97706;"></i>
+          <div>
+            <strong class="font-bold text-amber-900">Tại sao phải làm đơn cớ mất ngay khi thất lạc giấy tờ?</strong>
+            <p class="text-xs md:text-sm mt-1 text-amber-800">
+              Khi làm đơn cớ mất và được Công an xác nhận, bạn có bằng chứng ngoại phạm pháp lý nếu kẻ gian dùng CCCD của bạn đi vay tiền app online, mở tài khoản rửa tiền, hoặc lừa đảo. Ngoài ra, giấy cớ mất là căn cứ để xin cấp lại bằng lái xe, thẻ ngân hàng mà không bị xử phạt chậm trễ.
+            </p>
+          </div>
+        </div>
+
+        <!-- 3 Simple Steps -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="guide-step-card">
+            <div class="flex items-center gap-2.5 mb-2">
+              <div class="guide-step-number amber">1</div>
+              <h4 class="font-bold text-slate-900 text-sm md:text-base">Điền đơn online</h4>
+            </div>
+            <p class="text-xs md:text-sm text-slate-600">
+              Trên DOANTM chọn thẻ <strong>"Điền Đơn Cớ Mất"</strong>. Nhập họ tên, CCCD, địa chỉ, thời gian và địa điểm bị mất giấy tờ, tài sản.
+            </p>
+          </div>
+
+          <div class="guide-step-card">
+            <div class="flex items-center gap-2.5 mb-2">
+              <div class="guide-step-number amber">2</div>
+              <h4 class="font-bold text-slate-900 text-sm md:text-base">Xuất & In bản A4</h4>
+            </div>
+            <p class="text-xs md:text-sm text-slate-600">
+              Bấm nút "Tải file PDF" hoặc in trực tiếp 02 bản A4 ra giấy. Ký và ghi rõ họ tên ở phần Người làm đơn.
+            </p>
+          </div>
+
+          <div class="guide-step-card">
+            <div class="flex items-center gap-2.5 mb-2">
+              <div class="guide-step-number amber">3</div>
+              <h4 class="font-bold text-slate-900 text-sm md:text-base">Xác nhận tại Công An</h4>
+            </div>
+            <p class="text-xs md:text-sm text-slate-600">
+              Mang 02 bản đơn đến Trực ban Công an Phường/Xã nơi xảy ra sự việc hoặc nơi cư trú. Cán bộ thụ lý ghi sổ trực và đóng dấu xác nhận.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </article>
+
+    <!-- -------------------------------------------------------------------
+         ARTICLE 4: HƯỚNG DẪN XÁC NHẬN HẠNH KIỂM (MẪU CT03)
+         ------------------------------------------------------------------- -->
+    <article class="guide-article-card" id="article-hanh-kiem" data-category="hanh-kiem">
+      <div class="guide-card-accent-bar accent-gradient-purple"></div>
+
+      <!-- Article Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-purple-50 text-purple-700 border border-purple-200">
+              MẪU CT03 • HỒ SƠ XIN VIỆC & LÝ LỊCH
+            </span>
+            <span class="text-xs text-slate-500 font-semibold flex items-center gap-1">
+              <i data-lucide="clock" style="width:13px;height:13px;"></i> Thời gian xác nhận: 1 - 2 ngày làm việc
+            </span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Hướng dẫn Xin Giấy Xác Nhận Hạnh Kiểm / Lý Lịch Tư Pháp
+          </h2>
+          <p class="text-slate-600 text-sm md:text-base mt-1">
+            Phục vụ bổ sung hồ sơ xin việc làm, đăng ký tài xế công nghệ (Grab, Be, ShopeeFood), du học, xuất khẩu lao động.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <a
+            href="ct01.html"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-sm shadow hover:bg-purple-700 transition-all hover:-translate-y-0.5"
+          >
+            <i data-lucide="file-check-2" style="width:16px;height:16px;"></i>
+            <span>Điền Xác Nhận Hạnh Kiểm</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Article Body -->
+      <div class="mt-6 space-y-6">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="guide-step-card">
+            <h4 class="font-bold text-slate-900 text-base mb-2 flex items-center gap-2">
+              <i data-lucide="briefcase" style="width:18px;height:18px;color:#8b5cf6;"></i>
+              Mục đích xin xác nhận hạnh kiểm:
+            </h4>
+            <ul class="text-xs md:text-sm text-slate-600 space-y-1.5">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="guide-check-icon"></i> Đi làm công ty, nhà máy, cơ quan, doanh nghiệp.</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="guide-check-icon"></i> Đăng ký đối tác tài xế công nghệ Grab, Be, Gojek.</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="guide-check-icon"></i> Nộp hồ sơ xét duyệt lý lịch kết nạp Đoàn, Đảng.</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="guide-check-icon"></i> Thủ tục du học, xuất khẩu lao động.</li>
+            </ul>
+          </div>
+
+          <div class="guide-step-card">
+            <h4 class="font-bold text-slate-900 text-base mb-2 flex items-center gap-2">
+              <i data-lucide="map-pin" style="width:18px;height:18px;color:#8b5cf6;"></i>
+              Địa điểm nộp & thẩm định:
+            </h4>
+            <p class="text-xs md:text-sm text-slate-600 leading-relaxed mb-2">
+              Công an Phường/Xã nơi công dân đăng ký <strong>thường trú</strong> (hoặc nơi <strong>tạm trú dài hạn</strong>).
+            </p>
+            <p class="text-xs text-slate-500">
+              * Mẹo: Nếu cần Phiếu Lý lịch tư pháp số 1 hoặc số 2 chính thức, bạn có thể đăng ký trực tiếp trên ứng dụng <strong>VNeID</strong> với thời gian nhận kết quả điện tử rất nhanh.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </article>
+
+    <!-- -------------------------------------------------------------------
+         ARTICLE 5: KÊ KHAI TẠM TRÚ THEO SỐ LƯỢNG LỚN (CHỦ TRỌ & DOANH NGHIỆP)
+         ------------------------------------------------------------------- -->
+    <article class="guide-article-card" id="article-so-luong" data-category="so-luong">
+      <div class="guide-card-accent-bar accent-gradient-amber" style="background: linear-gradient(90deg, #f59e0b 0%, #ef4444 100%);"></div>
+
+      <!-- Article Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
+              <i data-lucide="star" style="width:13px;height:13px;fill:#d97706;color:#d97706;"></i>
+              TÍNH NĂNG NỔI BẬT • CHUYÊN DÙNG CHO CHỦ NHÀ TRỌ & DOANH NGHIỆP
+            </span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Hướng dẫn Khai Báo Hồ Sơ Tạm Trú Theo Số Lượng Lớn
+          </h2>
+          <p class="text-slate-600 text-sm md:text-base mt-1">
+            Giải pháp số hóa giúp chủ trọ, quản lý ký túc xá, nhà thầu quản lý hàng chục đến hàng trăm nhân khẩu tạm trú nhanh chóng, tiết kiệm 95% thời gian.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <a
+            href="ct01.html"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-red-600 text-white font-bold text-sm shadow hover:from-amber-600 hover:to-red-700 transition-all hover:-translate-y-0.5"
+          >
+            <i data-lucide="star" style="width:16px;height:16px;fill:#fff;"></i>
+            <span>Xem công cụ số lượng lớn</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Article Body -->
+      <div class="mt-6 space-y-6">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-5 rounded-2xl bg-amber-50/50 border border-amber-200">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mb-3">
+              <i data-lucide="qr-code" style="width:20px;height:20px;"></i>
+            </div>
+            <h4 class="font-bold text-slate-900 text-base mb-1">Quét QR CCCD hàng loạt</h4>
+            <p class="text-slate-600 text-xs md:text-sm">
+              Chỉ cần dùng camera điện thoại quét liên tục mã QR trên thẻ CCCD của từng khách trọ, hệ thống tự động bóc tách số CCCD, họ tên, ngày sinh, quê quán.
+            </p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-sky-50/50 border border-sky-200">
+            <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center mb-3">
+              <i data-lucide="file-spreadsheet" style="width:20px;height:20px;"></i>
+            </div>
+            <h4 class="font-bold text-slate-900 text-base mb-1">Xuất danh sách chuẩn ASM</h4>
+            <p class="text-slate-600 text-xs md:text-sm">
+              Tự động kết xuất file danh sách khách cư trú theo định dạng tương thích với phần mềm Quản lý lưu trú ASM của Cục C06 Bộ Công An.
+            </p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-emerald-50/50 border border-emerald-200">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-3">
+              <i data-lucide="shield-alert" style="width:20px;height:20px;"></i>
+            </div>
+            <h4 class="font-bold text-slate-900 text-base mb-1">Tránh bị xử phạt vi phạm</h4>
+            <p class="text-slate-600 text-xs md:text-sm">
+              Theo Nghị định 144/2021/NĐ-CP, cơ sở lưu trú không khai báo tạm trú cho khách trong 24h có thể bị phạt từ 1.000.000đ đến 4.000.000đ.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </article>
+
+    <!-- -------------------------------------------------------------------
+         ARTICLE 6: CÁC LƯU Ý VÀNG & 4 LỖI THƯỜNG BỊ TỪ CHỐI HỒ SƠ
+         ------------------------------------------------------------------- -->
+    <article class="guide-article-card" id="article-luu-y" data-category="luu-y">
+      <div class="guide-card-accent-bar accent-gradient-red"></div>
+
+      <!-- Article Header -->
+      <div class="pb-6 border-b border-slate-100">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-red-50 text-red-700 border border-red-200">
+            KINH NGHIỆM THỰC TẾ
+          </span>
+          <span class="text-xs text-slate-500 font-semibold">Cập nhật theo quy định Cư trú 2026</span>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Các Lưu Ý Vàng &amp; 4 Lỗi Thường Khiến Hồ Sơ Bị Từ Chối
+        </h2>
+        <p class="text-slate-600 text-sm md:text-base mt-1">
+          Nắm rõ 4 lỗi cốt tử này sẽ giúp hồ sơ của bạn được Cảnh sát khu vực phê duyệt ngay từ lần nộp đầu tiên mà không bị trả lại bổ sung.
+        </p>
+      </div>
+
+      <!-- Mistakes Grid -->
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- Error 1 -->
+        <div class="p-5 rounded-2xl bg-red-50/60 border border-red-200">
+          <div class="flex items-center gap-2 text-red-700 font-bold text-base mb-2">
+            <i data-lucide="x-circle" style="width:20px;height:20px;color:#dc2626;"></i>
+            <span>Lỗi 1: Thiếu chữ ký của Chủ hộ / Chủ nhà</span>
+          </div>
+          <p class="text-slate-700 text-xs md:text-sm leading-relaxed mb-3">
+            <strong>Nguyên nhân:</strong> Người thuê chỉ ký tên ở phần "Người kê khai" mà không có chữ ký của Chủ nhà tại phần "Ý kiến của chủ hộ, chủ sở hữu chỗ ở hợp pháp" trên Tờ khai CT01 và Hợp đồng cư trú.
+          </p>
+          <div class="p-3 rounded-xl bg-white border border-red-200 text-xs text-slate-800 flex items-start gap-2">
+            <i data-lucide="check-circle" style="width:16px;height:16px;color:#10b981;flex-shrink:0;"></i>
+            <span><strong>Cách khắc phục:</strong> Trên nền tảng DOANTM, dùng 2 ô chữ ký tay riêng biệt cho Bên A và Bên B để ký trực tiếp trước khi xuất PDF.</span>
+          </div>
+        </div>
+
+        <!-- Error 2 -->
+        <div class="p-5 rounded-2xl bg-amber-50/60 border border-amber-200">
+          <div class="flex items-center gap-2 text-amber-800 font-bold text-base mb-2">
+            <i data-lucide="x-circle" style="width:20px;height:20px;color:#d97706;"></i>
+            <span>Lỗi 2: Ảnh chụp tài liệu mờ, lóa đèn, cắt góc</span>
+          </div>
+          <p class="text-slate-700 text-xs md:text-sm leading-relaxed mb-3">
+            <strong>Nguyên nhân:</strong> Chụp ảnh CCCD hoặc Sổ đỏ bị bóng sáng, rung tay làm mờ số CCCD, bị cắt mất 4 góc viền của văn bản.
+          </p>
+          <div class="p-3 rounded-xl bg-white border border-amber-200 text-xs text-slate-800 flex items-start gap-2">
+            <i data-lucide="check-circle" style="width:16px;height:16px;color:#10b981;flex-shrink:0;"></i>
+            <span><strong>Cách khắc phục:</strong> Xuất trực tiếp file PDF A4 từ DOANTM với độ nét vector 100%, hoặc chụp ảnh tài liệu dưới ánh sáng ban ngày trên nền phẳng.</span>
+          </div>
+        </div>
+
+        <!-- Error 3 -->
+        <div class="p-5 rounded-2xl bg-sky-50/60 border border-sky-200">
+          <div class="flex items-center gap-2 text-sky-800 font-bold text-base mb-2">
+            <i data-lucide="x-circle" style="width:20px;height:20px;color:#0284c7;"></i>
+            <span>Lỗi 3: Địa chỉ tạm trú không khớp cơ sở dữ liệu</span>
+          </div>
+          <p class="text-slate-700 text-xs md:text-sm leading-relaxed mb-3">
+            <strong>Nguyên nhân:</strong> Khai báo tên đường, thôn, ấp theo thói quen cũ mà không theo tên đơn vị hành chính mới được chuẩn hóa trên Cổng DVC.
+          </p>
+          <div class="p-3 rounded-xl bg-white border border-sky-200 text-xs text-slate-800 flex items-start gap-2">
+            <i data-lucide="check-circle" style="width:16px;height:16px;color:#10b981;flex-shrink:0;"></i>
+            <span><strong>Cách khắc phục:</strong> Xem kỹ địa chỉ ghi trên Sổ hồng/Sổ đỏ của chủ nhà để điền chuẩn xác từng ngõ, ngách, số nhà, khu phố.</span>
+          </div>
+        </div>
+
+        <!-- Error 4 -->
+        <div class="p-5 rounded-2xl bg-purple-50/60 border border-purple-200">
+          <div class="flex items-center gap-2 text-purple-800 font-bold text-base mb-2">
+            <i data-lucide="x-circle" style="width:20px;height:20px;color:#7c3aed;"></i>
+            <span>Lỗi 4: Quên thanh toán lệ phí hồ sơ</span>
+          </div>
+          <p class="text-slate-700 text-xs md:text-sm leading-relaxed mb-3">
+            <strong>Nguyên nhân:</strong> Nộp hồ sơ xong nhưng không để ý thông báo yêu cầu nộp lệ phí 15.000đ, khiến hồ sơ bị treo ở trạng thái "Chờ thanh toán".
+          </p>
+          <div class="p-3 rounded-xl bg-white border border-purple-200 text-xs text-slate-800 flex items-start gap-2">
+            <i data-lucide="check-circle" style="width:16px;height:16px;color:#10b981;flex-shrink:0;"></i>
+            <span><strong>Cách khắc phục:</strong> Sau khi nộp hồ sơ, kiểm tra mục "Quản lý hồ sơ đã nộp" trên Cổng DVC hoặc VNeID để quét mã QR thanh toán ngay.</span>
+          </div>
+        </div>
+
+      </div>
+
+    </article>
+
+  </main>
+
+  <!-- =======================================================================
+       4. BOTTOM CALL TO ACTION
+       ======================================================================= -->
+  <section class="max-w-5xl mx-auto px-4 py-12 text-center">
+    <div class="p-8 md:p-12 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-zinc-900 text-white relative overflow-hidden shadow-2xl border border-slate-700">
+      <!-- Glow ambient light -->
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-red-600/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-sky-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative z-10 max-w-2xl mx-auto space-y-5">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-red-600/20 text-red-400 border border-red-500/30">
+          <i data-lucide="sparkles" style="width:14px;height:14px;"></i>
+          TRẢI NGHIỆM ĐIỀN ĐƠN TỰ ĐỘNG
+        </span>
+        <h3 class="text-2xl md:text-4xl font-extrabold tracking-tight">
+          Sẵn sàng lập hồ sơ Dịch vụ công chuẩn xác?
+        </h3>
+        <p class="text-slate-300 text-sm md:text-base leading-relaxed">
+          Không cần tốn thời gian gõ từng chữ. Hãy quét mã QR CCCD trên điện thoại, hệ thống DOANTM sẽ tự động điền Tờ khai CT01 và sinh Hợp đồng cư trú hoàn chỉnh trong 60 giây.
+        </p>
+
+        <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a
+            href="ct01.html"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-extrabold text-base shadow-xl shadow-red-600/30 hover:from-red-700 hover:to-rose-700 transition-all hover:scale-105"
+          >
+            <i data-lucide="edit-3" style="width:18px;height:18px;"></i>
+            <span>Kê khai biểu mẫu CT01 ngay</span>
+          </a>
+          <a
+            href="index.html"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-base transition-all border border-white/15"
+          >
+            <i data-lucide="home" style="width:18px;height:18px;"></i>
+            <span>Về Trang chủ DOANTM</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =======================================================================
+       5. FOOTER
+       ======================================================================= -->
+  <footer class="border-t border-slate-200 bg-white/80 backdrop-blur py-8 text-center text-xs text-slate-500">
+    <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2 font-bold text-slate-800">
+        <span class="w-2 h-2 rounded-full bg-red-600"></span>
+        <span>DOANTM PLATFORM • HỆ THỐNG HỖ TRỢ DỊCH VỤ CÔNG TRỰC TUYẾN</span>
+      </div>
+      <div>
+        Thiết kế tối ưu cho công dân số &amp; doanh nghiệp lưu trú © 2026 DOANTM.
+      </div>
+    </div>
+  </footer>
+
+  <!-- =======================================================================
+       6. SCRIPTS
+       ======================================================================= -->
+  <script>
+    // Initialize Lucide Icons
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+
+      // Mobile Drawer Toggle
+      const drawerToggle = document.getElementById('mobile-drawer-toggle');
+      const mobileDrawer = document.getElementById('mobile-drawer');
+      if (drawerToggle && mobileDrawer) {
+        drawerToggle.addEventListener('click', () => {
+          mobileDrawer.classList.toggle('open');
+        });
+      }
+    });
+
+    // Category Filter function
+    function filterGuideCategory(categoryKey) {
+      document.querySelectorAll('.guide-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-category') === categoryKey);
+      });
+
+      const articles = document.querySelectorAll('.guide-article-card');
+      articles.forEach(article => {
+        if (categoryKey === 'all') {
+          article.style.display = 'block';
+        } else {
+          article.style.display = article.getAttribute('data-category') === categoryKey ? 'block' : 'none';
+        }
+      });
+    }
+
+    // Search function
+    function handleGuideSearch(query) {
+      const q = (query || '').trim().toLowerCase();
+      const clearBtn = document.getElementById('guide-clear-search');
+      if (clearBtn) clearBtn.style.display = q.length > 0 ? 'block' : 'none';
+
+      const articles = document.querySelectorAll('.guide-article-card');
+      articles.forEach(article => {
+        const text = article.textContent.toLowerCase();
+        if (!q || text.includes(q)) {
+          article.style.display = 'block';
+        } else {
+          article.style.display = 'none';
+        }
+      });
+    }
+
+    function clearGuideSearch() {
+      const box = document.getElementById('guide-search-box');
+      if (box) {
+        box.value = '';
+        handleGuideSearch('');
+      }
+    }
+  </script>
+
+</body>
+</html>

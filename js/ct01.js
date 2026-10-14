@@ -1,0 +1,2652 @@
+/**
+ * DOANTM PLATFORM - CT01 & CITIZEN SERVICE PORTAL ENGINE
+ * Exact Functional Replication of capan.vn/client/ct01:
+ * - Dual CCCD QR Scanner (Camera + Drag-to-Crop Image + Raw QR + Presets)
+ * - Live 2-Page A4 Document Preview (Mẫu CT01 TT 116/2026 & Hợp đồng cho thuê, mượn, ở nhờ)
+ * - Interactive Dual Signature Pads with Stroke Undo (Bên A Chủ nhà & Bên B Người kê khai)
+ * - Up to 9 Family Members Editor (Mục 11 CT01)
+ * - CT02 (Đơn cớ mất) & CT03 (Đơn xin xác nhận hạnh kiểm) + Word/PDF Export
+ * - High-Resolution 2-Page PDF & 2-File JPG Export (1240x1754 A4)
+ * - Progress Lookup & 31-Area CSKV Officer Directory
+ */
+
+// ============================================================================
+// 1. STATE & DATA DEFINITIONS
+// ============================================================================
+const INITIAL_FORM_STATE = {
+  members: [],
+  fullName: '',
+  birthDate: '',
+  gender: '',
+  citizenId: '',
+  phone: '',
+  email: '',
+  permanentAddress: '',
+  currentAddress: '',
+  requestContent: 'Đăng ký tạm trú',
+  houseNo: '',
+  street: '',
+  quarter: '',
+  ward: 'Phường An Nhơn',
+  city: 'TP. Hồ Chí Minh',
+  moveInDate: '',
+  landlordName: '',
+  landlordBirthYear: '',
+  landlordId: '',
+  landlordAddress: ''
+};
+
+let formState = JSON.parse(JSON.stringify(INITIAL_FORM_STATE));
+let tenantSignatureDataUrl = '';
+let landlordSignatureDataUrl = '';
+let previewFitMode = 'fit';
+let currentScale = 1;
+
+// Active Form Key ('ct01' | 'ct02' | 'ct03' | 'ct04' | 'ct07')
+let activeFormKey = 'ct01';
+
+// Citizen Application State (for CT02 Loss & CT03 Conduct)
+let citizenAppState = {
+  fullName: '',
+  birthDate: '',
+  citizenId: '',
+  issueDate: '',
+  issuePlace: 'Cục Cảnh sát QLHC về TTXH',
+  permanentAddress: '',
+  phone: '',
+  lossDate: '',
+  lostItems: '',
+  lossLocation: '',
+  lossReason: '',
+  replacementPurpose: 'làm lại giấy tờ cá nhân',
+  birthPlace: '',
+  hometown: '',
+  ethnicity: 'Kinh',
+  currentAddress: '',
+  applicationReason: 'bổ sung hồ sơ xin việc làm',
+  organization: '',
+  organizationAddress: '',
+  signingLocation: 'An Nhơn',
+  signingDate: new Date().toISOString().slice(0, 10)
+};
+
+// Batch Residence Registration State (for CT07 - Điền hồ sơ tạm trú theo số lượng)
+let batchState = {
+  count: 3,
+  landlord: {
+    fullName: '',
+    birthYear: '',
+    citizenId: '',
+    permanentAddress: ''
+  },
+  house: {
+    city: 'TP. Hồ Chí Minh',
+    district: 'Quận Gò Vấp',
+    ward: 'Phường An Nhơn',
+    street: ''
+  },
+  tenants: []
+};
+
+// Sample QR Presets for instant testing
+const SAMPLE_QR_PRESETS = {
+  landlord_sample: '079075009876|024567890|TRẦN VĂN HÙNG|12051975|Nam|Số 123/45 Đường Nguyễn Văn Nghi, Phường An Nhơn, TP. Hồ Chí Minh|15042022',
+  tenant_sample_1: '079095012345|025123456|NGUYỄN VĂN AN|15081995|Nam|456 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh|10052022',
+  tenant_sample_2: '048198006789|201789123|LÊ THỊ NGỌC MAI|22111998|Nữ|78 Nguyễn Văn Linh, Quận Hải Châu, TP. Đà Nẵng|20082022'
+};
+
+// 31 CSKV Officers Data from capan.vn
+const CSKV_OFFICERS = [
+  ['Lê Lại Hoàng Anh', '0366012345'],
+  ['Nguyễn Công Trí', '0777703879'],
+  ['Bùi Chí Nguyện', '0834598859'],
+  ['Dương Thiện Chí', '0934578789'],
+  ['Phạm Minh Nhựt', '0907291389'],
+  ['Trương Văn Thiệp', '0947063564'],
+  ['Trịnh Minh Phụng', '0909994636'],
+  ['Nguyễn Bình Phương', '0909285702'],
+  ['Lê Ngọc Huân', '0903311722'],
+  ['Trần Viết Sơn', '0906603806'],
+  ['Trần Nhật Hoàng', '0981048279'],
+  ['Phan Lê Xuân', '0909456986'],
+  ['Đỗ Thanh Phúc', '0902822988'],
+  ['Bùi Thái Sơn', '0908508484'],
+  ['Lê Hồng Tự', '0937726779'],
+  ['Đinh Minh Tâm', '0888314116'],
+  ['Võ Văn Tèo', '0986938459'],
+  ['Lê Anh Hiếu', '0829645890'],
+  ['Nguyễn Văn Hưng', '0909018303'],
+  ['Trần Duy Phú', '0937711012'],
+  ['Phạm Văn Hùng', '0934178995'],
+  ['Nguyễn Hùng Cường', '0934476033'],
+  ['Nguyễn Lê Minh Quang', '0774204559'],
+  ['Hà Ngọc Minh', '0932013646'],
+  ['Lê Hồng Công', '0908208219'],
+  ['Trương Phạm Anh Khoa', '0903646230'],
+  ['Nguyễn Minh Quý', '0938700908'],
+  ['Nguyễn Văn Vương', '0989377773'],
+  ['Phan Văn Tiền', '0965707789'],
+  ['Lại Minh Hoàng', '0979309998'],
+  ['Nguyễn Trọng Khôi', '0908090647']
+];
+let revealedCskvAreas = new Set();
+
+// ============================================================================
+// 2. INITIALIZATION
+// ============================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+
+  // Default contract datetime to today at 10:00
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const defaultDateTime = `${yyyy}-${mm}-${dd}T10:00`;
+  formState.moveInDate = defaultDateTime;
+  const dtInput = document.getElementById('ct01-contract-datetime');
+  if (dtInput) dtInput.value = defaultDateTime;
+
+  // Render initial A4 documents & cards
+  renderAllA4AndCards();
+
+  // Initialize Dual Signature Pads
+  initSignaturePads();
+
+  // Setup Responsive A4 Scaling
+  setupA4ResponsiveScaler();
+
+  // Setup Image Cropper Pointer Events in QR Modal
+  setupQrCropperEvents();
+
+  // Setup Mobile Drawer Toggle
+  const mobileToggle = document.getElementById('mobile-drawer-toggle');
+  const mobileDrawer = document.getElementById('mobile-drawer');
+  if (mobileToggle && mobileDrawer) {
+    mobileToggle.addEventListener('click', () => {
+      mobileDrawer.classList.toggle('open');
+    });
+  }
+
+  // Render CSKV Directory & Initial Lookup
+  renderCskvDirectory();
+  handleLookupSearch(true);
+});
+
+// ============================================================================
+// 3. TOAST NOTIFICATION HELPER
+// ============================================================================
+function showToast(message, type = 'success') {
+  const container = document.getElementById('capan-toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `capan-toast ${type}`;
+  toast.innerHTML = `<span>${message}</span>`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-6px)';
+    toast.style.transition = 'all 0.25s ease';
+    setTimeout(() => toast.remove(), 260);
+  }, 3200);
+}
+
+// ============================================================================
+// 4. NAVIGATION & TAB SWITCHING
+// ============================================================================
+function switchMainTab(tabName, subUtility) {
+  const views = {
+    utilities: document.getElementById('view-utilities'),
+    declaration: document.getElementById('view-declaration'),
+    guide: document.getElementById('view-guide')
+  };
+
+  Object.entries(views).forEach(([key, el]) => {
+    if (el) el.hidden = key !== tabName;
+  });
+
+  // Update desktop nav active state
+  document.querySelectorAll('.capan-nav-item').forEach(btn => {
+    const t = btn.getAttribute('data-main-tab');
+    if (tabName === 'utilities' && subUtility === 'ct01') {
+      btn.classList.toggle('active', t === 'utilities');
+    } else if (tabName === 'utilities') {
+      btn.classList.toggle('active', t === 'utilities-all');
+    } else {
+      btn.classList.toggle('active', t === tabName);
+    }
+  });
+
+  // Update mobile drawer active state
+  document.querySelectorAll('.capan-drawer-item[data-mobile-tab]').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-mobile-tab') === tabName);
+  });
+
+  const mobileDrawer = document.getElementById('mobile-drawer');
+  if (mobileDrawer) mobileDrawer.classList.remove('open');
+
+  if (tabName === 'utilities' && subUtility) {
+    switchUtilityTab(subUtility);
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function switchUtilityTab(utilKey) {
+  const subviews = {
+    ct01: document.getElementById('subview-ct01'),
+    lookup: document.getElementById('subview-lookup'),
+    appointment: document.getElementById('subview-appointment')
+  };
+
+  Object.entries(subviews).forEach(([k, el]) => {
+    if (el) el.hidden = k !== utilKey;
+  });
+
+  ['ct01', 'lookup', 'appointment'].forEach(k => {
+    const btn = document.getElementById(`util-tab-${k}`);
+    if (btn) btn.classList.toggle('active', k === utilKey);
+  });
+
+  if (utilKey === 'ct01') {
+    setTimeout(() => {
+      resizeSignatureCanvases();
+      updateA4Scale();
+    }, 60);
+  }
+}
+
+function selectFormCard(formKey) {
+  activeFormKey = formKey;
+
+  document.querySelectorAll('.capan-form-tab-card').forEach(card => {
+    card.classList.toggle('active', card.getAttribute('data-form-key') === formKey);
+  });
+
+  const wsCt01 = document.getElementById('form-workspace-ct01');
+  const wsCitizenApp = document.getElementById('form-workspace-citizen-app');
+  const wsDeveloping = document.getElementById('form-workspace-developing');
+  const wsBatch = document.getElementById('form-workspace-batch');
+
+  if (formKey === 'ct01' || formKey === 'ct04') {
+    const isPermanent = formKey === 'ct04';
+    if (wsCt01) wsCt01.hidden = false;
+    if (wsCitizenApp) wsCitizenApp.hidden = true;
+    if (wsDeveloping) wsDeveloping.hidden = true;
+    if (wsBatch) wsBatch.hidden = true;
+
+    const titleText = isPermanent ? 'Điền hồ sơ Đăng kí Thường Trú' : 'Điền hồ sơ Đăng kí Tạm trú';
+    setText('workspace-steps-title-desktop', titleText);
+    setText('workspace-steps-title-mobile', titleText);
+    setText(
+      'preview-title-desktop',
+      isPermanent
+        ? 'Xem trước văn bản A4 (Hồ sơ Đăng kí Thường Trú - Mẫu CT01 & Hợp đồng)'
+        : 'Xem trước văn bản A4 (Mẫu CT01 & Hợp đồng cư trú)'
+    );
+
+    const regValue = isPermanent ? 'Đăng ký thường trú' : 'Đăng ký tạm trú';
+    const delValue = isPermanent
+      ? 'Xoá đăng kí thường trú do không còn chỗ ở hợp pháp tại căn nhà địa chỉ'
+      : 'Xoá đăng kí tạm trú do không còn chỗ ở hợp pháp tại căn nhà địa chỉ';
+    const delLabel = isPermanent
+      ? 'Xoá đăng kí thường trú do không còn chỗ ở hợp pháp'
+      : 'Xoá đăng kí tạm trú do không còn chỗ ở hợp pháp';
+
+    const radioReg = document.getElementById('radio-req-register');
+    const radioRegLabel = document.getElementById('radio-req-register-label');
+    const radioDel = document.getElementById('radio-req-delete');
+    const radioDelLabel = document.getElementById('radio-req-delete-label');
+
+    if (radioReg) radioReg.value = regValue;
+    if (radioRegLabel) radioRegLabel.textContent = regValue;
+    if (radioDel) radioDel.value = delValue;
+    if (radioDelLabel) radioDelLabel.textContent = delLabel;
+
+    const isCurrentlyDelete = String(formState.requestContent || '').startsWith('Xoá đăng kí');
+    formState.requestContent = isCurrentlyDelete ? delValue : regValue;
+    if (radioReg) radioReg.checked = !isCurrentlyDelete;
+    if (radioDel) radioDel.checked = isCurrentlyDelete;
+
+    renderAllA4AndCards();
+    setTimeout(() => {
+      resizeSignatureCanvases();
+      updateA4Scale();
+    }, 60);
+  } else if (formKey === 'ct02' || formKey === 'ct03') {
+    if (wsCt01) wsCt01.hidden = true;
+    if (wsCitizenApp) wsCitizenApp.hidden = false;
+    if (wsDeveloping) wsDeveloping.hidden = true;
+    if (wsBatch) wsBatch.hidden = true;
+    syncCitizenAppFromMainState();
+    renderCitizenAppPreview();
+  } else if (formKey === 'ct07') {
+    if (wsCt01) wsCt01.hidden = true;
+    if (wsCitizenApp) wsCitizenApp.hidden = true;
+    if (wsDeveloping) wsDeveloping.hidden = true;
+    if (wsBatch) wsBatch.hidden = false;
+    initBatchWorkspace();
+  } else {
+    if (wsCt01) wsCt01.hidden = true;
+    if (wsCitizenApp) wsCitizenApp.hidden = true;
+    if (wsDeveloping) wsDeveloping.hidden = false;
+    if (wsBatch) wsBatch.hidden = true;
+
+    const heading = document.getElementById('developing-form-heading');
+    const desc = document.getElementById('developing-form-desc');
+    if (heading) heading.textContent = 'Biểu mẫu đang hoàn thiện';
+    if (desc) {
+      desc.innerHTML =
+        'Hệ thống dịch vụ công đang cập nhật biểu mẫu điện tử theo quy chuẩn mới nhất của Bộ Công An.';
+    }
+    showToast('Biểu mẫu đang được cập nhật!', 'warn');
+  }
+}
+
+// ============================================================================
+// 5. FORM FIELD UPDATES & LIVE A4 RENDERING
+// ============================================================================
+function updateFormField(field, value) {
+  formState[field] = value;
+  renderAllA4AndCards();
+}
+
+function toggleManualDrawer(target) {
+  const drawer = document.getElementById(`manual-drawer-${target}`);
+  if (drawer) {
+    drawer.hidden = !drawer.hidden;
+  }
+}
+
+function format12DigitsArray(idStr) {
+  const digits = String(idStr || '').replace(/\D/g, '').slice(0, 12);
+  return digits.padEnd(12, ' ').split('');
+}
+
+function buildResidenceAddressString() {
+  const h = (formState.houseNo || '').trim();
+  const s = (formState.street || '').trim();
+  if (!h && !s) return '';
+
+  const streetPart = [h ? `Số ${h}` : '', s].filter(Boolean).join(' ');
+  const parts = [
+    streetPart,
+    (formState.quarter || '').trim(),
+    (formState.ward || 'Phường An Nhơn').trim(),
+    (formState.city || 'TP. Hồ Chí Minh').trim()
+  ].filter(Boolean);
+
+  return parts.join(', ');
+}
+
+function parseContractDateTime(dtStr) {
+  if (!dtStr) {
+    return { date: '', day: '', month: '', year: '', hours: '10', minutes: '00' };
+  }
+  const dateMatch = dtStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  const timeMatch = dtStr.match(/T(\d{2}):(\d{2})/);
+  const day = dateMatch ? dateMatch[3] : '';
+  const month = dateMatch ? dateMatch[2] : '';
+  const year = dateMatch ? dateMatch[1] : '';
+  return {
+    date: dateMatch ? `${day}/${month}/${year}` : '',
+    day,
+    month,
+    year,
+    hours: timeMatch ? timeMatch[1] : '10',
+    minutes: timeMatch ? timeMatch[2] : '00'
+  };
+}
+
+function renderAllA4AndCards() {
+  // 1. Update Landlord QR Card Summary
+  const landlordSummary = document.getElementById('landlord-card-summary');
+  if (landlordSummary) {
+    if (formState.landlordName) {
+      landlordSummary.innerHTML = `
+        <div class="qr-scanned-info">
+          <div class="info-row">
+            <span class="info-label">Họ tên Chủ nhà:</span>
+            <span class="info-value text-bold">${escapeHtml(formState.landlordName)}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Số CCCD:</span>
+            <span class="info-value text-code">${escapeHtml(formState.landlordId || '---')}</span>
+            <span class="info-label" style="margin-left:12px;">Năm sinh:</span>
+            <span class="info-value">${escapeHtml(formState.landlordBirthYear || '---')}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Nơi thường trú:</span>
+            <span class="info-value">${escapeHtml(formState.landlordAddress || '---')}</span>
+          </div>
+        </div>
+      `;
+    } else {
+      landlordSummary.innerHTML = `
+        <div class="qr-empty-hint">
+          Chưa quét thẻ CCCD Chủ nhà. Bấm "Quét thẻ CCCD" để camera nhận diện tự động hoặc bấm "Nhập tay".
+        </div>
+      `;
+    }
+  }
+
+  // 2. Update Tenant QR Card Summary
+  const tenantSummary = document.getElementById('tenant-card-summary');
+  if (tenantSummary) {
+    if (formState.fullName) {
+      tenantSummary.innerHTML = `
+        <div class="qr-scanned-info">
+          <div class="info-row">
+            <span class="info-label">Họ và tên:</span>
+            <span class="info-value text-bold">${escapeHtml(formState.fullName)}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Số ĐDCN:</span>
+            <span class="info-value text-code">${escapeHtml(formState.citizenId || '---')}</span>
+            <span class="info-label" style="margin-left:12px;">Ngày sinh:</span>
+            <span class="info-value">${escapeHtml(formState.birthDate || '---')}</span>
+            <span class="info-label" style="margin-left:12px;">Giới tính:</span>
+            <span class="info-value">${escapeHtml(formState.gender || '---')}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Nơi thường trú:</span>
+            <span class="info-value">${escapeHtml(formState.permanentAddress || '---')}</span>
+          </div>
+        </div>
+      `;
+    } else {
+      tenantSummary.innerHTML = `
+        <div class="qr-empty-hint">
+          Chưa quét thẻ CCCD Người kê khai. Bấm "Quét thẻ CCCD" để camera nhận diện tự động hoặc bấm "Nhập tay".
+        </div>
+      `;
+    }
+  }
+
+  // Sync manual drawer inputs if they aren't currently focused
+  syncInputValueIfNotFocused('manual-landlordName', formState.landlordName);
+  syncInputValueIfNotFocused('manual-landlordId', formState.landlordId);
+  syncInputValueIfNotFocused('manual-landlordBirthYear', formState.landlordBirthYear);
+  syncInputValueIfNotFocused('manual-landlordAddress', formState.landlordAddress);
+  syncInputValueIfNotFocused('manual-fullName', formState.fullName);
+  syncInputValueIfNotFocused('manual-citizenId', formState.citizenId);
+  syncInputValueIfNotFocused('manual-birthDate', formState.birthDate);
+  syncInputValueIfNotFocused('manual-gender', formState.gender);
+  syncInputValueIfNotFocused('manual-permanentAddress', formState.permanentAddress);
+  syncInputValueIfNotFocused('ct01-house-no', formState.houseNo);
+  syncInputValueIfNotFocused('ct01-street', formState.street);
+  syncInputValueIfNotFocused('ct01-ward', formState.ward);
+  syncInputValueIfNotFocused('ct01-city', formState.city);
+  syncInputValueIfNotFocused('ct01-phone', formState.phone);
+  syncInputValueIfNotFocused('ct01-email', formState.email);
+
+  // 3. Update A4 Page 1 (Mẫu CT01)
+  const wardText = formState.ward || 'Phường An Nhơn';
+  const cityText = formState.city || 'TP. Hồ Chí Minh';
+  setText('a4-ct01-recipient', `Công an ${wardText} - ${cityText}`);
+  setText('a4-ct01-fullName', formState.fullName || '');
+  setText('a4-ct01-birthDate', formState.birthDate || '');
+  setText('a4-ct01-gender', formState.gender || '');
+  setText('a4-ct01-phone', formState.phone || '');
+  setText('a4-ct01-email', formState.email || '');
+  setText('a4-ct01-headName', formState.fullName || '');
+  setText('a4-ct01-relationship', formState.fullName ? 'chủ hộ' : '');
+
+  // Item 4: 12-digit boxes for Tenant
+  const tenantDigits = format12DigitsArray(formState.citizenId);
+  const tenantBoxesEl = document.getElementById('a4-ct01-tenant-id-boxes');
+  if (tenantBoxesEl) {
+    tenantBoxesEl.innerHTML = tenantDigits
+      .map(d => `<span class="ct01-box-cell"><span class="ct01-box-digit">${escapeHtml(d.trim())}</span></span>`)
+      .join('');
+  }
+
+  // Item 9: 12-digit boxes for Landlord / Head
+  const landlordDigits = format12DigitsArray(formState.landlordId);
+  const landlordBoxesEl = document.getElementById('a4-ct01-landlord-id-boxes');
+  if (landlordBoxesEl) {
+    landlordBoxesEl.innerHTML = landlordDigits
+      .map(d => `<span class="ct01-box-cell"><span class="ct01-box-digit">${escapeHtml(d.trim())}</span></span>`)
+      .join('');
+  }
+
+  // Item 10: Nội dung đề nghị
+  const defaultReqContent = activeFormKey === 'ct04' ? 'Đăng ký thường trú' : 'Đăng ký tạm trú';
+  const currentReqContent = formState.requestContent || defaultReqContent;
+  const isRegisterStay = currentReqContent === 'Đăng ký tạm trú' || currentReqContent === 'Đăng ký thường trú';
+  const fullResidenceAddr = buildResidenceAddressString();
+  setText('a4-ct01-requestContent', currentReqContent);
+  setText('a4-ct01-requestPrefix', isRegisterStay ? ' vào nhà địa chỉ: ' : ': ');
+
+  const reqAddrEl = document.getElementById('a4-ct01-requestAddress');
+  if (reqAddrEl) {
+    reqAddrEl.className = isRegisterStay ? 'ct01-request-address' : 'ct01-address-row ct01-request-address';
+    reqAddrEl.textContent = isRegisterStay ? `${fullResidenceAddr}.` : (fullResidenceAddr ? `${fullResidenceAddr}.` : '');
+  }
+
+  // Item 11: 9-row Members Table
+  const tbody = document.getElementById('a4-ct01-members-tbody');
+  if (tbody) {
+    let rowsHtml = '';
+    for (let i = 0; i < 9; i++) {
+      const m = formState.members[i];
+      rowsHtml += `
+        <tr>
+          <td class="text-center"><span>${m ? i + 1 : ''}</span></td>
+          <td><span class="text-uppercase">${escapeHtml(m?.fullName || '')}</span></td>
+          <td class="text-center"><span>${escapeHtml(m?.birthDate || '')}</span></td>
+          <td class="text-center"><span>${escapeHtml(m?.gender || '')}</span></td>
+          <td class="text-center"><span>${escapeHtml(m?.citizenId || '')}</span></td>
+          <td class="text-center"><span>${escapeHtml(m?.relationship || '')}</span></td>
+        </tr>
+      `;
+    }
+    tbody.innerHTML = rowsHtml;
+  }
+
+  // Members Editor Summary List
+  const addMemberBtn = document.getElementById('btn-add-member');
+  const addMemberLbl = document.getElementById('btn-add-member-label');
+  if (addMemberBtn && addMemberLbl) {
+    addMemberBtn.disabled = formState.members.length >= 9;
+    addMemberLbl.textContent = `Thêm thành viên (${formState.members.length}/9)`;
+  }
+
+  const membersListEl = document.getElementById('members-summary-list');
+  if (membersListEl) {
+    membersListEl.innerHTML = formState.members
+      .map(
+        (m, idx) => `
+        <div class="ct01-member-summary">
+          <span>${idx + 1}. <strong>${escapeHtml(m.fullName)}</strong> · ${escapeHtml(m.birthDate)} · ${escapeHtml(m.relationship)}</span>
+          <div class="member-actions">
+            <button type="button" class="btn-link" onclick="openMemberModal('${m.id}')">Sửa</button>
+            <button type="button" class="btn-link danger" onclick="deleteMember('${m.id}')">Xoá</button>
+          </div>
+        </div>
+      `
+      )
+      .join('');
+  }
+
+  // Date & Signatures on CT01
+  const dt = parseContractDateTime(formState.moveInDate);
+  const shortPlace = wardText.replace(/^Phường\s+/i, '').replace(/^Xã\s+/i, '') || 'An Nhơn';
+  setText(
+    'a4-sig-date-1',
+    dt.date ? `${shortPlace}, ngày ${dt.day} tháng ${dt.month} năm ${dt.year}` : `${shortPlace}, ngày.......tháng....năm.......`
+  );
+  setText(
+    'a4-sig-date-2',
+    dt.date ? `${shortPlace}, ngày ${dt.day} tháng ${dt.month} năm ${dt.year}` : `${shortPlace}, ngày.....tháng....năm...`
+  );
+  setText('a4-sig-date-3', `${shortPlace}, ngày.......tháng....năm...`);
+  setText(
+    'a4-sig-date-4',
+    dt.date ? `${shortPlace}, ngày ${dt.day} tháng ${dt.month} năm ${dt.year}` : `${shortPlace}, ngày....tháng...năm...`
+  );
+
+  setText('a4-ct01-sig-head-name', formState.fullName || '');
+  setText('a4-ct01-sig-landlord-name', formState.landlordName || '');
+  setText('a4-ct01-sig-declarant-name', formState.fullName || '');
+
+  // 4. Update A4 Page 2 (Hợp đồng cho thuê, mượn, ở nhờ)
+  setText('a4-contract-hours', dt.hours);
+  setText('a4-contract-minutes', dt.minutes);
+  setText('a4-contract-date', dt.date);
+  setText('a4-contract-address-top', fullResidenceAddr);
+
+  setText('a4-contract-landlordName', formState.landlordName || '');
+  setText('a4-contract-landlordBirthYear', formState.landlordBirthYear || '');
+  setText('a4-contract-landlordId', formState.landlordId || '');
+  setText(
+    'a4-contract-landlordAddress',
+    formState.landlordAddress || (formState.houseNo || formState.street ? fullResidenceAddr : '')
+  );
+  setText('a4-contract-propertyAddress', `${fullResidenceAddr}.`);
+
+  setText('a4-contract-tenantName', formState.fullName || '');
+  setText('a4-contract-tenantBirth', formState.birthDate || '');
+  setText('a4-contract-tenantId', formState.citizenId || '');
+  setText('a4-contract-tenantAddress', formState.permanentAddress || '');
+
+  // Render Section 11 members into Part II of Contract (Bên B)
+  const contractMembersContainer = document.getElementById('a4-contract-members-list');
+  if (contractMembersContainer) {
+    if (formState.members && formState.members.length > 0) {
+      contractMembersContainer.innerHTML = `
+        <div class="contract-members-sublist" style="margin-top: 3px;">
+          <p class="party-info-row" style="margin: 2px 0 1px;"><strong>Cùng các thành viên:</strong></p>
+          ${formState.members.map((m) => {
+            const bYear = extractBirthYearOnly(m.birthDate);
+            const idVal = m.citizenId ? escapeHtml(m.citizenId) : '';
+            return `
+              <div class="party-flex-row contract-member-row" style="margin-bottom: 2px;">
+                <span class="party-name">- Ông (bà): <span class="text-uppercase">${escapeHtml(m.fullName || '')}</span></span>
+                <span class="party-birth">Sinh năm: <span>${escapeHtml(bYear)}</span></span>
+                <span class="party-cccd" style="min-width: 175px; text-align: right;">CCCD: <span>${idVal}</span></span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    } else {
+      contractMembersContainer.innerHTML = '';
+    }
+  }
+
+  setText('a4-contract-clause1-purpose', activeFormKey === 'ct04' ? 'đăng kí thường trú' : 'đăng kí tam trú');
+  setText('a4-contract-clause1-addr', fullResidenceAddr);
+  setText('a4-contract-clause1-date', dt.date);
+
+  setText('a4-contract-sig-landlord-name', formState.landlordName || '');
+  setText('a4-contract-sig-tenant-name', formState.fullName || '');
+
+  // Render Signature Images into both A4 pages
+  renderSignatureImagesOnA4();
+}
+
+function renderSignatureImagesOnA4() {
+  const headSigBox = document.getElementById('a4-ct01-sig-head');
+  const declSigBox = document.getElementById('a4-ct01-sig-declarant');
+  const contractTenantSigBox = document.getElementById('a4-contract-sig-tenant');
+  const landlordSigBox = document.getElementById('a4-ct01-sig-landlord');
+  const contractLandlordSigBox = document.getElementById('a4-contract-sig-landlord');
+
+  const tenantImgHtml = tenantSignatureDataUrl
+    ? `<img src="${tenantSignatureDataUrl}" alt="Chữ ký người kê khai" class="sig-canvas-img" />`
+    : '';
+  const landlordImgHtml = landlordSignatureDataUrl
+    ? `<img src="${landlordSignatureDataUrl}" alt="Chữ ký chủ nhà" class="sig-canvas-img" />`
+    : '';
+
+  if (headSigBox) headSigBox.innerHTML = tenantImgHtml;
+  if (declSigBox) declSigBox.innerHTML = tenantImgHtml;
+  if (contractTenantSigBox) contractTenantSigBox.innerHTML = tenantImgHtml;
+  if (landlordSigBox) landlordSigBox.innerHTML = landlordImgHtml;
+  if (contractLandlordSigBox) contractLandlordSigBox.innerHTML = landlordImgHtml;
+}
+
+// ============================================================================
+// 6. INTERACTIVE DUAL SIGNATURE PADS (WITH STROKE UNDO)
+// ============================================================================
+class SmoothSignaturePad {
+  constructor(canvasId, wrapperId, placeholderId, undoBtnId, clearBtnId, onUpdate) {
+    this.canvas = document.getElementById(canvasId);
+    this.wrapper = document.getElementById(wrapperId);
+    this.placeholder = document.getElementById(placeholderId);
+    this.undoBtn = document.getElementById(undoBtnId);
+    this.clearBtn = document.getElementById(clearBtnId);
+    this.onUpdate = onUpdate;
+    this.strokes = [];
+    this.currentStroke = [];
+    this.isDrawing = false;
+    this.penColor = '#1d4ed8';
+
+    if (this.canvas && this.wrapper) {
+      this.ctx = this.canvas.getContext('2d');
+      this.resize();
+      this.bindEvents();
+    }
+  }
+
+  resize() {
+    if (!this.canvas || !this.wrapper) return;
+    const ratio = Math.max(window.devicePixelRatio || 1, 2);
+    const width = this.wrapper.clientWidth || 360;
+    const height = 130;
+    this.canvas.width = width * ratio;
+    this.canvas.height = height * ratio;
+    this.canvas.style.width = `${width}px`;
+    this.canvas.style.height = `${height}px`;
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.scale(ratio, ratio);
+    this.redrawAll();
+  }
+
+  getPoint(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
+  }
+
+  bindEvents() {
+    const start = (e) => {
+      if (e.button !== undefined && e.button !== 0) return;
+      e.preventDefault();
+      this.isDrawing = true;
+      const pt = this.getPoint(e);
+      this.currentStroke = [pt];
+      this.drawStrokeSegment(this.currentStroke);
+    };
+
+    const move = (e) => {
+      if (!this.isDrawing) return;
+      e.preventDefault();
+      const pt = this.getPoint(e);
+      this.currentStroke.push(pt);
+      this.redrawAll();
+      this.drawStroke(this.currentStroke);
+    };
+
+    const end = (e) => {
+      if (!this.isDrawing) return;
+      e.preventDefault();
+      this.isDrawing = false;
+      if (this.currentStroke.length > 0) {
+        this.strokes.push([...this.currentStroke]);
+        this.currentStroke = [];
+        this.redrawAll();
+        this.emitUpdate();
+      }
+    };
+
+    this.canvas.addEventListener('pointerdown', start);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
+  }
+
+  drawStroke(points) {
+    if (!points || points.length === 0) return;
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.strokeStyle = this.penColor;
+    ctx.fillStyle = this.penColor;
+    ctx.lineWidth = 2.3;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    if (points.length === 1) {
+      ctx.beginPath();
+      ctx.arc(points[0].x, points[0].y, 1.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      return;
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length - 1; i++) {
+      const midX = (points[i].x + points[i + 1].x) / 2;
+      const midY = (points[i].y + points[i + 1].y) / 2;
+      ctx.quadraticCurveTo(points[i].x, points[i].y, midX, midY);
+    }
+    const last = points[points.length - 1];
+    ctx.lineTo(last.x, last.y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  drawStrokeSegment(points) {
+    this.drawStroke(points);
+  }
+
+  redrawAll() {
+    if (!this.ctx || !this.canvas) return;
+    const width = this.wrapper.clientWidth || 360;
+    this.ctx.clearRect(0, 0, width, 130);
+    for (const stroke of this.strokes) {
+      this.drawStroke(stroke);
+    }
+    const hasInk = this.strokes.length > 0;
+    if (this.placeholder) this.placeholder.hidden = hasInk;
+    if (this.undoBtn) this.undoBtn.disabled = !hasInk;
+    if (this.clearBtn) this.clearBtn.disabled = !hasInk;
+  }
+
+  undo() {
+    if (this.strokes.length === 0) return;
+    this.strokes.pop();
+    this.redrawAll();
+    this.emitUpdate();
+  }
+
+  clear() {
+    this.strokes = [];
+    this.currentStroke = [];
+    this.redrawAll();
+    this.emitUpdate();
+  }
+
+  emitUpdate() {
+    const dataUrl = this.strokes.length > 0 ? this.canvas.toDataURL('image/png') : '';
+    if (this.onUpdate) this.onUpdate(dataUrl);
+  }
+}
+
+let landlordPadInstance = null;
+let tenantPadInstance = null;
+
+function initSignaturePads() {
+  landlordPadInstance = new SmoothSignaturePad(
+    'sig-canvas-landlord',
+    'sig-wrapper-landlord',
+    'sig-placeholder-landlord',
+    'btn-undo-landlord',
+    'btn-clear-landlord',
+    (dataUrl) => {
+      landlordSignatureDataUrl = dataUrl;
+      renderSignatureImagesOnA4();
+    }
+  );
+
+  tenantPadInstance = new SmoothSignaturePad(
+    'sig-canvas-tenant',
+    'sig-wrapper-tenant',
+    'sig-placeholder-tenant',
+    'btn-undo-tenant',
+    'btn-clear-tenant',
+    (dataUrl) => {
+      tenantSignatureDataUrl = dataUrl;
+      renderSignatureImagesOnA4();
+    }
+  );
+
+  window.addEventListener('resize', () => {
+    resizeSignatureCanvases();
+  });
+}
+
+function resizeSignatureCanvases() {
+  if (landlordPadInstance) landlordPadInstance.resize();
+  if (tenantPadInstance) tenantPadInstance.resize();
+}
+
+function undoSignature(role) {
+  if (role === 'landlord' && landlordPadInstance) landlordPadInstance.undo();
+  if (role === 'tenant' && tenantPadInstance) tenantPadInstance.undo();
+}
+
+function clearSignature(role) {
+  if (role === 'landlord' && landlordPadInstance) landlordPadInstance.clear();
+  if (role === 'tenant' && tenantPadInstance) tenantPadInstance.clear();
+}
+
+// ============================================================================
+// 7. RESPONSIVE A4 SCALER
+// ============================================================================
+function setupA4ResponsiveScaler() {
+  window.addEventListener('resize', updateA4Scale);
+  updateA4Scale();
+}
+
+function setPreviewFitMode(mode) {
+  previewFitMode = mode;
+  const fitBtn = document.getElementById('btn-scale-fit');
+  const actualBtn = document.getElementById('btn-scale-actual');
+  if (fitBtn) fitBtn.classList.toggle('active', mode === 'fit');
+  if (actualBtn) actualBtn.classList.toggle('active', mode === 'actual');
+  updateA4Scale();
+}
+
+function updateA4Scale() {
+  const wrapper = document.getElementById('doc-preview-wrapper');
+  const scaler = document.getElementById('a4-page-scaler');
+  const badge = document.getElementById('doc-scale-badge');
+  const toolbar = document.getElementById('doc-scale-toolbar');
+  if (!wrapper || !scaler) return;
+
+  const availableWidth = wrapper.clientWidth - 24;
+  if (availableWidth > 0 && availableWidth < 794) {
+    currentScale = Math.max(0.3, Math.min(1, availableWidth / 794));
+  } else {
+    currentScale = 1;
+  }
+
+  if (toolbar) {
+    toolbar.hidden = !(currentScale < 0.98);
+  }
+
+  const effectiveScale = previewFitMode === 'fit' ? currentScale : 1;
+  if (effectiveScale < 1) {
+    scaler.style.zoom = String(effectiveScale);
+  } else {
+    scaler.style.zoom = '1';
+  }
+
+  if (badge) {
+    badge.textContent =
+      previewFitMode === 'fit' && currentScale < 0.99
+        ? `📱 Tự động vừa màn hình (${Math.round(currentScale * 100)}%)`
+        : '📄 Kích thước chuẩn A4 (100%)';
+  }
+}
+
+// ============================================================================
+// 8. CCCD QR SCANNER MODAL (CAMERA + IMAGE CROPPER + PRESETS)
+// ============================================================================
+let qrScannerTarget = 'tenant'; // 'landlord' | 'tenant' | 'member' | 'citizen-app'
+let scannedQrResult = null;
+let cameraStream = null;
+let cameraAnimFrame = null;
+let uploadedQrImageObj = null;
+let cropRect = null;
+let isDraggingCrop = false;
+let cropStartPt = null;
+
+function parseCccdQrPayload(rawText) {
+  if (!rawText || typeof rawText !== 'string') return null;
+  const parts = rawText.trim().split('|');
+  if (parts.length < 5) return null;
+
+  const citizenId = (parts[0] || '').trim();
+  const oldId = (parts[1] || '').trim();
+  const fullName = (parts[2] || '').trim();
+  const rawDob = (parts[3] || '').trim();
+  const gender = (parts[4] || '').trim();
+  const address = (parts[5] || '').trim();
+  const rawIssueDate = (parts[6] || '').trim();
+
+  let birthDate = rawDob;
+  let birthYear = '';
+  if (rawDob.length === 8 && /^\d{8}$/.test(rawDob)) {
+    birthDate = `${rawDob.slice(0, 2)}/${rawDob.slice(2, 4)}/${rawDob.slice(4)}`;
+    birthYear = rawDob.slice(4);
+  }
+
+  let issueDate = rawIssueDate;
+  if (rawIssueDate.length === 8 && /^\d{8}$/.test(rawIssueDate)) {
+    issueDate = `${rawIssueDate.slice(0, 2)}/${rawIssueDate.slice(2, 4)}/${rawIssueDate.slice(4)}`;
+  }
+
+  return {
+    citizenId,
+    oldId,
+    fullName,
+    birthDate,
+    birthYear,
+    gender,
+    address,
+    issueDate
+  };
+}
+
+// Fallback OCR parser for CCCD image recognition when QR code is not detected
+function parseCccdOcrText(rawText) {
+  if (!rawText || typeof rawText !== 'string') return null;
+
+  // 1. Citizen ID (12 digits, often starting with 0)
+  let citizenId = '';
+  const idMatch = rawText.match(/\b(0\d{11})\b/) ||
+                  rawText.match(/\b(0\d{2}[\s.-]?\d{3}[\s.-]?\d{3}[\s.-]?\d{3})\b/) ||
+                  rawText.match(/(?:Số|No|CCCD|CMND|Số\s*\/[^\d\n]*)\s*([0-9\s.-]{12,16})/i);
+  if (idMatch) {
+    citizenId = idMatch[1].replace(/[\s.-]/g, '');
+  }
+
+  // 2. Date of Birth (dd/mm/yyyy or dd-mm-yyyy)
+  let birthDate = '';
+  let birthYear = '';
+  const dobMatch = rawText.match(/(?:sinh|birth|DOB)[^\d\n]*(\d{1,2}[/\.-]\d{1,2}[/\.-]\d{4})/i) ||
+                   rawText.match(/\b(\d{1,2}[/\.-]\d{1,2}[/\.-](?:19|20)\d{2})\b/);
+  if (dobMatch) {
+    const parts = dobMatch[1].split(/[/\.-]/);
+    if (parts.length === 3) {
+      birthDate = `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+      birthYear = parts[2];
+    }
+  }
+
+  // 3. Gender (Nam / Nữ)
+  let gender = 'Nam';
+  if (/Giới tính[:\s]*(Nam|Nữ)/i.test(rawText)) {
+    gender = /Giới tính[:\s]*Nam/i.test(rawText) ? 'Nam' : 'Nữ';
+  } else if (/\b(Nữ|Nu)\b/i.test(rawText)) {
+    gender = 'Nữ';
+  } else if (/\bNam\b/i.test(rawText)) {
+    gender = 'Nam';
+  }
+
+  // 4. Full Name (Uppercase Vietnamese name)
+  let fullName = '';
+  const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (/Họ và tên|Full name/i.test(line)) {
+      const after = line.replace(/.*(?:Họ và tên|Full name)[:\s]*/i, '').trim();
+      if (after && after.length >= 3 && !/\d/.test(after)) {
+        fullName = after;
+        break;
+      }
+      if (lines[i + 1]) {
+        const next = lines[i + 1].trim();
+        if (next && next.length >= 3 && !/\d/.test(next) && !/Ngày|Date|Giới/i.test(next)) {
+          fullName = next;
+          break;
+        }
+      }
+    }
+  }
+
+  // Fallback for full name: find uppercase line
+  if (!fullName) {
+    const excluded = ['CỘNG HÒA', 'XÃ HỘI', 'VIỆT NAM', 'ĐỘC LẬP', 'TỰ DO', 'HẠNH PHÚC', 'CĂN CƯỚC', 'CÔNG DÂN', 'IDENTITY', 'CARD', 'REPUBLIC', 'SOCIALIST'];
+    for (const line of lines) {
+      const clean = line.replace(/[^A-ZÀ-Ỹa-zà-ỹ\s]/gi, '').trim();
+      const isUpper = clean === clean.toUpperCase() && clean.length >= 5;
+      const words = clean.split(/\s+/).length;
+      const isEx = excluded.some(kw => clean.includes(kw));
+      if (isUpper && words >= 2 && words <= 5 && !isEx) {
+        fullName = clean;
+        break;
+      }
+    }
+  }
+
+  // 5. Permanent Address / Nơi thường trú
+  let address = '';
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (/Nơi thường trú|Place of residence|Thường trú/i.test(line)) {
+      const parts = [line.replace(/.*(?:thường trú|residence)[:\s]*/i, '').trim()];
+      if (lines[i + 1] && !/Có giá trị|Date of expiry|Quê quán|Place of/i.test(lines[i + 1])) {
+        parts.push(lines[i + 1].trim());
+      }
+      address = parts.filter(Boolean).join(', ');
+      break;
+    }
+  }
+
+  if (citizenId || fullName || birthDate) {
+    return {
+      citizenId: citizenId || '',
+      oldId: '',
+      fullName: fullName ? fullName.toUpperCase() : '',
+      birthDate: birthDate || '',
+      birthYear: birthYear || '',
+      gender: gender || 'Nam',
+      address: address || '',
+      issueDate: ''
+    };
+  }
+  return null;
+}
+
+function openQrScannerModal(target) {
+  qrScannerTarget = target || 'tenant';
+  scannedQrResult = null;
+  uploadedQrImageObj = null;
+  cropRect = null;
+
+  const modal = document.getElementById('qr-scanner-modal');
+  const titleEl = document.getElementById('qr-modal-title');
+  const resultCard = document.getElementById('qr-scanned-result-card');
+  const applyBtn = document.getElementById('btn-apply-qr-data');
+  const cropPanel = document.getElementById('qr-crop-panel');
+  const cameraWrapper = document.getElementById('qr-camera-wrapper');
+  const rawInput = document.getElementById('qr-raw-string-input');
+
+  if (titleEl) {
+    const labelMap = {
+      landlord: 'Quét mã QR CCCD — Chủ nhà (Bên A)',
+      tenant: 'Quét mã QR CCCD — Người kê khai (Bên B)',
+      member: 'Quét mã QR CCCD — Thành viên hộ gia đình (Mục 11)',
+      'citizen-app': 'Quét mã QR CCCD — Điền đơn hành chính',
+      'batch-landlord': 'Quét / Tải ảnh CCCD — Chủ nhà (Bên A) [Hồ sơ số lượng]'
+    };
+    if (qrScannerTarget.startsWith('batch-tenant-')) {
+      const bIdx = parseInt(qrScannerTarget.replace('batch-tenant-', ''), 10) + 1;
+      titleEl.textContent = `Quét / Tải ảnh CCCD — Người thuê #${bIdx}`;
+    } else {
+      titleEl.textContent = labelMap[qrScannerTarget] || 'Quét mã QR / Tải ảnh thẻ Căn cước công dân (CCCD)';
+    }
+  }
+
+  if (resultCard) resultCard.hidden = true;
+  if (applyBtn) applyBtn.disabled = true;
+  if (cropPanel) cropPanel.hidden = true;
+  if (cameraWrapper) cameraWrapper.hidden = false;
+  if (rawInput) rawInput.value = '';
+
+  if (modal) {
+    modal.hidden = false;
+    startQrCameraStream();
+  }
+}
+
+function closeQrScannerModal() {
+  stopQrCameraStream();
+  const modal = document.getElementById('qr-scanner-modal');
+  if (modal) modal.hidden = true;
+}
+
+async function startQrCameraStream() {
+  const warningEl = document.getElementById('qr-camera-warning');
+  const videoEl = document.getElementById('qr-camera-video');
+  const cameraWrapper = document.getElementById('qr-camera-wrapper');
+  if (warningEl) warningEl.hidden = true;
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    if (warningEl) {
+      warningEl.textContent = 'Trình duyệt không hỗ trợ mở camera trực tiếp. Hãy tải ảnh CCCD hoặc chọn dữ liệu mẫu bên dưới.';
+      warningEl.hidden = false;
+    }
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      }
+    });
+    cameraStream = stream;
+    if (videoEl) {
+      videoEl.srcObject = stream;
+      await videoEl.play();
+      scanCameraFrameLoop();
+    }
+  } catch (err) {
+    if (warningEl) {
+      warningEl.textContent = 'Không thể mở camera (thiết bị không có camera hoặc chưa cấp quyền). Bạn có thể tải ảnh CCCD hoặc chọn mẫu thử nhanh bên dưới.';
+      warningEl.hidden = false;
+    }
+    if (cameraWrapper) cameraWrapper.hidden = true;
+  }
+}
+
+function stopQrCameraStream() {
+  if (cameraAnimFrame) {
+    cancelAnimationFrame(cameraAnimFrame);
+    cameraAnimFrame = null;
+  }
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(t => t.stop());
+    cameraStream = null;
+  }
+}
+
+function scanCameraFrameLoop() {
+  const videoEl = document.getElementById('qr-camera-video');
+  if (!cameraStream || !videoEl) return;
+
+  if (videoEl.readyState >= videoEl.HAVE_CURRENT_DATA && videoEl.videoWidth > 0 && window.jsQR) {
+    const canvas = document.createElement('canvas');
+    canvas.width = videoEl.videoWidth;
+    canvas.height = videoEl.videoHeight;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (ctx) {
+      ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'attemptBoth' });
+      if (code && code.data) {
+        const parsed = parseCccdQrPayload(code.data);
+        if (parsed) {
+          setScannedQrResult(parsed);
+          showToast('Đã quét và nhận diện thành công mã QR CCCD!');
+          stopQrCameraStream();
+          return;
+        }
+      }
+    }
+  }
+
+  cameraAnimFrame = requestAnimationFrame(scanCameraFrameLoop);
+}
+
+function handleQrImageUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  stopQrCameraStream();
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      uploadedQrImageObj = {
+        src: e.target.result,
+        width: img.naturalWidth || img.width,
+        height: img.naturalHeight || img.height,
+        element: img
+      };
+      const uploadedImgEl = document.getElementById('qr-uploaded-img');
+      const cropPanel = document.getElementById('qr-crop-panel');
+      const cameraWrapper = document.getElementById('qr-camera-wrapper');
+      const selectionBox = document.getElementById('qr-crop-selection-box');
+      const btnScanCropped = document.getElementById('btn-scan-cropped');
+
+      if (uploadedImgEl) uploadedImgEl.src = e.target.result;
+      if (cameraWrapper) cameraWrapper.hidden = true;
+      if (cropPanel) cropPanel.hidden = false;
+      if (selectionBox) selectionBox.hidden = true;
+      if (btnScanCropped) btnScanCropped.disabled = true;
+      cropRect = null;
+
+      // Automatically attempt full-image scan first for convenience
+      scanUploadedImage(false, true);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function setupQrCropperEvents() {
+  const cropper = document.getElementById('qr-cropper-area');
+  const selectionBox = document.getElementById('qr-crop-selection-box');
+  const btnScanCropped = document.getElementById('btn-scan-cropped');
+  if (!cropper || !selectionBox) return;
+
+  const getRelPt = (e) => {
+    const r = cropper.getBoundingClientRect();
+    return {
+      x: Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)),
+      y: Math.max(0, Math.min(1, (e.clientY - r.top) / r.height))
+    };
+  };
+
+  cropper.addEventListener('pointerdown', (e) => {
+    isDraggingCrop = true;
+    cropStartPt = getRelPt(e);
+    cropper.setPointerCapture(e.pointerId);
+    cropRect = { left: cropStartPt.x, top: cropStartPt.y, width: 0, height: 0 };
+    selectionBox.hidden = false;
+  });
+
+  cropper.addEventListener('pointermove', (e) => {
+    if (!isDraggingCrop || !cropStartPt) return;
+    const cur = getRelPt(e);
+    cropRect = {
+      left: Math.min(cropStartPt.x, cur.x),
+      top: Math.min(cropStartPt.y, cur.y),
+      width: Math.abs(cur.x - cropStartPt.x),
+      height: Math.abs(cur.y - cropStartPt.y)
+    };
+    selectionBox.style.left = `${cropRect.left * 100}%`;
+    selectionBox.style.top = `${cropRect.top * 100}%`;
+    selectionBox.style.width = `${cropRect.width * 100}%`;
+    selectionBox.style.height = `${cropRect.height * 100}%`;
+  });
+
+  const endDrag = () => {
+    if (!isDraggingCrop) return;
+    isDraggingCrop = false;
+    if (cropRect && cropRect.width >= 0.03 && cropRect.height >= 0.03) {
+      if (btnScanCropped) btnScanCropped.disabled = false;
+    } else {
+      cropRect = null;
+      selectionBox.hidden = true;
+      if (btnScanCropped) btnScanCropped.disabled = true;
+    }
+  };
+
+  cropper.addEventListener('pointerup', endDrag);
+  cropper.addEventListener('pointercancel', endDrag);
+}
+
+async function scanUploadedImage(useCrop, silentIfFail = false) {
+  if (!uploadedQrImageObj) return;
+  const region = useCrop && cropRect ? cropRect : { left: 0, top: 0, width: 1, height: 1 };
+
+  const sx = Math.round(uploadedQrImageObj.width * region.left);
+  const sy = Math.round(uploadedQrImageObj.height * region.top);
+  const sw = Math.max(1, Math.round(uploadedQrImageObj.width * region.width));
+  const sh = Math.max(1, Math.round(uploadedQrImageObj.height * region.height));
+
+  const canvas = document.createElement('canvas');
+  canvas.width = sw;
+  canvas.height = sh;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(uploadedQrImageObj.element, sx, sy, sw, sh, 0, 0, sw, sh);
+
+  // 1. Try QR decoding first if jsQR is loaded
+  if (window.jsQR) {
+    const imgData = ctx.getImageData(0, 0, sw, sh);
+    const code = jsQR(imgData.data, sw, sh, { inversionAttempts: 'attemptBoth' });
+    const parsed = code && code.data ? parseCccdQrPayload(code.data) : null;
+
+    if (parsed) {
+      setScannedQrResult(parsed);
+      showToast('Đọc thành công mã QR từ ảnh CCCD!');
+      return;
+    }
+  }
+
+  // 2. Fallback to image text recognition (OCR) using Tesseract.js
+  if (window.Tesseract) {
+    const btnScanCropped = document.getElementById('btn-scan-cropped');
+    const originalBtnText = btnScanCropped ? btnScanCropped.innerHTML : '';
+    try {
+      if (btnScanCropped) {
+        btnScanCropped.disabled = true;
+        btnScanCropped.innerHTML = '<span>⏳ Đang quét chữ (OCR)...</span>';
+      }
+      showToast('Không thấy mã QR rõ nét, đang nhận diện chữ (OCR) trên ảnh CCCD...', 'info');
+
+      // Contrast enhancement on canvas for better OCR
+      const ocrCanvas = document.createElement('canvas');
+      ocrCanvas.width = sw;
+      ocrCanvas.height = sh;
+      const ocrCtx = ocrCanvas.getContext('2d');
+      ocrCtx.drawImage(canvas, 0, 0);
+      const idata = ocrCtx.getImageData(0, 0, sw, sh);
+      const d = idata.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+        const v = gray > 135 ? Math.min(255, gray * 1.15) : Math.max(0, gray * 0.85);
+        d[i] = v;
+        d[i + 1] = v;
+        d[i + 2] = v;
+      }
+      ocrCtx.putImageData(idata, 0, 0);
+
+      const workerRes = await Tesseract.recognize(ocrCanvas, 'vie+eng', {
+        logger: m => {
+          if (m.status === 'recognizing text' && m.progress) {
+            console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
+          }
+        }
+      });
+
+      const ocrText = workerRes && workerRes.data ? workerRes.data.text : '';
+      const ocrParsed = parseCccdOcrText(ocrText);
+      if (ocrParsed && (ocrParsed.citizenId || ocrParsed.fullName)) {
+        setScannedQrResult(ocrParsed);
+        showToast(`Đã trích xuất thông tin CCCD qua nhận diện ảnh: ${ocrParsed.fullName || ocrParsed.citizenId}`);
+        return;
+      }
+    } catch (err) {
+      console.warn('Tesseract OCR error:', err);
+    } finally {
+      if (btnScanCropped && originalBtnText) {
+        btnScanCropped.disabled = false;
+        btnScanCropped.innerHTML = originalBtnText;
+      }
+    }
+  }
+
+  if (!silentIfFail) {
+    showToast('Không đọc được mã QR hoặc chữ rõ ràng. Hãy khoanh sát vùng thông tin trên ảnh.', 'warn');
+  } else {
+    showToast('Hãy kéo chuột khoanh vùng mã QR hoặc thông tin trên ảnh rồi bấm "Quét vùng đã khoanh".', 'warn');
+  }
+}
+
+function parseRawQrInput() {
+  const input = document.getElementById('qr-raw-string-input');
+  if (!input || !input.value.trim()) {
+    showToast('Vui lòng dán chuỗi mã QR CCCD vào ô.', 'warn');
+    return;
+  }
+  const parsed = parseCccdQrPayload(input.value.trim());
+  if (!parsed) {
+    showToast('Chuỗi QR không đúng định dạng CCCD (Số CCCD|CMND|Họ tên|Ngày sinh|Giới tính|Địa chỉ|Ngày cấp).', 'error');
+    return;
+  }
+  setScannedQrResult(parsed);
+  showToast(`Đã nhận diện thông tin công dân: ${parsed.fullName}`);
+}
+
+function applySampleQrPreset(presetKey) {
+  const raw = SAMPLE_QR_PRESETS[presetKey];
+  if (!raw) return;
+  const input = document.getElementById('qr-raw-string-input');
+  if (input) input.value = raw;
+  const parsed = parseCccdQrPayload(raw);
+  if (parsed) {
+    setScannedQrResult(parsed);
+    showToast(`Đã nạp mẫu CCCD: ${parsed.fullName}`);
+  }
+}
+
+function setScannedQrResult(parsed) {
+  scannedQrResult = parsed;
+  setText('scanned-res-id', parsed.citizenId);
+  setText('scanned-res-name', parsed.fullName);
+  setText('scanned-res-dob', parsed.birthDate);
+  setText('scanned-res-gender', parsed.gender);
+  setText('scanned-res-address', parsed.address);
+
+  const resultCard = document.getElementById('qr-scanned-result-card');
+  const applyBtn = document.getElementById('btn-apply-qr-data');
+  if (resultCard) resultCard.hidden = false;
+  if (applyBtn) applyBtn.disabled = false;
+}
+
+function confirmApplyScannedQr() {
+  if (!scannedQrResult) return;
+  const t = scannedQrResult;
+
+  if (qrScannerTarget === 'landlord') {
+    formState.landlordName = t.fullName || formState.landlordName;
+    formState.landlordBirthYear = t.birthDate || t.birthYear || formState.landlordBirthYear;
+    formState.landlordId = t.citizenId || formState.landlordId;
+    formState.landlordAddress = t.address || formState.landlordAddress;
+    renderAllA4AndCards();
+    showToast(`Đã tự động điền thông tin Chủ nhà (Bên A) từ CCCD của ${t.fullName}`);
+  } else if (qrScannerTarget === 'tenant') {
+    formState.fullName = t.fullName || formState.fullName;
+    formState.birthDate = t.birthDate || formState.birthDate;
+    formState.gender = t.gender || formState.gender;
+    formState.citizenId = t.citizenId || formState.citizenId;
+    formState.permanentAddress = t.address || formState.permanentAddress;
+    renderAllA4AndCards();
+    showToast(`Đã tự động điền thông tin Người kê khai (Bên B) từ CCCD của ${t.fullName}`);
+  } else if (qrScannerTarget === 'member') {
+    const nameEl = document.getElementById('member-fullName');
+    const dobEl = document.getElementById('member-birthDate');
+    const genderEl = document.getElementById('member-gender');
+    const idEl = document.getElementById('member-citizenId');
+    if (nameEl) nameEl.value = t.fullName || '';
+    if (dobEl && t.birthDate) {
+      const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(t.birthDate);
+      if (m) dobEl.value = `${m[3]}-${m[2]}-${m[1]}`;
+    }
+    if (genderEl) genderEl.value = t.gender || '';
+    if (idEl) idEl.value = t.citizenId || '';
+    showToast(`Đã điền thông tin thành viên: ${t.fullName}`);
+  } else if (qrScannerTarget === 'citizen-app') {
+    citizenAppState.fullName = t.fullName || citizenAppState.fullName;
+    citizenAppState.birthDate = convertDdMmYyyyToIso(t.birthDate) || citizenAppState.birthDate;
+    citizenAppState.citizenId = t.citizenId || citizenAppState.citizenId;
+    citizenAppState.permanentAddress = t.address || citizenAppState.permanentAddress;
+    citizenAppState.issueDate = convertDdMmYyyyToIso(t.issueDate) || citizenAppState.issueDate;
+    renderCitizenAppPreview();
+    showToast(`Đã điền thông tin đơn từ CCCD của ${t.fullName}`);
+  } else if (qrScannerTarget === 'batch-landlord') {
+    batchState.landlord.fullName = t.fullName || batchState.landlord.fullName;
+    batchState.landlord.birthYear = t.birthYear || extractBirthYearOnly(t.birthDate) || batchState.landlord.birthYear;
+    batchState.landlord.citizenId = t.citizenId || batchState.landlord.citizenId;
+    batchState.landlord.permanentAddress = t.address || batchState.landlord.permanentAddress;
+    syncBatchLandlordInputs();
+    showToast(`Đã tự động điền thông tin Chủ nhà (Bên A): ${t.fullName}`);
+  } else if (qrScannerTarget.startsWith('batch-tenant-')) {
+    const idx = parseInt(qrScannerTarget.replace('batch-tenant-', ''), 10);
+    if (batchState.tenants && batchState.tenants[idx]) {
+      const cur = batchState.tenants[idx];
+      cur.fullName = t.fullName || cur.fullName;
+      cur.birthDate = t.birthDate || cur.birthDate;
+      cur.gender = t.gender || cur.gender;
+      cur.citizenId = t.citizenId || cur.citizenId;
+      cur.permanentAddress = t.address || cur.permanentAddress;
+      renderBatchTenantsList();
+      showToast(`Đã tự động điền thông tin người thuê #${idx + 1}: ${t.fullName}`);
+    }
+  }
+
+  closeQrScannerModal();
+}
+
+// ============================================================================
+// 9. FAMILY MEMBERS MODAL (MỤC 11 CT01)
+// ============================================================================
+let editingMemberId = null;
+
+function openMemberModal(memberId = null) {
+  editingMemberId = memberId;
+  const modal = document.getElementById('member-modal');
+  const title = document.getElementById('member-modal-title');
+  const form = document.getElementById('member-form');
+  if (!modal || !form) return;
+
+  form.reset();
+  if (memberId) {
+    const existing = formState.members.find(m => m.id === memberId);
+    if (existing) {
+      if (title) title.textContent = 'Sửa thông tin thành viên';
+      document.getElementById('member-fullName').value = existing.fullName || '';
+      document.getElementById('member-birthDate').value = convertDdMmYyyyToIso(existing.birthDate);
+      document.getElementById('member-gender').value = existing.gender || '';
+      document.getElementById('member-citizenId').value = existing.citizenId || '';
+      document.getElementById('member-relationship').value = existing.relationship || '';
+    }
+  } else {
+    if (title) title.textContent = 'Thêm thành viên';
+  }
+
+  modal.hidden = false;
+}
+
+function closeMemberModal() {
+  const modal = document.getElementById('member-modal');
+  if (modal) modal.hidden = true;
+}
+
+function saveMemberForm(event) {
+  event.preventDefault();
+  if (!editingMemberId && formState.members.length >= 9) {
+    showToast('Tối đa 9 thành viên trong bảng Mục 11.', 'warn');
+    return;
+  }
+
+  const fullName = document.getElementById('member-fullName').value.trim();
+  const isoDob = document.getElementById('member-birthDate').value;
+  const gender = document.getElementById('member-gender').value;
+  const citizenId = document.getElementById('member-citizenId').value.trim();
+  const relationship = document.getElementById('member-relationship').value.trim();
+
+  const [y, m, d] = isoDob.split('-');
+  const formattedDob = y && m && d ? `${d}/${m}/${y}` : isoDob;
+
+  const memberObj = {
+    id: editingMemberId || `mem-${Date.now()}`,
+    fullName,
+    birthDate: formattedDob,
+    gender,
+    citizenId,
+    relationship
+  };
+
+  if (editingMemberId) {
+    formState.members = formState.members.map(item => (item.id === editingMemberId ? memberObj : item));
+  } else {
+    formState.members.push(memberObj);
+  }
+
+  renderAllA4AndCards();
+  closeMemberModal();
+  showToast('Đã lưu thành viên vào Mục 11 tờ khai CT01.');
+}
+
+function deleteMember(memberId) {
+  formState.members = formState.members.filter(m => m.id !== memberId);
+  renderAllA4AndCards();
+}
+
+// ============================================================================
+// 10. QUICK DEMO DATA & RESET
+// ============================================================================
+function fillDemoData() {
+  formState.landlordName = 'TRẦN VĂN HÙNG';
+  formState.landlordBirthYear = '12/05/1975';
+  formState.landlordId = '079075009876';
+  formState.landlordAddress = 'Số 123/45 Đường Nguyễn Văn Nghi, Phường An Nhơn, TP. Hồ Chí Minh';
+
+  formState.fullName = 'NGUYỄN VĂN AN';
+  formState.birthDate = '15/08/1995';
+  formState.gender = 'Nam';
+  formState.citizenId = '079095012345';
+  formState.phone = '0909 888 686';
+  formState.email = 'nguyenvanan.dvc@gmail.com';
+  formState.permanentAddress = '456 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh';
+
+  formState.requestContent = activeFormKey === 'ct04' ? 'Đăng ký thường trú' : 'Đăng ký tạm trú';
+  const radioReg = document.getElementById('radio-req-register');
+  const radioDel = document.getElementById('radio-req-delete');
+  if (radioReg) radioReg.checked = true;
+  if (radioDel) radioDel.checked = false;
+
+  formState.houseNo = '123/45';
+  formState.street = 'Đường Nguyễn Văn Nghi';
+  formState.ward = 'Phường An Nhơn';
+  formState.city = 'TP. Hồ Chí Minh';
+
+  formState.members = [
+    {
+      id: 'demo-mem-1',
+      fullName: 'LÊ THỊ NGỌC MAI',
+      birthDate: '22/11/1998',
+      gender: 'Nữ',
+      citizenId: '048198006789',
+      relationship: 'Vợ'
+    },
+    {
+      id: 'demo-mem-2',
+      fullName: 'NGUYỄN MINH KHÔI',
+      birthDate: '10/06/2022',
+      gender: 'Nam',
+      citizenId: '079222004567',
+      relationship: 'Con ruột'
+    }
+  ];
+
+  renderAllA4AndCards();
+  showToast('Đã điền bộ dữ liệu mẫu vào Tờ khai CT01 & Hợp đồng cư trú!');
+}
+
+function resetAllFormData() {
+  const savedMoveIn = formState.moveInDate;
+  formState = JSON.parse(JSON.stringify(INITIAL_FORM_STATE));
+  formState.moveInDate = savedMoveIn;
+  formState.requestContent = activeFormKey === 'ct04' ? 'Đăng ký thường trú' : 'Đăng ký tạm trú';
+  const radioReg = document.getElementById('radio-req-register');
+  const radioDel = document.getElementById('radio-req-delete');
+  if (radioReg) radioReg.checked = true;
+  if (radioDel) radioDel.checked = false;
+  clearSignature('landlord');
+  clearSignature('tenant');
+  renderAllA4AndCards();
+  showToast('Đã làm mới toàn bộ biểu mẫu.', 'warn');
+}
+
+// ============================================================================
+// 11. EXPORT 2-PAGE A4 PDF & DUAL JPG (EXACT CAPAN.VN SPECIFICATION)
+// ============================================================================
+async function renderA4PagesToCanvases() {
+  const pageIds = ['ct01-doc-page-print', 'contract-doc-page-print'];
+  const elements = pageIds.map(id => {
+    const el = document.getElementById(id);
+    if (!el) throw new Error('Không tìm thấy bản xem trước A4');
+    return el;
+  });
+
+  if (document.fonts && document.fonts.ready) {
+    await document.fonts.ready;
+  }
+
+  const canvases = [];
+  for (const el of elements) {
+    const rawCanvas = await html2canvas(el, {
+      backgroundColor: '#ffffff',
+      scale: 1240 / el.offsetWidth,
+      logging: false,
+      useCORS: true,
+      onclone: (doc, clonedEl) => {
+        for (let p = clonedEl.parentElement; p; p = p.parentElement) {
+          p.style.zoom = '1';
+          p.style.overflow = 'visible';
+        }
+        const scaler = clonedEl.closest('.a4-page-scaler');
+        if (scaler) {
+          scaler.style.display = 'block';
+          scaler.style.width = '210mm';
+          scaler.style.maxWidth = 'none';
+        }
+        clonedEl.style.margin = '0';
+        clonedEl.style.boxShadow = 'none';
+        clonedEl.style.flexShrink = '0';
+        clonedEl.classList.add('a4-export-page');
+        clonedEl.querySelectorAll('.ct01-signatures-container, .ct01-sig-col').forEach(node => {
+          node.style.setProperty('border-color', 'transparent', 'important');
+        });
+      }
+    });
+
+    const a4Canvas = document.createElement('canvas');
+    a4Canvas.width = 1240;
+    a4Canvas.height = 1754;
+    const ctx = a4Canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, a4Canvas.width, a4Canvas.height);
+    const ratio = Math.min(a4Canvas.width / rawCanvas.width, a4Canvas.height / rawCanvas.height);
+    ctx.drawImage(
+      rawCanvas,
+      (a4Canvas.width - rawCanvas.width * ratio) / 2,
+      0,
+      rawCanvas.width * ratio,
+      rawCanvas.height * ratio
+    );
+    canvases.push(a4Canvas);
+  }
+
+  return canvases;
+}
+
+function buildMultiPagePdfBlob(canvases) {
+  const chunks = [];
+  const offsets = [0];
+  let totalLen = 0;
+
+  const pushBytes = (data) => {
+    const bytes = typeof data === 'string' ? new TextEncoder().encode(data) : data;
+    chunks.push(bytes);
+    totalLen += bytes.length;
+  };
+
+  const objects = [];
+  const addObject = (data) => {
+    const bytes = typeof data === 'string' ? new TextEncoder().encode(data) : data;
+    objects.push(bytes);
+    return objects.length;
+  };
+
+  const concatUint8 = (...arrays) => {
+    const total = arrays.reduce((acc, a) => acc + a.length, 0);
+    const out = new Uint8Array(total);
+    let pos = 0;
+    arrays.forEach(a => {
+      out.set(a, pos);
+      pos += a.length;
+    });
+    return out;
+  };
+
+  const imgObjIndices = canvases.map(canvas => {
+    const b64 = canvas.toDataURL('image/jpeg', 0.96).split(',')[1];
+    const binStr = atob(b64);
+    const jpegBytes = Uint8Array.from(binStr, c => c.charCodeAt(0));
+    return addObject(
+      concatUint8(
+        new TextEncoder().encode(
+          `<< /Type /XObject /Subtype /Image /Width 1240 /Height 1754 /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`
+        ),
+        jpegBytes,
+        new TextEncoder().encode('\nendstream')
+      )
+    );
+  });
+
+  const pageObjIndices = canvases.map((_, idx) => {
+    const streamCmd = new TextEncoder().encode(`q\n595 0 0 842 0 0 cm\n/Im${idx + 1} Do\nQ\n`);
+    const contentIdx = addObject(
+      `<< /Length ${streamCmd.length} >>\nstream\n${new TextDecoder().decode(streamCmd)}endstream`
+    );
+    return addObject(
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /XObject << /Im${idx + 1} ${imgObjIndices[idx] + 2} 0 R >> >> /Contents ${contentIdx + 2} 0 R >>`
+    );
+  });
+
+  objects.unshift(new TextEncoder().encode('<< /Type /Catalog /Pages 2 0 R >>'));
+  objects.splice(
+    1,
+    0,
+    new TextEncoder().encode(
+      `<< /Type /Pages /Kids [${pageObjIndices.map(i => `${i + 2} 0 R`).join(' ')}] /Count ${pageObjIndices.length} >>`
+    )
+  );
+
+  pushBytes('%PDF-1.4\n');
+  objects.forEach((objBytes, idx) => {
+    offsets[idx + 1] = totalLen;
+    pushBytes(`${idx + 1} 0 obj\n`);
+    pushBytes(objBytes);
+    pushBytes('\nendobj\n');
+  });
+
+  const xrefOffset = totalLen;
+  pushBytes(
+    `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n${objects
+      .map((_, idx) => `${String(offsets[idx + 1]).padStart(10, '0')} 00000 n \n`)
+      .join('')}trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`
+  );
+
+  return new Blob(chunks, { type: 'application/pdf' });
+}
+
+function triggerBlobDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+async function exportTwoPagePdf() {
+  const btn = document.getElementById('btn-download-pdf');
+  try {
+    if (btn) btn.disabled = true;
+    showToast('Đang xuất file PDF 2 trang A4 chất lượng cao...');
+    const canvases = await renderA4PagesToCanvases();
+    const pdfBlob = buildMultiPagePdfBlob(canvases);
+    const cleanName = (formState.fullName || 'CongDan').trim().replace(/\s+/g, '_');
+    triggerBlobDownload(pdfBlob, `HoSoCuTru_2Trang_A4_${cleanName}.pdf`);
+    showToast('File PDF 2 trang A4 đã sẵn sàng để lưu!');
+  } catch (err) {
+    console.error(err);
+    showToast('Có lỗi khi tạo file PDF A4.', 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function exportBothJpg() {
+  const btn = document.getElementById('btn-download-jpg');
+  try {
+    if (btn) btn.disabled = true;
+    showToast('Đang tạo 2 trang A4 thành 2 file ảnh JPG riêng...');
+    const canvases = await renderA4PagesToCanvases();
+    const blobs = await Promise.all(
+      canvases.map(
+        c =>
+          new Promise((resolve, reject) => {
+            c.toBlob(b => (b ? resolve(b) : reject(new Error('Blob error'))), 'image/jpeg', 0.96);
+          })
+      )
+    );
+    const cleanName = (formState.fullName || 'CongDan').trim().replace(/\s+/g, '_');
+    triggerBlobDownload(blobs[0], `CT01-ToKhaiCuTru-${cleanName}.jpg`);
+    await new Promise(r => setTimeout(r, 900));
+    triggerBlobDownload(blobs[1], `HopDong-ChoONho-${cleanName}.jpg`);
+    showToast('Đã tải xuống 2 file ảnh A4: CT01 và Hợp đồng!');
+  } catch (err) {
+    console.error(err);
+    showToast('Có lỗi khi tải ảnh A4.', 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+// ============================================================================
+// 12. CT02 (ĐƠN CỚ MẤT) & CT03 (ĐƠN XÁC NHẬN HẠNH KIỂM)
+// ============================================================================
+function syncCitizenAppFromMainState() {
+  if (formState.fullName && !citizenAppState.fullName) citizenAppState.fullName = formState.fullName;
+  if (formState.birthDate && !citizenAppState.birthDate) {
+    citizenAppState.birthDate = convertDdMmYyyyToIso(formState.birthDate);
+  }
+  if (formState.citizenId && !citizenAppState.citizenId) citizenAppState.citizenId = formState.citizenId;
+  if (formState.permanentAddress && !citizenAppState.permanentAddress) {
+    citizenAppState.permanentAddress = formState.permanentAddress;
+  }
+  if (formState.phone && !citizenAppState.phone) citizenAppState.phone = formState.phone;
+  const resAddr = buildResidenceAddressString();
+  if (resAddr && !citizenAppState.currentAddress) citizenAppState.currentAddress = resAddr;
+}
+
+function formatIsoDateForDoc(isoStr) {
+  if (!isoStr) return '...... / ...... / ........';
+  const [y, m, d] = isoStr.split('-');
+  if (!y || !m || !d) return isoStr;
+  return `${d} / ${m} / ${y}`;
+}
+
+function renderCitizenAppPreview() {
+  const isLoss = activeFormKey === 'ct02';
+  const toolbarTitle = document.getElementById('citizen-app-toolbar-title');
+  if (toolbarTitle) {
+    toolbarTitle.textContent = isLoss ? 'Điền Đơn Cớ Mất' : 'Điền Xác Nhận Hạnh Kiểm';
+  }
+
+  const pageEl = document.getElementById('citizen-app-a4-page');
+  if (!pageEl) return;
+
+  const s = citizenAppState;
+  const idLine = `${s.citizenId.trim() || '................................................'} cấp ngày: ${formatIsoDateForDoc(s.issueDate)} tại: ${s.issuePlace.trim() || '................................................'}.`;
+
+  const paragraphs = isLoss
+    ? [
+        `Tôi tên là: ${s.fullName.trim() || '................................................'}`,
+        `Sinh ngày: ${formatIsoDateForDoc(s.birthDate)}`,
+        `CMND/CCCD số: ${idLine}`,
+        `Địa chỉ thường trú: ${s.permanentAddress.trim() || '................................................'}`,
+        `Điện thoại: ${s.phone.trim() || '................................................'}`,
+        'Tôi làm đơn này trình bày với Quý cơ quan sự việc như sau:',
+        `Vào ngày ${formatIsoDateForDoc(s.lossDate)}, tôi có làm mất: ${s.lostItems.trim() || '................................................'}.`,
+        `Tại: ${s.lossLocation.trim() || '................................................'}`,
+        `Lý do mất: ${s.lossReason.trim() || '................................................'}`,
+        `Nay để phục vụ cho việc xin ${s.replacementPurpose.trim() || '................................................'}, tôi làm đơn này đề nghị Công an ${formState.ward || 'Phường An Nhơn'}, ${formState.city || 'TP. Hồ Chí Minh'} xác nhận cho tôi có đến trình báo với nội dung nêu trên.`,
+        'Tôi xin cam đoan các giấy tờ nêu trên không cầm cố, thế chấp hoặc không bị cơ quan có thẩm quyền nào khác thu giữ.',
+        'Tôi xin chân thành cảm ơn!'
+      ]
+    : [
+        `Tôi tên là: ${s.fullName.trim() || '................................................'}`,
+        `Ngày, tháng, năm sinh: ${formatIsoDateForDoc(s.birthDate)}`,
+        `Nơi sinh: ${s.birthPlace.trim() || '................................................'}`,
+        `Nguyên quán: ${s.hometown.trim() || '................................................'}. Dân tộc: ${s.ethnicity.trim() || '................................................'}`,
+        `Địa chỉ thường trú: ${s.permanentAddress.trim() || '................................................'}`,
+        `Địa chỉ tạm trú và nơi ở hiện tại: ${s.currentAddress.trim() || '................................................'}`,
+        `Số CCCD/CMND/Hộ chiếu: ${idLine}`,
+        `Kính mong Công an ${formState.ward || 'Phường An Nhơn'} xác nhận về hạnh kiểm của tôi: từ trước đến nay bản thân tôi không có vi phạm pháp luật, không có tiền án tiền sự, cũng như không có vi phạm về an ninh trật tự tại địa phương.`,
+        `Lý do: ${s.applicationReason.trim() || '................................................'} tại: ${s.organization.trim() || '................................................'}. Địa chỉ: ${s.organizationAddress.trim() || '................................................'}.`
+      ];
+
+  const [sy, sm, sd] = (s.signingDate || '').split('-');
+
+  pageEl.innerHTML = `
+    <header class="ct01-national-header">
+      <h3 class="national-country">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h3>
+      <h4 class="national-motto">Độc lập – Tự do – Hạnh phúc</h4>
+      <div class="national-underline"></div>
+    </header>
+    <h2 class="ct01-main-title">${isLoss ? 'ĐƠN CỚ MẤT' : 'ĐƠN XIN XÁC NHẬN HẠNH KIỂM'}</h2>
+    <p class="citizen-application-recipient">
+      Kính gửi: <strong>CÔNG AN ${(formState.ward || 'PHƯỜNG AN NHƠN').toUpperCase()} – ${(formState.city || 'TP. HỒ CHÍ MINH').toUpperCase()}</strong>
+    </p>
+    ${paragraphs.map(p => `<p>${escapeHtml(p)}</p>`).join('')}
+    <div class="citizen-application-signatures">
+      <p>${isLoss ? '<strong>Xác nhận của cơ quan</strong>' : ''}</p>
+      <p>${isLoss ? '................, ' : `${escapeHtml(s.signingLocation || '................')}, `}ngày ${sd || '......'} tháng ${sm || '......'} năm ${sy || '........'}</p>
+      <strong>${isLoss ? 'Công an phường/xã/thị trấn' : 'Xác nhận của Công an phường'}</strong>
+      <strong>Người làm đơn</strong>
+      <div>
+        <p class="citizen-application-signature-space"></p>
+        <strong>${escapeHtml(s.fullName)}</strong>
+      </div>
+    </div>
+  `;
+}
+
+function openCitizenAppModal() {
+  const isLoss = activeFormKey === 'ct02';
+  const modal = document.getElementById('citizen-app-modal');
+  const title = document.getElementById('citizen-app-modal-title');
+  const grid = document.getElementById('citizen-app-fields-grid');
+  if (!modal || !grid) return;
+
+  if (title) {
+    title.textContent = isLoss ? 'Nhập thông tin Đơn Cớ Mất' : 'Nhập thông tin Xác Nhận Hạnh Kiểm';
+  }
+
+  const baseFields = [
+    { name: 'fullName', label: 'Họ và tên' },
+    { name: 'birthDate', label: 'Ngày sinh', type: 'date' },
+    { name: 'citizenId', label: 'Số CCCD / CMND / Hộ chiếu' },
+    { name: 'issueDate', label: 'Ngày cấp', type: 'date' },
+    { name: 'issuePlace', label: 'Nơi cấp' },
+    { name: 'permanentAddress', label: 'Địa chỉ thường trú' }
+  ];
+
+  const lossFields = [
+    { name: 'phone', label: 'Điện thoại' },
+    { name: 'lossDate', label: 'Ngày mất', type: 'date' },
+    { name: 'lostItems', label: 'Giấy tờ / tài sản bị mất' },
+    { name: 'lossLocation', label: 'Địa điểm mất' },
+    { name: 'lossReason', label: 'Lý do mất' },
+    { name: 'replacementPurpose', label: 'Mục đích xác nhận (VD: xin cấp lại giấy tờ)' },
+    { name: 'signingDate', label: 'Ngày làm đơn', type: 'date' }
+  ];
+
+  const conductFields = [
+    { name: 'birthPlace', label: 'Nơi sinh' },
+    { name: 'hometown', label: 'Nguyên quán' },
+    { name: 'ethnicity', label: 'Dân tộc' },
+    { name: 'currentAddress', label: 'Địa chỉ tạm trú và nơi ở hiện tại' },
+    { name: 'applicationReason', label: 'Lý do xin xác nhận' },
+    { name: 'organization', label: 'Cơ quan / công ty nhận hồ sơ' },
+    { name: 'organizationAddress', label: 'Địa chỉ cơ quan / công ty' },
+    { name: 'signingLocation', label: 'Địa danh làm đơn' },
+    { name: 'signingDate', label: 'Ngày làm đơn', type: 'date' }
+  ];
+
+  const fields = [...baseFields, ...(isLoss ? lossFields : conductFields)];
+  grid.innerHTML = fields
+    .map(
+      f => `
+      <div class="ct01-address-input-field">
+        <label>${escapeHtml(f.label)}</label>
+        <input
+          type="${f.type || 'text'}"
+          class="capan-input"
+          value="${escapeHtml(citizenAppState[f.name] || '')}"
+          oninput="citizenAppState['${f.name}'] = this.value; renderCitizenAppPreview();"
+        />
+      </div>
+    `
+    )
+    .join('');
+
+  modal.hidden = false;
+}
+
+function closeCitizenAppModal() {
+  const modal = document.getElementById('citizen-app-modal');
+  if (modal) modal.hidden = true;
+}
+
+function downloadCitizenAppWord() {
+  const pageEl = document.getElementById('citizen-app-a4-page');
+  if (!pageEl) return;
+  const isLoss = activeFormKey === 'ct02';
+  const htmlContent = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head><meta charset='utf-8'><title>${isLoss ? 'Don Co Mat' : 'Xac Nhan Hanh Kiem'}</title>
+    <style>body { font-family: 'Times New Roman', serif; font-size: 13pt; line-height: 1.5; }</style>
+    </head><body>${pageEl.innerHTML}</body></html>
+  `;
+  const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+  const cleanName = (citizenAppState.fullName || 'CongDan').trim().replace(/\s+/g, '_');
+  triggerBlobDownload(blob, `${isLoss ? 'DonCoMat' : 'XacNhanHanhKiem'}_${cleanName}.doc`);
+  showToast('Đã tải xuống file Word (.doc) thành công!');
+}
+
+// ============================================================================
+// 13. TRA CỨU TIẾN ĐỘ HỒ SƠ & DANH BẠ 31 CSKV
+// ============================================================================
+function handleLookupSearch(silent = false) {
+  const input = document.getElementById('lookup-code-input');
+  const container = document.getElementById('lookup-result-container');
+  if (!input || !container) return;
+
+  const code = input.value.trim().toUpperCase();
+  if (!code) {
+    if (!silent) showToast('Vui lòng nhập Mã hồ sơ hoặc Số CCCD để tra cứu.', 'warn');
+    return;
+  }
+
+  const applicant = formState.fullName || 'NGUYỄN VĂN AN';
+  container.innerHTML = `
+    <div class="capan-lookup-result-box">
+      <div class="capan-result-badge-row">
+        <span class="capan-status-tag">● Đang thụ lý hồ sơ</span>
+        <span style="font-size:13.5px;font-weight:800;color:#334155;">Mã HS: ${escapeHtml(code)}</span>
+      </div>
+      <div class="capan-result-grid">
+        <div>
+          <strong>Thủ tục đăng ký:</strong>
+          <p>Đăng ký tạm trú / Xác nhận thông tin cư trú (Mẫu CT01)</p>
+        </div>
+        <div>
+          <strong>Người nộp hồ sơ:</strong>
+          <p>${escapeHtml(applicant)}</p>
+        </div>
+        <div>
+          <strong>Thời gian nộp:</strong>
+          <p>09:30 - Hôm nay</p>
+        </div>
+        <div>
+          <strong>Dự kiến trả kết quả:</strong>
+          <p>Trong 03 ngày làm việc</p>
+        </div>
+        <div>
+          <strong>Cán bộ thụ lý hồ sơ:</strong>
+          <p>Đại úy Lê Văn Cường - Cán bộ CSKV</p>
+        </div>
+      </div>
+      <div>
+        <h4 style="margin:0 0 12px;font-size:14.5px;color:#0f172a;">Tiến trình xử lý hồ sơ:</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;border-left:2px solid #cbd5e1;padding-left:14px;margin-left:6px;">
+          <div>
+            <strong style="color:#059669;font-size:13.5px;">✓ Nộp hồ sơ trực tuyến thành công</strong>
+            <div style="color:#64748b;font-size:12.5px;">Hệ thống tự động cấp mã tiếp nhận điện tử</div>
+          </div>
+          <div>
+            <strong style="color:#059669;font-size:13.5px;">✓ Bộ phận Một cửa tiếp nhận hồ sơ</strong>
+            <div style="color:#64748b;font-size:12.5px;">Đầy đủ Tờ khai CT01 và Hợp đồng cư trú hợp lệ</div>
+          </div>
+          <div>
+            <strong style="color:#dc2626;font-size:13.5px;">● Cán bộ Cảnh sát khu vực đang xác minh cư trú</strong>
+            <div style="color:#64748b;font-size:12.5px;">Đang tiến hành kiểm tra thực tế địa bàn</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  if (!silent) showToast('Đã tìm thấy thông tin tiến độ hồ sơ!');
+}
+
+function normalizeText(str) {
+  return String(str || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/gi, 'd')
+    .toLowerCase();
+}
+
+function formatPhonePretty(phone) {
+  const d = String(phone || '').replace(/\D/g, '');
+  return d.length === 10 ? `${d.slice(0, 4)} ${d.slice(4, 7)} ${d.slice(7)}` : phone;
+}
+
+function renderCskvDirectory() {
+  const searchInput = document.getElementById('cskv-search-input');
+  const areaInput = document.getElementById('cskv-area-input');
+  const grid = document.getElementById('cskv-cards-grid');
+  const matchBanner = document.getElementById('cskv-match-banner');
+  if (!grid) return;
+
+  const q = normalizeText(searchInput ? searchInput.value.trim() : '');
+  const areaRaw = normalizeText(areaInput ? areaInput.value.trim() : '');
+
+  let matchedAreaNum = null;
+  if (areaRaw) {
+    const m = areaRaw.match(/(?:khu\s*vuc|kv)?\s*0*(\d{1,2})\b/);
+    if (m) {
+      const n = Number(m[1]);
+      if (n >= 1 && n <= CSKV_OFFICERS.length) matchedAreaNum = n;
+    }
+  }
+
+  if (matchBanner) {
+    if (areaRaw && matchedAreaNum) {
+      const [officerName, officerPhone] = CSKV_OFFICERS[matchedAreaNum - 1];
+      matchBanner.hidden = false;
+      matchBanner.innerHTML = `
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:13.5px;">
+          <span>Kết quả tra cứu:</span>
+          <span class="capan-officer-kv-badge">KV${matchedAreaNum}</span>
+          <strong>${escapeHtml(officerName)}</strong>
+          <span>SĐT: <a href="tel:${officerPhone}" style="color:#dc2626;font-weight:800;">${formatPhonePretty(officerPhone)}</a></span>
+        </div>
+      `;
+    } else {
+      matchBanner.hidden = true;
+    }
+  }
+
+  const filtered = CSKV_OFFICERS.map(([name, phone], idx) => ({
+    name,
+    phone,
+    area: idx + 1
+  })).filter(item => {
+    if (matchedAreaNum && item.area !== matchedAreaNum) return false;
+    if (!q) return true;
+    return normalizeText(`${item.name} ${item.phone} khu vuc ${item.area} kv${item.area}`).includes(q);
+  });
+
+  grid.innerHTML = filtered
+    .map(item => {
+      const isRevealed = revealedCskvAreas.has(item.area) || matchedAreaNum === item.area;
+      return `
+        <div class="capan-officer-card ${isRevealed ? 'is-revealed' : ''}" onclick="toggleRevealCskv(${item.area})">
+          <div class="capan-officer-card-header">
+            <div class="capan-officer-avatar-icon">👮</div>
+            <div>
+              <div class="capan-officer-name">${escapeHtml(item.name)}</div>
+              <span class="capan-officer-kv-badge">KV${item.area}</span>
+            </div>
+          </div>
+          ${
+            isRevealed
+              ? `
+            <div class="capan-officer-revealed-box" onclick="event.stopPropagation()">
+              <div class="capan-officer-phone-display">
+                <span>📞</span>
+                <a href="tel:${item.phone}" style="color:#dc2626;text-decoration:none;flex:1;">${formatPhonePretty(item.phone)}</a>
+              </div>
+              <div class="capan-officer-card-buttons">
+                <a href="tel:${item.phone}" class="capan-card-btn capan-card-btn-call">Gọi ngay</a>
+                <button type="button" class="capan-card-btn capan-card-btn-copy" onclick="copyCskvPhone('${item.phone}', ${item.area}, '${escapeHtml(item.name)}')">Sao chép</button>
+              </div>
+            </div>
+          `
+              : `<div style="margin-top:8px;font-size:11.5px;color:#64748b;">Chạm vào thẻ để hiện số điện thoại liên hệ</div>`
+          }
+        </div>
+      `;
+    })
+    .join('');
+}
+
+function toggleRevealCskv(area) {
+  if (revealedCskvAreas.has(area)) {
+    revealedCskvAreas.delete(area);
+  } else {
+    revealedCskvAreas.add(area);
+  }
+  renderCskvDirectory();
+}
+
+function copyCskvPhone(phone, area, name) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(phone);
+    showToast(`Đã sao chép SĐT CSKV KV${area} (${name})`);
+  }
+}
+
+function submitQuickDeclaration() {
+  const addr = document.getElementById('decl-address-input')?.value.trim();
+  if (!formState.fullName || !formState.citizenId) {
+    showToast('Vui lòng quét mã QR CCCD trước khi gửi khai báo cư trú.', 'warn');
+    openQrScannerModal('tenant');
+    return;
+  }
+  if (!addr) {
+    showToast('Vui lòng nhập địa chỉ cư trú hiện tại.', 'warn');
+    return;
+  }
+  showToast(`Đã ghi nhận khai báo cư trú của công dân ${formState.fullName}!`);
+  switchMainTab('utilities', 'ct01');
+}
+
+// ============================================================================
+// 14. UTILITY HELPERS
+// ============================================================================
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+function syncInputValueIfNotFocused(id, val) {
+  const el = document.getElementById(id);
+  if (el && document.activeElement !== el) {
+    el.value = val || '';
+  }
+}
+
+function convertDdMmYyyyToIso(str) {
+  if (!str) return '';
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(str.trim());
+  return m ? `${m[3]}-${m[2]}-${m[1]}` : str;
+}
+
+function extractBirthYearOnly(str) {
+  if (!str) return '';
+  const s = String(str).trim();
+  const m = s.match(/\b(19\d{2}|20\d{2})\b/);
+  return m ? m[1] : s;
+}
+
+function escapeHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ============================================================================
+// 15. BATCH RESIDENCE REGISTRATION (ĐIỀN HỒ SƠ TẠM TRÚ THEO SỐ LƯỢNG)
+// ============================================================================
+function initBatchWorkspace() {
+  if (!batchState.tenants || batchState.tenants.length === 0) {
+    batchState.tenants = [];
+    const initialCount = batchState.count || 3;
+    for (let i = 0; i < initialCount; i++) {
+      batchState.tenants.push(createDefaultBatchTenant(i));
+    }
+  }
+
+  const countInput = document.getElementById('batch-tenant-count');
+  if (countInput) countInput.value = batchState.tenants.length;
+
+  // Update chip active states
+  document.querySelectorAll('#batch-qty-chips .batch-chip-btn').forEach(btn => {
+    const num = parseInt(btn.textContent) || 0;
+    btn.classList.toggle('active', num === batchState.tenants.length);
+  });
+
+  syncBatchLandlordInputs();
+  syncBatchHouseInputs();
+  renderBatchTenantsList();
+}
+
+function createDefaultBatchTenant(index) {
+  return {
+    id: `batch-tenant-${Date.now()}-${index}`,
+    fullName: '',
+    birthDate: '',
+    gender: 'Nam',
+    citizenId: '',
+    phone: '',
+    email: '',
+    permanentAddress: ''
+  };
+}
+
+function syncBatchLandlordInputs() {
+  const nameEl = document.getElementById('batch-landlord-name');
+  const birthEl = document.getElementById('batch-landlord-birth');
+  const idEl = document.getElementById('batch-landlord-id');
+  const addrEl = document.getElementById('batch-landlord-address');
+  if (nameEl && document.activeElement !== nameEl) nameEl.value = batchState.landlord.fullName || '';
+  if (birthEl && document.activeElement !== birthEl) birthEl.value = batchState.landlord.birthYear || '';
+  if (idEl && document.activeElement !== idEl) idEl.value = batchState.landlord.citizenId || '';
+  if (addrEl && document.activeElement !== addrEl) addrEl.value = batchState.landlord.permanentAddress || '';
+}
+
+function syncBatchHouseInputs() {
+  const cityEl = document.getElementById('batch-house-city');
+  const distEl = document.getElementById('batch-house-district');
+  const wardEl = document.getElementById('batch-house-ward');
+  const streetEl = document.getElementById('batch-house-street');
+  if (cityEl && document.activeElement !== cityEl) cityEl.value = batchState.house.city || '';
+  if (distEl && document.activeElement !== distEl) distEl.value = batchState.house.district || '';
+  if (wardEl && document.activeElement !== wardEl) wardEl.value = batchState.house.ward || '';
+  if (streetEl && document.activeElement !== streetEl) streetEl.value = batchState.house.street || '';
+}
+
+function setBatchTenantCount(n) {
+  const count = Math.max(1, Math.min(50, parseInt(n) || 1));
+  batchState.count = count;
+
+  const countInput = document.getElementById('batch-tenant-count');
+  if (countInput) countInput.value = count;
+
+  // Update chips
+  document.querySelectorAll('#batch-qty-chips .batch-chip-btn').forEach(btn => {
+    const num = parseInt(btn.textContent) || 0;
+    btn.classList.toggle('active', num === count);
+  });
+
+  // Adjust tenants array length
+  const curLen = batchState.tenants.length;
+  if (curLen < count) {
+    for (let i = curLen; i < count; i++) {
+      batchState.tenants.push(createDefaultBatchTenant(i));
+    }
+  } else if (curLen > count) {
+    batchState.tenants = batchState.tenants.slice(0, count);
+  }
+
+  renderBatchTenantsList();
+}
+
+function adjustBatchTenantCount(delta) {
+  setBatchTenantCount((batchState.count || (batchState.tenants ? batchState.tenants.length : 1)) + delta);
+}
+
+function addNewBatchTenant() {
+  setBatchTenantCount((batchState.tenants ? batchState.tenants.length : 0) + 1);
+}
+
+function removeBatchTenant(index) {
+  if (batchState.tenants.length <= 1) {
+    showToast('Danh sách người thuê tối thiểu 1 người.', 'warn');
+    return;
+  }
+  batchState.tenants.splice(index, 1);
+  batchState.count = batchState.tenants.length;
+  const countInput = document.getElementById('batch-tenant-count');
+  if (countInput) countInput.value = batchState.count;
+  renderBatchTenantsList();
+  showToast(`Đã xoá người thuê #${index + 1}.`);
+}
+
+function updateBatchLandlordField(field, val) {
+  batchState.landlord[field] = val;
+}
+
+function updateBatchHouseField(field, val) {
+  batchState.house[field] = val;
+}
+
+function updateBatchTenantField(index, field, val) {
+  if (batchState.tenants[index]) {
+    batchState.tenants[index][field] = val;
+  }
+}
+
+function fillBatchLandlordSample() {
+  batchState.landlord = {
+    fullName: 'TRẦN VĂN HÙNG',
+    birthYear: '1975',
+    citizenId: '079075009876',
+    permanentAddress: 'Số 123/45 Đường Nguyễn Văn Nghi, Phường An Nhơn, TP. Hồ Chí Minh'
+  };
+  batchState.house = {
+    city: 'TP. Hồ Chí Minh',
+    district: 'Quận Gò Vấp',
+    ward: 'Phường An Nhơn',
+    street: '123/45 Đường Nguyễn Văn Nghi'
+  };
+  syncBatchLandlordInputs();
+  syncBatchHouseInputs();
+  showToast('Đã nạp mẫu dữ liệu Chủ nhà & Căn nhà cho thuê!');
+}
+
+const SAMPLE_BATCH_TENANTS = [
+  {
+    fullName: 'NGUYỄN VĂN AN',
+    birthDate: '15/08/1995',
+    gender: 'Nam',
+    citizenId: '079095012345',
+    phone: '0909 888 686',
+    email: 'nguyenvanan.dvc@gmail.com',
+    permanentAddress: '456 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh'
+  },
+  {
+    fullName: 'LÊ THỊ NGỌC MAI',
+    birthDate: '22/11/1998',
+    gender: 'Nữ',
+    citizenId: '048198006789',
+    phone: '0918 234 567',
+    email: 'lethimaingoc@gmail.com',
+    permanentAddress: '78 Nguyễn Văn Linh, Quận Hải Châu, TP. Đà Nẵng'
+  },
+  {
+    fullName: 'TRẦN THỊ BÍCH NGỌC',
+    birthDate: '10/04/1997',
+    gender: 'Nữ',
+    citizenId: '079197003456',
+    phone: '0987 654 321',
+    email: 'bichngoc.tran@gmail.com',
+    permanentAddress: '12 Phan Chu Trinh, TP. Huế, Thừa Thiên Huế'
+  },
+  {
+    fullName: 'PHẠM HOÀNG ĐỨC',
+    birthDate: '05/12/1992',
+    gender: 'Nam',
+    citizenId: '031092008765',
+    phone: '0933 112 233',
+    email: 'ducpham92@gmail.com',
+    permanentAddress: '56 Trần Hưng Đạo, TP. Quy Nhơn, Bình Định'
+  },
+  {
+    fullName: 'VŨ QUANG HUY',
+    birthDate: '18/09/2000',
+    gender: 'Nam',
+    citizenId: '001200004321',
+    phone: '0977 445 566',
+    email: 'huyvu.k20@gmail.com',
+    permanentAddress: '89 Phố Huế, Quận Hai Bà Trưng, TP. Hà Nội'
+  }
+];
+
+function fillAllBatchTenantsSample() {
+  const len = batchState.tenants.length;
+  for (let i = 0; i < len; i++) {
+    const preset = SAMPLE_BATCH_TENANTS[i % SAMPLE_BATCH_TENANTS.length];
+    batchState.tenants[i] = {
+      ...batchState.tenants[i],
+      fullName: preset.fullName,
+      birthDate: preset.birthDate,
+      gender: preset.gender,
+      citizenId: preset.citizenId,
+      phone: preset.phone,
+      email: preset.email,
+      permanentAddress: preset.permanentAddress
+    };
+  }
+  renderBatchTenantsList();
+  showToast(`Đã nạp mẫu dữ liệu thử cho toàn bộ ${len} người thuê!`);
+}
+
+function updateTenantCardTitle(idx) {
+  const card = document.getElementById(`batch-tenant-card-${idx}`);
+  if (!card) return;
+  const t = batchState.tenants[idx];
+  if (!t) return;
+  const nameEl = card.querySelector('.batch-tenant-name');
+  if (nameEl) nameEl.textContent = t.fullName ? t.fullName : '(Chưa nhập họ tên)';
+}
+
+function renderBatchTenantsList() {
+  const container = document.getElementById('batch-tenants-list-container');
+  if (!container) return;
+
+  const html = batchState.tenants.map((t, idx) => `
+    <div class="batch-tenant-card" id="batch-tenant-card-${idx}">
+      <div class="batch-tenant-card-header">
+        <div class="batch-tenant-title">
+          <span class="batch-tenant-index">#${idx + 1}</span>
+          <span class="batch-tenant-name">${t.fullName ? escapeHtml(t.fullName) : '(Chưa nhập họ tên)'}</span>
+          ${t.citizenId ? `<span class="batch-tenant-id-badge">${escapeHtml(t.citizenId)}</span>` : ''}
+        </div>
+        <div class="batch-tenant-actions">
+          <button type="button" class="capan-btn-outline batch-tenant-scan-btn" onclick="openQrScannerModal('batch-tenant-${idx}')" title="Quét QR hoặc tải ảnh chụp CCCD của người này">
+            <i data-lucide="qr-code" style="width:14px;height:14px;color:#dc2626;"></i>
+            <span>Quét / Tải CCCD</span>
+          </button>
+          <button type="button" class="batch-tenant-delete-btn" onclick="removeBatchTenant(${idx})" title="Xoá người này khỏi danh sách">
+            <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="batch-tenant-card-body">
+        <div class="batch-form-grid">
+          <div class="ct01-address-input-field">
+            <label>Họ và tên người thuê <span style="color:#dc2626;">*</span></label>
+            <input type="text" class="capan-input text-uppercase" placeholder="VD: NGUYỄN VĂN AN" value="${escapeHtml(t.fullName || '')}" oninput="updateBatchTenantField(${idx}, 'fullName', this.value); updateTenantCardTitle(${idx});" />
+          </div>
+          <div class="ct01-address-input-field">
+            <label>Ngày sinh (dd/mm/yyyy) <span style="color:#dc2626;">*</span></label>
+            <input type="text" class="capan-input" placeholder="VD: 15/08/1995" value="${escapeHtml(t.birthDate || '')}" oninput="updateBatchTenantField(${idx}, 'birthDate', this.value)" />
+          </div>
+          <div class="ct01-address-input-field">
+            <label>Giới tính <span style="color:#dc2626;">*</span></label>
+            <select class="capan-select" onchange="updateBatchTenantField(${idx}, 'gender', this.value)">
+              <option value="Nam" ${t.gender === 'Nam' ? 'selected' : ''}>Nam</option>
+              <option value="Nữ" ${t.gender === 'Nữ' ? 'selected' : ''}>Nữ</option>
+            </select>
+          </div>
+          <div class="ct01-address-input-field">
+            <label>Số CCCD / Định danh (12 số) <span style="color:#dc2626;">*</span></label>
+            <input type="text" class="capan-input" maxlength="12" placeholder="VD: 079095012345" value="${escapeHtml(t.citizenId || '')}" oninput="updateBatchTenantField(${idx}, 'citizenId', this.value); updateTenantCardTitle(${idx});" />
+          </div>
+          <div class="ct01-address-input-field">
+            <label>Số điện thoại liên hệ</label>
+            <input type="text" class="capan-input" placeholder="VD: 0909 888 686" value="${escapeHtml(t.phone || '')}" oninput="updateBatchTenantField(${idx}, 'phone', this.value)" />
+          </div>
+          <div class="ct01-address-input-field">
+            <label>Email liên hệ</label>
+            <input type="text" class="capan-input" placeholder="VD: email@gmail.com" value="${escapeHtml(t.email || '')}" oninput="updateBatchTenantField(${idx}, 'email', this.value)" />
+          </div>
+          <div class="ct01-address-input-field batch-grid-col-full">
+            <label>Nơi thường trú (theo CCCD) <span style="color:#dc2626;">*</span></label>
+            <input type="text" class="capan-input" placeholder="VD: 456 Lê Lợi, Phường Bến Thành, Quận 1, TP. HCM" value="${escapeHtml(t.permanentAddress || '')}" oninput="updateBatchTenantField(${idx}, 'permanentAddress', this.value)" />
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  container.innerHTML = html;
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+}
+
+async function exportBatchZip() {
+  if (typeof JSZip === 'undefined') {
+    showToast('Thư viện tạo file ZIP (JSZip) chưa tải xong. Vui lòng thử lại sau vài giây.', 'error');
+    return;
+  }
+
+  const tenants = batchState.tenants || [];
+  if (tenants.length === 0) {
+    showToast('Danh sách người thuê đang trống. Vui lòng chọn số lượng ít nhất 1 người.', 'warn');
+    return;
+  }
+
+  // Warn if no landlord name
+  if (!batchState.landlord.fullName) {
+    showToast('Vui lòng nhập họ tên hoặc quét CCCD Chủ nhà ở Bước 2 trước khi xuất hồ sơ.', 'warn');
+    const landlordNameInput = document.getElementById('batch-landlord-name');
+    if (landlordNameInput) landlordNameInput.focus();
+    return;
+  }
+
+  const btnExport = document.getElementById('btn-export-batch-zip');
+  const btnLabel = document.getElementById('btn-export-batch-zip-label');
+  const progressWrap = document.getElementById('batch-export-progress-wrap');
+  const progressFill = document.getElementById('batch-progress-bar-fill');
+  const progressText = document.getElementById('batch-progress-text');
+
+  const updateProgress = (pct, text) => {
+    if (progressWrap) progressWrap.hidden = false;
+    if (progressFill) progressFill.style.width = `${Math.min(100, Math.max(0, pct))}%`;
+    if (progressText) progressText.textContent = text;
+  };
+
+  const wsCt01 = document.getElementById('form-workspace-ct01');
+  const prevHidden = wsCt01 ? wsCt01.hidden : false;
+  const prevStyle = wsCt01 ? wsCt01.getAttribute('style') || '' : '';
+
+  try {
+    if (btnExport) btnExport.disabled = true;
+    if (btnLabel) btnLabel.textContent = 'Đang khởi tạo nén file ZIP...';
+    updateProgress(5, 'Đang chuẩn bị dữ liệu xuất hồ sơ...');
+
+    const zip = new JSZip();
+    const originalFormState = JSON.parse(JSON.stringify(formState));
+
+    // Temporarily make wsCt01 visible off-screen so html2canvas can measure & render A4
+    if (wsCt01) {
+      wsCt01.hidden = false;
+      wsCt01.style.position = 'fixed';
+      wsCt01.style.left = '-9999px';
+      wsCt01.style.top = '0';
+      wsCt01.style.width = '1200px';
+      wsCt01.style.zIndex = '-9999';
+      wsCt01.style.opacity = '0';
+      wsCt01.style.pointerEvents = 'none';
+    }
+
+    const total = tenants.length;
+    for (let i = 0; i < total; i++) {
+      const tenant = tenants[i];
+      const displayName = (tenant.fullName || `Nguoi_Thue_${i + 1}`).trim();
+      const pct = Math.round(10 + (i / total) * 78);
+      updateProgress(pct, `Đang kết xuất hồ sơ (${i + 1}/${total}): ${displayName}...`);
+
+      // 1. Map batch landlord & house & tenant into formState
+      formState.landlordName = batchState.landlord.fullName || '';
+      formState.landlordBirthYear = batchState.landlord.birthYear || '';
+      formState.landlordId = batchState.landlord.citizenId || '';
+      formState.landlordAddress = batchState.landlord.permanentAddress || '';
+
+      formState.houseNo = '';
+      formState.street = batchState.house.street || '';
+      formState.quarter = batchState.house.district || '';
+      formState.ward = batchState.house.ward || '';
+      formState.city = batchState.house.city || '';
+
+      formState.fullName = tenant.fullName || `Người thuê ${i + 1}`;
+      formState.birthDate = tenant.birthDate || '';
+      formState.gender = tenant.gender || 'Nam';
+      formState.citizenId = tenant.citizenId || '';
+      formState.phone = tenant.phone || '';
+      formState.email = tenant.email || '';
+      formState.permanentAddress = tenant.permanentAddress || '';
+      formState.requestContent = 'Đăng ký tạm trú';
+      formState.members = [];
+
+      // Ensure valid contract moveInDate
+      if (!formState.moveInDate) {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        formState.moveInDate = `${yyyy}-${mm}-${dd}T10:00`;
+      }
+
+      renderAllA4AndCards();
+
+      // Small pause for DOM update
+      await new Promise(r => setTimeout(r, 60));
+
+      // Render canvases
+      const canvases = await renderA4PagesToCanvases();
+      const blobCt01 = await new Promise(r => canvases[0].toBlob(r, 'image/jpeg', 0.96));
+      const blobContract = await new Promise(r => canvases[1].toBlob(r, 'image/jpeg', 0.96));
+
+      // Subfolder named after tenant: [Tên người thuê]
+      const cleanTenantName = displayName.replace(/[\\/:*?"<>|]/g, '_');
+      const folderName = `${cleanTenantName}${tenant.citizenId ? '_' + tenant.citizenId : ''}`;
+      const tenantFolder = zip.folder(folderName);
+      tenantFolder.file(`01_CT01_${cleanTenantName}.jpg`, blobCt01);
+      tenantFolder.file(`02_HopDongCuTru_${cleanTenantName}.jpg`, blobContract);
+    }
+
+    updateProgress(92, 'Đang đóng gói và nén tất cả hồ sơ thành file ZIP...');
+    const zipBlob = await zip.generateAsync({
+      type: 'blob',
+      compression: 'DEFLATE',
+      compressionOptions: { level: 6 }
+    });
+
+    const nowStr = new Date().toISOString().slice(0, 10);
+    const filename = `HoSoTamTru_SoLuong_${total}_Nguoi_${nowStr}.zip`;
+    triggerBlobDownload(zipBlob, filename);
+
+    updateProgress(100, `Hoàn tất! Đã xuất và tải về ${filename}`);
+    showToast(`Đã xuất thành công gói hồ sơ tạm trú cho ${total} người thuê (.ZIP)!`);
+
+    // Restore original form state
+    formState = originalFormState;
+    renderAllA4AndCards();
+  } catch (err) {
+    console.error('Batch export error:', err);
+    showToast('Có lỗi trong quá trình kết xuất và nén file ZIP.', 'error');
+    if (progressText) progressText.textContent = 'Quá trình xuất bị gián đoạn. Vui lòng thử lại.';
+  } finally {
+    if (wsCt01) {
+      wsCt01.hidden = prevHidden;
+      if (prevStyle) wsCt01.setAttribute('style', prevStyle);
+      else wsCt01.removeAttribute('style');
+    }
+    if (btnExport) btnExport.disabled = false;
+    if (btnLabel) btnLabel.textContent = 'Xuất & Tải về toàn bộ hồ sơ (.ZIP)';
+    setTimeout(() => {
+      if (progressWrap) progressWrap.hidden = true;
+    }, 8000);
+  }
+}
+
+
