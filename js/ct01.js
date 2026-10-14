@@ -428,7 +428,7 @@ function renderAllA4AndCards() {
     } else {
       landlordSummary.innerHTML = `
         <div class="qr-empty-hint">
-          Chưa quét thẻ CCCD Chủ nhà. Bấm "Quét thẻ CCCD" để camera nhận diện tự động hoặc bấm "Nhập tay".
+          Chưa có thông tin Chủ nhà (Bên A)
         </div>
       `;
     }
@@ -461,7 +461,7 @@ function renderAllA4AndCards() {
     } else {
       tenantSummary.innerHTML = `
         <div class="qr-empty-hint">
-          Chưa quét thẻ CCCD Người kê khai. Bấm "Quét thẻ CCCD" để camera nhận diện tự động hoặc bấm "Nhập tay".
+          Chưa có thông tin Người kê khai (Bên B)
         </div>
       `;
     }

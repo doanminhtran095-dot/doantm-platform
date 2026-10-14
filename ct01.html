@@ -156,7 +156,6 @@
                   <span class="text-desktop">Điền hồ sơ và mẫu đơn trực tuyến</span>
                   <span class="text-mobile">Điền hồ sơ và mẫu đơn</span>
                 </h3>
-                <p class="forms-nav-desc">Chọn hồ sơ đăng ký tạm trú hoặc điền đơn cớ mất, xác nhận hạnh kiểm và tải file Word / PDF A4.</p>
               </div>
             </div>
 
@@ -218,7 +217,6 @@
                   <span class="text-desktop" id="workspace-steps-title-desktop">Điền hồ sơ Đăng kí Tạm trú</span>
                   <span class="text-mobile" id="workspace-steps-title-mobile">Điền hồ sơ Đăng kí Tạm trú</span>
                 </h3>
-                <p class="steps-desc-text" id="workspace-steps-desc">Quét mã QR trên thẻ CCCD để tự động điền nhanh dữ liệu và xuất file A4.</p>
               </div>
 
               <div class="capan-steps-bar">
@@ -252,7 +250,6 @@
                       </div>
                       <div>
                         <h4>Chủ nhà (Bên A)</h4>
-                        <span class="qr-sub-text">Tự động điền Bên A &amp; Mục 9 CT01</span>
                       </div>
                     </div>
                     <div class="qr-card-actions">
@@ -269,7 +266,7 @@
 
                   <div class="qr-card-body" id="landlord-card-summary">
                     <div class="qr-empty-hint">
-                      Chưa quét thẻ CCCD Chủ nhà. Bấm "Quét thẻ CCCD" để camera nhận diện tự động hoặc bấm "Nhập tay".
+                      Chưa có thông tin Chủ nhà (Bên A)
                     </div>
                   </div>
 
@@ -305,7 +302,6 @@
                       </div>
                       <div>
                         <h4>Người kê khai (Bên B)</h4>
-                        <span class="qr-sub-text">Tự động điền Bên B &amp; Mục 1–8 CT01</span>
                       </div>
                     </div>
                     <div class="qr-card-actions">
@@ -322,7 +318,7 @@
 
                   <div class="qr-card-body" id="tenant-card-summary">
                     <div class="qr-empty-hint">
-                      Chưa quét thẻ CCCD Người kê khai. Bấm "Quét thẻ CCCD" để camera nhận diện tự động hoặc bấm "Nhập tay".
+                      Chưa có thông tin Người kê khai (Bên B)
                     </div>
                   </div>
 
@@ -435,7 +431,6 @@
                 <!-- Fieldset 11: Những thành viên trong hộ gia đình cùng thay đổi -->
                 <fieldset class="ct01-members-editor no-print">
                   <legend>11. Những thành viên trong hộ gia đình cùng thay đổi</legend>
-                  <p>Quét QR CCCD hoặc nhập tay. Trẻ chưa có CCCD có thể để trống số định danh.</p>
                   <button type="button" class="capan-btn-outline" id="btn-add-member" onclick="openMemberModal()">
                     <i data-lucide="plus" style="width:15px;height:15px;"></i>
                     <span id="btn-add-member-label">Thêm thành viên (0/9)</span>
@@ -702,10 +697,9 @@
                           <i data-lucide="pen-tool" style="width:16px;height:16px;color:#dc2626;"></i>
                           <span>Bên A – Chủ nhà</span>
                         </div>
-                        <div class="sig-subtext">Chữ ký chủ nhà (Tự động chèn vào Mục (4) CT01 &amp; Đại diện Bên A Hợp đồng)</div>
                         <div class="sig-canvas-wrapper" id="sig-wrapper-landlord">
                           <canvas id="sig-canvas-landlord"></canvas>
-                          <div class="sig-placeholder" id="sig-placeholder-landlord">Ký trực tiếp bằng ngón tay / chuột / bút tại đây</div>
+                          <div class="sig-placeholder" id="sig-placeholder-landlord">Ký tại đây</div>
                         </div>
                         <div class="sig-actions">
                           <button type="button" class="sig-btn" id="btn-undo-landlord" onclick="undoSignature('landlord')" disabled>
@@ -725,10 +719,9 @@
                           <i data-lucide="pen-tool" style="width:16px;height:16px;color:#0284c7;"></i>
                           <span>Bên B – Người kê khai</span>
                         </div>
-                        <div class="sig-subtext">Chữ ký người kê khai (Tự động chèn vào Mục (3), (6) CT01 &amp; Đại diện Bên B Hợp đồng)</div>
                         <div class="sig-canvas-wrapper" id="sig-wrapper-tenant">
                           <canvas id="sig-canvas-tenant"></canvas>
-                          <div class="sig-placeholder" id="sig-placeholder-tenant">Ký trực tiếp bằng ngón tay / chuột / bút tại đây</div>
+                          <div class="sig-placeholder" id="sig-placeholder-tenant">Ký tại đây</div>
                         </div>
                         <div class="sig-actions">
                           <button type="button" class="sig-btn" id="btn-undo-tenant" onclick="undoSignature('tenant')" disabled>
@@ -750,8 +743,7 @@
                 <!-- Bottom Export Actions Bar -->
                 <div class="capan-preview-bottom-actions no-print" id="bottom-export-bar">
                   <div class="capan-output-copy">
-                    <strong>Hồ sơ đã sẵn sàng</strong>
-                    <span>Chọn PDF để in hoặc lưu hồ sơ A4 (Gồm 2 trang: Tờ khai CT01 &amp; Hợp đồng cư trú).</span>
+                    <strong>Xuất hồ sơ A4 hoàn chỉnh</strong>
                   </div>
                   <div class="capan-output-buttons">
                     <button type="button" class="capan-btn-coral-large" id="btn-download-pdf" onclick="exportTwoPagePdf()">
@@ -782,7 +774,6 @@
               <div class="citizen-application-toolbar-content">
                 <div>
                   <strong id="citizen-app-toolbar-title">Điền Đơn Cớ Mất</strong>
-                  <span>Nhập thông tin trực tuyến, quét nhanh từ mã QR CCCD và xuất văn bản A4.</span>
                 </div>
                 <div class="citizen-application-toolbar-actions">
                   <button type="button" class="capan-btn-coral-large" style="height:38px;padding:0 16px;font-size:13px;" onclick="openCitizenAppModal()">
@@ -838,7 +829,6 @@
                   <span class="batch-hero-counter" id="batch-progress-stat">Đã điền: 0 / 3 người</span>
                 </div>
                 <h3>Điền hồ sơ tạm trú theo số lượng (Chủ nhà trọ &amp; Doanh nghiệp)</h3>
-                <p>Khai báo thông tin chủ nhà và địa chỉ căn nhà một lần. Quét hoặc tải ảnh CCCD của từng người thuê. Hệ thống sẽ tự động ghép từng cặp hình (CT01 + Hợp đồng) vào thư mục riêng mang tên người thuê và đóng gói tải về file .ZIP.</p>
               </div>
             </div>
 
@@ -848,7 +838,6 @@
                 <div class="batch-step-badge">1</div>
                 <div>
                   <h4 class="batch-card-title">Chọn số lượng người đăng ký tạm trú</h4>
-                  <p class="batch-card-sub">Nhập số lượng hoặc chọn nhanh các mốc số lượng người thuê cần lập hồ sơ.</p>
                 </div>
               </div>
 
@@ -885,7 +874,6 @@
                 <div class="batch-step-badge">2</div>
                 <div>
                   <h4 class="batch-card-title">Thông tin Chủ nhà (Bên A) &amp; Căn nhà cho thuê</h4>
-                  <p class="batch-card-sub">Thông tin này dùng chung cho tất cả các bản CT01 và hợp đồng của những người thuê bên dưới.</p>
                 </div>
                 <div class="batch-head-actions">
                   <button type="button" class="capan-btn-outline" onclick="openQrScannerModal('batch-landlord')">
@@ -954,7 +942,6 @@
                 <div class="batch-step-badge">3</div>
                 <div>
                   <h4 class="batch-card-title">Quét CCCD của từng người thuê</h4>
-                  <p class="batch-card-sub">Quét mã QR hoặc tải hình chụp thẻ CCCD để tự động bóc tách dữ liệu vào hồ sơ người thuê.</p>
                 </div>
                 <div class="batch-head-actions">
                   <button type="button" class="capan-btn-outline" onclick="fillAllBatchTenantsSample()" title="Nạp mẫu dữ liệu thử nghiệm cho toàn bộ người thuê">
@@ -982,7 +969,6 @@
                 <div class="batch-step-badge" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%);">4</div>
                 <div>
                   <h4 class="batch-card-title">Xuất và Tải về toàn bộ hồ sơ (.ZIP)</h4>
-                  <p class="batch-card-sub">Tự động sinh từng cặp hình (01_CT01 &amp; 02_HopDongCuTru) đặt trong thư mục con mang tên người thuê và nén thành 1 file ZIP duy nhất.</p>
                 </div>
               </div>
 
@@ -1218,7 +1204,6 @@
           </span>
           <div>
             <div class="qr-scanner-title" id="qr-modal-title">Quét mã QR thẻ Căn cước công dân (CCCD)</div>
-            <p>Quét bằng camera, tải ảnh CCCD để khoanh vùng QR, hoặc chọn nhanh dữ liệu mẫu.</p>
           </div>
         </div>
         <button type="button" class="capan-modal-close" onclick="closeQrScannerModal()" aria-label="Đóng">
@@ -1245,7 +1230,6 @@
           </div>
           <div style="text-align:center;">
             <p style="margin:0;font-size:13px;font-weight:700;color:#1e293b;">Đặt mã QR trên CCCD vào khung quét</p>
-            <p style="margin:2px 0 0;font-size:12px;color:#64748b;" id="qr-camera-status-text">Giữ thẻ ổn định trước camera hoặc tải ảnh CCCD bên dưới.</p>
           </div>
         </div>
 
@@ -1255,8 +1239,7 @@
         <!-- Image Cropper Panel (When user uploads an image) -->
         <div class="qr-upload-crop-panel" id="qr-crop-panel" hidden>
           <div>
-            <h3 style="margin:0;font-size:14.5px;font-weight:700;color:#0f172a;">Khoanh vùng mã QR trên ảnh CCCD</h3>
-            <p style="margin:2px 0 0;font-size:12.5px;color:#64748b;">Kéo chuột hoặc chạm từ góc này sang góc đối diện của mã QR để chọn vùng quét chính xác.</p>
+            <h3 style="margin:0;font-size:14.5px;font-weight:700;color:#0f172a;">Khoanh vùng mã QR hoặc chữ trên ảnh CCCD</h3>
           </div>
 
           <button type="button" class="qr-upload-cropper" id="qr-cropper-area" aria-label="Khoanh vùng mã QR trên ảnh CCCD">
@@ -1283,8 +1266,7 @@
         <!-- Upload Option Box -->
         <div class="qr-upload-option" id="qr-upload-option-box">
           <div>
-            <h3 style="margin:0;font-size:14.5px;font-weight:700;color:#0f172a;">Quét từ ảnh CCCD</h3>
-            <p style="margin:2px 0 0;font-size:12.5px;color:#64748b;">Chọn ảnh rõ mã QR trên máy tính hoặc điện thoại để khoanh vùng và quét.</p>
+            <h3 style="margin:0;font-size:14.5px;font-weight:700;color:#0f172a;">Quét từ ảnh chụp CCCD</h3>
           </div>
           <label class="capan-btn-outline" style="cursor:pointer;flex-shrink:0;">
             <i data-lucide="upload" style="width:15px;height:15px;color:#dc2626;"></i>
@@ -1296,7 +1278,7 @@
         <!-- Quick Raw QR String & Preset Selector -->
         <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;">
           <div style="font-size:12px;font-weight:700;color:#334155;margin-bottom:8px;">
-            Hoặc dán chuỗi mã QR CCCD / Chọn nhanh công dân mẫu để thử nghiệm:
+            Nhập chuỗi mã QR hoặc chọn dữ liệu mẫu:
           </div>
           <div style="display:flex;gap:8px;margin-bottom:8px;">
             <input type="text" id="qr-raw-string-input" class="capan-input" style="height:34px;font-size:12px;font-family:monospace;" placeholder="079095012345|025123456|NGUYỄN VĂN AN|15081995|Nam|123 Nguyễn Huệ, Q1, TP.HCM|10052022" />
@@ -1315,7 +1297,6 @@
             <i data-lucide="check-circle-2" style="width:22px;height:22px;color:#16a34a;"></i>
             <div>
               <h3 style="margin:0;font-size:15px;font-weight:800;color:#14532d;">Thông tin CCCD đã quét</h3>
-              <p style="margin:1px 0 0;font-size:12px;color:#15803d;">Kiểm tra thông tin trước khi bấm Áp dụng dữ liệu.</p>
             </div>
           </div>
           <dl class="scanned-grid">
@@ -1368,7 +1349,6 @@
           </span>
           <div>
             <div class="qr-scanner-title" id="member-modal-title">Thêm thành viên</div>
-            <p>Mục 11: Thành viên trong hộ gia đình cùng thay đổi cư trú</p>
           </div>
         </div>
         <button type="button" class="capan-modal-close" onclick="closeMemberModal()">
@@ -1437,7 +1417,6 @@
           </span>
           <div>
             <div class="qr-scanner-title" id="citizen-app-modal-title">Nhập thông tin Đơn Cớ Mất</div>
-            <p>Điền các trường bên dưới để cập nhật trực tiếp vào mẫu đơn A4.</p>
           </div>
         </div>
         <button type="button" class="capan-modal-close" onclick="closeCitizenAppModal()">
