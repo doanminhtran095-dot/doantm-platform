@@ -422,25 +422,24 @@
   <div id="modal-tour-detail" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
     <div class="bg-white border border-slate-200 text-slate-800 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
       
-      <!-- Header with Hero Image Banner -->
-      <div class="relative h-60 sm:h-72 overflow-hidden flex-shrink-0">
-        <img id="detail-hero-img" src="" alt="Tour Banner" class="w-full h-full object-cover" />
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-black/30"></div>
+      <!-- Header with Hero Image Banner (Tỉ lệ 16:9 sắc nét, không bị che chữ) -->
+      <div class="relative w-full aspect-video max-h-[380px] bg-slate-950 overflow-hidden flex-shrink-0" style="aspect-ratio: 16/9;">
+        <img id="detail-hero-img" src="" alt="Tour Banner" class="w-full h-full object-contain sm:object-cover" />
 
         <!-- Close button -->
-        <button onclick="window.toursAppInstance.closeTourDetail()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md text-white hover:bg-black/80 flex items-center justify-center transition border border-white/20">
+        <button onclick="window.toursAppInstance.closeTourDetail()" class="absolute top-3.5 right-3.5 z-20 w-10 h-10 rounded-full bg-black/75 hover:bg-black/95 backdrop-blur-md text-white flex items-center justify-center transition border border-white/20 shadow-lg" aria-label="Đóng">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
+      </div>
 
-        <!-- Top details on Image -->
-        <div class="absolute bottom-5 left-5 right-5 space-y-2">
-          <div class="flex flex-wrap items-center gap-2">
-            <span id="detail-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-[#31c0cc] text-white uppercase tracking-wider shadow"></span>
-            <span id="detail-code" class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-black/70 text-zinc-200 border border-zinc-700"></span>
-            <span id="detail-duration" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500 text-white"></span>
-          </div>
-          <h2 id="detail-title" class="text-xl sm:text-2xl font-extrabold text-white leading-snug uppercase"></h2>
+      <!-- Top details Bar bên dưới banner (Đầy đủ thông tin, không che hình) -->
+      <div class="px-6 py-4 bg-slate-900 text-white border-b border-slate-800 space-y-2 flex-shrink-0">
+        <div class="flex flex-wrap items-center gap-2">
+          <span id="detail-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-[#31c0cc] text-white uppercase tracking-wider shadow"></span>
+          <span id="detail-code" class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-white/10 text-zinc-200 border border-white/20"></span>
+          <span id="detail-duration" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500 text-white"></span>
         </div>
+        <h2 id="detail-title" class="text-lg sm:text-xl font-extrabold text-white leading-snug uppercase"></h2>
       </div>
 
       <!-- Quick Metadata Bar -->

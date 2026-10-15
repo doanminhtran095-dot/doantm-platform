@@ -876,6 +876,9 @@ function clearSignature(role) {
 // ============================================================================
 function setupA4ResponsiveScaler() {
   window.addEventListener('resize', updateA4Scale);
+  window.addEventListener('orientationchange', () => {
+    setTimeout(updateA4Scale, 150);
+  });
   updateA4Scale();
 }
 
@@ -890,14 +893,20 @@ function setPreviewFitMode(mode) {
 
 function updateA4Scale() {
   const wrapper = document.getElementById('doc-preview-wrapper');
-  const scaler = document.getElementById('a4-page-scaler');
+  const scalers = [
+    document.getElementById('a4-page-scaler'),
+    document.getElementById('citizen-app-scaler')
+  ].filter(Boolean);
   const badge = document.getElementById('doc-scale-badge');
   const toolbar = document.getElementById('doc-scale-toolbar');
-  if (!wrapper || !scaler) return;
+  if (!wrapper || scalers.length === 0) return;
 
-  const availableWidth = wrapper.clientWidth - 24;
-  if (availableWidth > 0 && availableWidth < 794) {
-    currentScale = Math.max(0.3, Math.min(1, availableWidth / 794));
+  const wrapperRect = wrapper.getBoundingClientRect();
+  const availableWidth = Math.max(0, (wrapperRect.width || wrapper.clientWidth) - 32);
+  const A4_STANDARD_WIDTH = 794; // 210mm in standard screen CSS px
+
+  if (availableWidth > 0 && availableWidth < A4_STANDARD_WIDTH) {
+    currentScale = Math.max(0.25, Math.min(1, availableWidth / A4_STANDARD_WIDTH));
   } else {
     currentScale = 1;
   }
@@ -907,11 +916,32 @@ function updateA4Scale() {
   }
 
   const effectiveScale = previewFitMode === 'fit' ? currentScale : 1;
-  if (effectiveScale < 1) {
-    scaler.style.zoom = String(effectiveScale);
-  } else {
-    scaler.style.zoom = '1';
-  }
+
+  scalers.forEach(scaler => {
+    scaler.style.zoom = ''; // Remove zoom completely to prevent iOS Safari text overlap
+    if (effectiveScale < 0.999) {
+      scaler.style.width = `${A4_STANDARD_WIDTH}px`;
+      scaler.style.minWidth = `${A4_STANDARD_WIDTH}px`;
+      scaler.style.transform = `scale(${effectiveScale})`;
+      scaler.style.webkitTransform = `scale(${effectiveScale})`;
+      scaler.style.transformOrigin = 'top center';
+      scaler.style.webkitTransformOrigin = 'top center';
+
+      // Measure unscaled height and apply negative margin to remove dead space
+      const unscaledHeight = scaler.scrollHeight;
+      const visualHeight = unscaledHeight * effectiveScale;
+      const gap = Math.max(0, unscaledHeight - visualHeight);
+      scaler.style.marginBottom = `-${Math.round(gap)}px`;
+    } else {
+      scaler.style.width = '100%';
+      scaler.style.minWidth = '';
+      scaler.style.transform = 'none';
+      scaler.style.webkitTransform = 'none';
+      scaler.style.transformOrigin = 'top center';
+      scaler.style.webkitTransformOrigin = 'top center';
+      scaler.style.marginBottom = '0px';
+    }
+  });
 
   if (badge) {
     badge.textContent =
@@ -1638,21 +1668,31 @@ async function renderA4PagesToCanvases() {
   for (const el of elements) {
     const rawCanvas = await html2canvas(el, {
       backgroundColor: '#ffffff',
-      scale: 1240 / el.offsetWidth,
+      scale: 1.6,
       logging: false,
       useCORS: true,
       onclone: (doc, clonedEl) => {
         for (let p = clonedEl.parentElement; p; p = p.parentElement) {
+          p.style.transform = 'none';
+          p.style.webkitTransform = 'none';
           p.style.zoom = '1';
           p.style.overflow = 'visible';
         }
         const scaler = clonedEl.closest('.a4-page-scaler');
         if (scaler) {
+          scaler.style.transform = 'none';
+          scaler.style.webkitTransform = 'none';
+          scaler.style.zoom = '1';
           scaler.style.display = 'block';
-          scaler.style.width = '210mm';
+          scaler.style.width = '794px';
+          scaler.style.minWidth = '794px';
           scaler.style.maxWidth = 'none';
+          scaler.style.margin = '0 auto';
+          scaler.style.marginBottom = '0';
         }
-        clonedEl.style.margin = '0';
+        clonedEl.style.width = '794px';
+        clonedEl.style.minHeight = '1123px';
+        clonedEl.style.margin = '0 auto';
         clonedEl.style.boxShadow = 'none';
         clonedEl.style.flexShrink = '0';
         clonedEl.classList.add('a4-export-page');
@@ -1793,28 +1833,162 @@ async function exportTwoPagePdf() {
   }
 }
 
+function canvasToJpegBlob(canvas, quality = 0.95) {
+  return new Promise(resolve => {
+    try {
+      canvas.toBlob(blob => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          const binStr = atob(dataUrl.split(',')[1]);
+          const len = binStr.length;
+          const u8 = new Uint8Array(len);
+          for (let i = 0; i < len; i++) {
+            u8[i] = binStr.charCodeAt(i);
+          }
+          resolve(new Blob([u8], { type: 'image/jpeg' }));
+        }
+      }, 'image/jpeg', quality);
+    } catch (e) {
+      const dataUrl = canvas.toDataURL('image/jpeg', quality);
+      const binStr = atob(dataUrl.split(',')[1]);
+      const len = binStr.length;
+      const u8 = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        u8[i] = binStr.charCodeAt(i);
+      }
+      resolve(new Blob([u8], { type: 'image/jpeg' }));
+    }
+  });
+}
+
+async function createTwoImagesZipBlob(blobs, cleanName) {
+  if (typeof JSZip === 'undefined') {
+    throw new Error('Thư viện JSZip chưa tải xong');
+  }
+  const zip = new JSZip();
+  zip.file(`01_CT01_ToKhai_ThayDoi_ThongTin_CuTru_${cleanName}.jpg`, blobs[0]);
+  zip.file(`02_HopDong_ChoThue_Muon_ONho_${cleanName}.jpg`, blobs[1]);
+  return await zip.generateAsync({ type: 'blob' });
+}
+
+let currentExportUrls = [];
+
+function openExportImagesModal() {
+  const modal = document.getElementById('export-images-modal');
+  if (modal) modal.hidden = false;
+  if (window.lucide) lucide.createIcons();
+}
+
+function closeExportImagesModal() {
+  const modal = document.getElementById('export-images-modal');
+  if (modal) modal.hidden = true;
+}
+
 async function exportBothJpg() {
   const btn = document.getElementById('btn-download-jpg');
   try {
     if (btn) btn.disabled = true;
-    showToast('Đang tạo 2 trang A4 thành 2 file ảnh JPG riêng...');
+    showToast('Đang kết xuất 02 trang hồ sơ A4 sắc nét...');
+
     const canvases = await renderA4PagesToCanvases();
     const blobs = await Promise.all(
-      canvases.map(
-        c =>
-          new Promise((resolve, reject) => {
-            c.toBlob(b => (b ? resolve(b) : reject(new Error('Blob error'))), 'image/jpeg', 0.96);
-          })
-      )
+      canvases.map(c => canvasToJpegBlob(c, 0.95))
     );
+
     const cleanName = (formState.fullName || 'CongDan').trim().replace(/\s+/g, '_');
-    triggerBlobDownload(blobs[0], `CT01-ToKhaiCuTru-${cleanName}.jpg`);
-    await new Promise(r => setTimeout(r, 900));
-    triggerBlobDownload(blobs[1], `HopDong-ChoONho-${cleanName}.jpg`);
-    showToast('Đã tải xuống 2 file ảnh A4: CT01 và Hợp đồng!');
+    const ct01Filename = `01_CT01_ToKhaiCuTru_${cleanName}.jpg`;
+    const contractFilename = `02_HopDong_ChoONho_${cleanName}.jpg`;
+    const zipFilename = `HoSoCuTru_2Trang_A4_${cleanName}.zip`;
+
+    // Revoke previous URLs to avoid memory leaks
+    currentExportUrls.forEach(u => URL.revokeObjectURL(u));
+    const url1 = URL.createObjectURL(blobs[0]);
+    const url2 = URL.createObjectURL(blobs[1]);
+    currentExportUrls = [url1, url2];
+
+    const imgCt01 = document.getElementById('export-img-preview-ct01');
+    const imgContract = document.getElementById('export-img-preview-contract');
+    if (imgCt01) imgCt01.src = url1;
+    if (imgContract) imgContract.src = url2;
+
+    // Action buttons inside modal
+    const btnSaveCt01 = document.getElementById('btn-save-single-ct01');
+    const btnSaveContract = document.getElementById('btn-save-single-contract');
+    const btnDlZip = document.getElementById('btn-download-both-zip');
+    const btnShareNative = document.getElementById('btn-share-images-native');
+
+    if (btnSaveCt01) {
+      btnSaveCt01.onclick = () => {
+        triggerBlobDownload(blobs[0], ct01Filename);
+        showToast('Đang tải ảnh Trang 1 (CT01)...');
+      };
+    }
+
+    if (btnSaveContract) {
+      btnSaveContract.onclick = () => {
+        triggerBlobDownload(blobs[1], contractFilename);
+        showToast('Đang tải ảnh Trang 2 (Hợp đồng)...');
+      };
+    }
+
+    if (btnDlZip) {
+      btnDlZip.onclick = async () => {
+        try {
+          showToast('Đang đóng gói file ZIP...');
+          const zipBlob = await createTwoImagesZipBlob(blobs, cleanName);
+          triggerBlobDownload(zipBlob, zipFilename);
+          showToast('Đã tải tập tin ZIP chứa đủ 02 ảnh A4!');
+        } catch (e) {
+          triggerBlobDownload(blobs[0], ct01Filename);
+        }
+      };
+    }
+
+    // Native Web Share API (Safari iOS 15+ allows direct Save 2 Images to Photos library)
+    try {
+      const file1 = new File([blobs[0]], ct01Filename, { type: 'image/jpeg' });
+      const file2 = new File([blobs[1]], contractFilename, { type: 'image/jpeg' });
+      if (navigator.canShare && navigator.canShare({ files: [file1, file2] })) {
+        if (btnShareNative) {
+          btnShareNative.style.display = 'inline-flex';
+          btnShareNative.onclick = async () => {
+            try {
+              await navigator.share({
+                files: [file1, file2],
+                title: 'Hồ sơ Cư trú A4 (CT01 & Hợp đồng)',
+                text: `02 trang hồ sơ cư trú A4 của ${formState.fullName || 'Công dân'}`
+              });
+              showToast('Đã mở bảng lưu ảnh của điện thoại.');
+            } catch (shareErr) {
+              if (shareErr.name !== 'AbortError') {
+                console.warn('Share error:', shareErr);
+              }
+            }
+          };
+        }
+      } else {
+        if (btnShareNative) btnShareNative.style.display = 'none';
+      }
+    } catch (e) {
+      if (btnShareNative) btnShareNative.style.display = 'none';
+    }
+
+    // Auto-trigger single ZIP download (Safari iOS & Android permit 1 single download prompt with 100% of both files)
+    try {
+      const zipBlob = await createTwoImagesZipBlob(blobs, cleanName);
+      triggerBlobDownload(zipBlob, zipFilename);
+    } catch (zipErr) {
+      triggerBlobDownload(blobs[0], ct01Filename);
+    }
+
+    // Open modal so user can view both images, download individually, or long-press to save to Photos
+    openExportImagesModal();
+    showToast('Đã tải file ZIP trọn bộ & mở cửa sổ lưu ảnh!');
   } catch (err) {
     console.error(err);
-    showToast('Có lỗi khi tải ảnh A4.', 'error');
+    showToast('Có lỗi khi tạo ảnh hồ sơ A4. Vui lòng thử lại.', 'error');
   } finally {
     if (btn) btn.disabled = false;
   }

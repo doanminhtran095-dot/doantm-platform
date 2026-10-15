@@ -48,6 +48,8 @@ html, body {
   max-width: 100vw;
   min-height: 100vh;
   overflow-x: hidden !important;
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
@@ -403,8 +405,9 @@ button, input, select, textarea {
 }
 
 .capan-utility-tabs {
-  display: inline-flex;
-  gap: 10px;
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 8px;
   padding: 6px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -417,14 +420,16 @@ button, input, select, textarea {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 42px;
-  padding: 0 20px;
+  height: 44px;
+  padding: 0 16px;
+  width: 100%;
+  box-sizing: border-box;
   border-radius: 10px;
   border: none;
   background: transparent;
   color: #334155;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -1333,6 +1338,9 @@ button, input, select, textarea {
 /* Exact A4 Paper Styles from capan.vn/client/ct01 */
 .a4-page, .a4-page * {
   font-family: 'Times New Roman', Times, serif !important;
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+  max-height: 999999px;
 }
 
 .a4-page {
@@ -1347,6 +1355,7 @@ button, input, select, textarea {
   line-height: 1.35;
   position: relative;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
 }
 
 .doc-preview-wrapper .ct01-doc-page *,
@@ -2236,7 +2245,8 @@ button, input, select, textarea {
   display: none !important;
 }
 
-#qr-scanner-modal {
+#qr-scanner-modal,
+#export-images-modal {
   z-index: 350 !important;
 }
 
@@ -2969,15 +2979,17 @@ button, input, select, textarea {
 
 @media (max-width: 640px) {
   .capan-utility-tabs {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     width: 100%;
+    max-width: 480px;
     gap: 6px;
     padding: 4px;
   }
   .capan-tab-btn {
-    flex: 1 1 0;
-    padding: 0 8px;
-    font-size: 12.5px;
+    width: 100%;
+    padding: 0 6px;
+    font-size: 13px;
     height: 40px;
     justify-content: center;
   }
@@ -3550,6 +3562,7 @@ button, input, select, textarea {
     width: 210mm !important;
     max-width: 210mm !important;
     margin: 0 auto !important;
+    margin-bottom: 0 !important;
     padding: 0 !important;
     display: block !important;
     overflow: visible !important;

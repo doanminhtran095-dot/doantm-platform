@@ -1164,7 +1164,7 @@ const OUTBOUND_TOURS_DATA = [
     "originalPrice": 68100000,
     "rating": 4.9,
     "reviewsCount": 190,
-    "image": "https://goholictravel.com/wp-content/uploads/2025/07/web-bac-cuong-559x220.jpg",
+    "image": "https://goholictravel.com/wp-content/uploads/2025/07/web-bac-cuong.jpg",
     "gallery": [
       "https://goholictravel.com/wp-content/uploads/2025/07/Screenshot-2025-07-02-at-11.36.49.jpg",
       "https://goholictravel.com/wp-content/uploads/2025/07/Screenshot-2025-07-02-at-11.36.56.jpg",
@@ -1416,7 +1416,7 @@ const OUTBOUND_TOURS_DATA = [
     "originalPrice": 55900000,
     "rating": 4.9,
     "reviewsCount": 204,
-    "image": "https://goholictravel.com/wp-content/uploads/2025/08/web-Thanhhaicamtuc-559x220.jpg",
+    "image": "https://goholictravel.com/wp-content/uploads/2025/08/web-Thanhhaicamtuc.jpg",
     "gallery": [
       "https://goholictravel.com/wp-content/uploads/2025/08/di-weng-5lbgmd27oow-unsplash.jpg",
       "https://goholictravel.com/wp-content/uploads/2025/07/china-2550684-1280.jpg",
@@ -2231,7 +2231,7 @@ const OUTBOUND_TOURS_DATA = [
     "originalPrice": 60400000,
     "rating": 4.9,
     "reviewsCount": 158,
-    "image": "https://goholictravel.com/wp-content/uploads/2025/08/web-Thanhhaicamtuc-559x220.jpg",
+    "image": "https://goholictravel.com/wp-content/uploads/2025/08/web-Thanhhaicamtuc.jpg",
     "gallery": [],
     "headMeta": [
       "8 ngày 7 đêm",
@@ -3408,34 +3408,36 @@ class ToursApp {
       return `
         <div class="group bg-white border border-slate-200/90 hover:border-[#31c0cc] rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
           <div>
-            <!-- Hình ảnh Tour chuẩn Goholic Travel -->
-            <div class="relative aspect-[16/10] overflow-hidden bg-slate-100 cursor-pointer" onclick="window.toursAppInstance.openTourDetail('${tour.id}')">
-              <img src="${tour.image}" alt="${tour.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition"></div>
-              
-              <!-- Nhãn Liên kết DOANTM x Goholic -->
-              <div class="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md text-[10px] font-bold text-slate-800 shadow-md border border-slate-200/80">
-                <img src="assets/goholic-logo-badge.png" alt="Goholic" class="h-3.5 rounded-sm object-contain" />
+            <!-- Thanh Header thông tin đối tác & quốc gia (đặt phía trên, không đè lên hình ảnh) -->
+            <div class="px-4 py-2.5 bg-slate-50/90 border-b border-slate-100 flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-800">
+                <img src="assets/goholic-logo-badge.png" alt="Goholic" class="h-4 rounded-sm object-contain" />
                 <span class="text-[#0f4c5c]">Goholic</span>
                 <span class="text-slate-300">✕</span>
                 <span class="text-emerald-600 font-extrabold">DOANTM</span>
               </div>
 
-              ${tour.isFeatured ? `
-                <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-[#f8af22] text-white text-[10px] font-extrabold uppercase tracking-wider shadow-md">
-                  Nổi Bật
-                </div>
-              ` : `
-                <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/65 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider">
+              <div class="flex items-center gap-1.5">
+                <span class="px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-[10.5px] font-bold uppercase tracking-wider">
                   ${tour.countryName}
-                </div>
-              `}
+                </span>
+                ${tour.isFeatured ? `
+                  <span class="px-2 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-xs">
+                    <i data-lucide="sparkles" class="w-3 h-3"></i> NỔI BẬT
+                  </span>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Khung hình Tour chuẩn tỉ lệ 16:9 Goholic Travel (100% hình ảnh nguyên vẹn, không crop viền, không che chữ) -->
+            <div class="relative w-full aspect-video overflow-hidden bg-slate-900 cursor-pointer" onclick="window.toursAppInstance.openTourDetail('${tour.id}')" style="aspect-ratio: 16/9;">
+              <img src="${tour.image}" alt="${tour.title}" class="w-full h-full object-cover transition duration-300 hover:brightness-105" loading="lazy" />
             </div>
 
             <!-- Phần thông tin thẻ Tour giống y hệt bố cục Goholic Travel -->
             <div class="p-5">
               <!-- Tiêu đề Tour in hoa đậm -->
-              <h3 onclick="window.toursAppInstance.openTourDetail('${tour.id}')" class="font-extrabold text-[15px] sm:text-base text-slate-900 group-hover:text-[#29aab4] transition line-clamp-2 min-h-[2.75rem] leading-snug cursor-pointer uppercase">
+              <h3 onclick="window.toursAppInstance.openTourDetail('${tour.id}')" class="font-extrabold text-[15px] sm:text-base text-slate-900 group-hover:text-[#29aab4] transition line-clamp-2 min-h-[2.75rem] leading-snug cursor-pointer uppercase" title="${tour.title}">
                 ${tour.title}
               </h3>
 
@@ -3462,6 +3464,11 @@ class ToursApp {
 
                 <!-- Giá tiền màu đỏ nổi bật góc phải dưới giống ảnh mẫu Goholic -->
                 <div class="text-right flex-shrink-0 pb-0.5">
+                  ${tour.originalPrice ? `
+                    <span class="text-xs text-slate-400 line-through block mb-0.5">
+                      ${tour.originalPrice.toLocaleString('vi-VN')}đ
+                    </span>
+                  ` : ''}
                   <span class="text-lg sm:text-[19px] font-extrabold text-[#e30925] tracking-tight block leading-none">
                     ${tour.priceDisplay}
                   </span>
