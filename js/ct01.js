@@ -1661,61 +1661,146 @@ async function renderA4PagesToCanvases() {
   });
 
   if (document.fonts && document.fonts.ready) {
-    await document.fonts.ready;
+    try {
+      await document.fonts.ready;
+    } catch (e) {}
   }
+
+  const targetW = 1240;
+  const targetH = 1754;
+  const A4_SRC_W = 794;
+  const A4_SRC_H = 1123;
+  const exportScale = targetW / A4_SRC_W; // ~1.561713 -> exact 1240 x 1754
 
   const canvases = [];
   for (const el of elements) {
     const rawCanvas = await html2canvas(el, {
       backgroundColor: '#ffffff',
-      scale: 1.6,
+      scale: exportScale,
+      windowWidth: 1240,
+      windowHeight: 1800,
+      width: A4_SRC_W,
+      height: A4_SRC_H,
+      x: 0,
+      y: 0,
+      scrollX: 0,
+      scrollY: 0,
       logging: false,
       useCORS: true,
+      allowTaint: true,
       onclone: (doc, clonedEl) => {
+        // Force the iframe document to desktop width so no mobile media queries apply
+        if (doc.documentElement) {
+          doc.documentElement.style.width = '1240px';
+          doc.documentElement.style.minWidth = '1240px';
+          doc.documentElement.style.maxWidth = 'none';
+          doc.documentElement.style.overflow = 'visible';
+        }
+        if (doc.body) {
+          doc.body.style.width = '1240px';
+          doc.body.style.minWidth = '1240px';
+          doc.body.style.maxWidth = 'none';
+          doc.body.style.margin = '0';
+          doc.body.style.padding = '0';
+          doc.body.style.overflow = 'visible';
+        }
+
+        // Reset transforms and bounds on all ancestors of clonedEl
         for (let p = clonedEl.parentElement; p; p = p.parentElement) {
           p.style.transform = 'none';
           p.style.webkitTransform = 'none';
           p.style.zoom = '1';
           p.style.overflow = 'visible';
+          p.style.margin = '0';
+          p.style.padding = '0';
+          p.style.width = '1240px';
+          p.style.minWidth = '1240px';
+          p.style.maxWidth = 'none';
         }
-        const scaler = clonedEl.closest('.a4-page-scaler');
-        if (scaler) {
-          scaler.style.transform = 'none';
-          scaler.style.webkitTransform = 'none';
-          scaler.style.zoom = '1';
-          scaler.style.display = 'block';
-          scaler.style.width = '794px';
-          scaler.style.minWidth = '794px';
-          scaler.style.maxWidth = 'none';
-          scaler.style.margin = '0 auto';
-          scaler.style.marginBottom = '0';
-        }
-        clonedEl.style.width = '794px';
-        clonedEl.style.minHeight = '1123px';
-        clonedEl.style.margin = '0 auto';
-        clonedEl.style.boxShadow = 'none';
-        clonedEl.style.flexShrink = '0';
+
+        // Apply strict A4 dimensions to cloned element
         clonedEl.classList.add('a4-export-page');
-        clonedEl.querySelectorAll('.ct01-signatures-container, .ct01-sig-col').forEach(node => {
-          node.style.setProperty('border-color', 'transparent', 'important');
+        clonedEl.style.width = `${A4_SRC_W}px`;
+        clonedEl.style.minWidth = `${A4_SRC_W}px`;
+        clonedEl.style.maxWidth = `${A4_SRC_W}px`;
+        clonedEl.style.height = `${A4_SRC_H}px`;
+        clonedEl.style.minHeight = `${A4_SRC_H}px`;
+        clonedEl.style.maxHeight = `${A4_SRC_H}px`;
+        clonedEl.style.boxSizing = 'border-box';
+        clonedEl.style.margin = '0';
+        clonedEl.style.padding = '16mm 15mm 16mm 22mm';
+        clonedEl.style.transform = 'none';
+        clonedEl.style.webkitTransform = 'none';
+        clonedEl.style.zoom = '1';
+        clonedEl.style.boxShadow = 'none';
+        clonedEl.style.overflow = 'hidden';
+
+        // 1. Force CT01 4-column signature row horizontal
+        const sigContainer = clonedEl.querySelector('.ct01-signatures-container');
+        if (sigContainer) {
+          sigContainer.style.setProperty('display', 'flex', 'important');
+          sigContainer.style.setProperty('flex-direction', 'row', 'important');
+          sigContainer.style.setProperty('flex-wrap', 'nowrap', 'important');
+          sigContainer.style.setProperty('align-items', 'stretch', 'important');
+          sigContainer.style.setProperty('width', '100%', 'important');
+          sigContainer.style.setProperty('min-height', '185px', 'important');
+          sigContainer.style.setProperty('border', 'none', 'important');
+        }
+        const sigCols = clonedEl.querySelectorAll('.ct01-sig-col');
+        const colWidths = ['26.8%', '25.2%', '24.8%', '23.2%'];
+        sigCols.forEach((col, idx) => {
+          col.style.setProperty('display', 'flex', 'important');
+          col.style.setProperty('flex-direction', 'column', 'important');
+          col.style.setProperty('align-items', 'center', 'important');
+          col.style.setProperty('flex', `0 0 ${colWidths[idx] || '25%'}`, 'important');
+          col.style.setProperty('width', colWidths[idx] || '25%', 'important');
+          col.style.setProperty('max-width', colWidths[idx] || '25%', 'important');
+          col.style.setProperty('min-width', '0', 'important');
+          col.style.setProperty('border', 'none', 'important');
         });
+
+        // 2. Force Contract 2-column signature row horizontal
+        const contractSigTable = clonedEl.querySelector('.contract-signature-table');
+        if (contractSigTable) {
+          contractSigTable.style.setProperty('display', 'flex', 'important');
+          contractSigTable.style.setProperty('flex-direction', 'row', 'important');
+          contractSigTable.style.setProperty('flex-wrap', 'nowrap', 'important');
+          contractSigTable.style.setProperty('justify-content', 'space-between', 'important');
+          contractSigTable.style.setProperty('width', '100%', 'important');
+          contractSigTable.style.setProperty('padding', '0 35px', 'important');
+        }
+        const contractSigCells = clonedEl.querySelectorAll('.contract-sig-cell');
+        contractSigCells.forEach(cell => {
+          cell.style.setProperty('display', 'flex', 'important');
+          cell.style.setProperty('flex-direction', 'column', 'important');
+          cell.style.setProperty('align-items', 'center', 'important');
+          cell.style.setProperty('flex', '0 0 220px', 'important');
+          cell.style.setProperty('width', '220px', 'important');
+        });
+
+        // 3. Force flex horizontal on household and ID lines
+        const householdLine = clonedEl.querySelector('.ct01-household-line');
+        if (householdLine) {
+          householdLine.style.setProperty('display', 'flex', 'important');
+          householdLine.style.setProperty('flex-direction', 'row', 'important');
+          householdLine.style.setProperty('flex-wrap', 'nowrap', 'important');
+        }
+        const idLine = clonedEl.querySelector('.ct01-id-line');
+        if (idLine) {
+          idLine.style.setProperty('display', 'flex', 'important');
+          idLine.style.setProperty('flex-direction', 'row', 'important');
+          idLine.style.setProperty('flex-wrap', 'nowrap', 'important');
+        }
       }
     });
 
     const a4Canvas = document.createElement('canvas');
-    a4Canvas.width = 1240;
-    a4Canvas.height = 1754;
+    a4Canvas.width = targetW;
+    a4Canvas.height = targetH;
     const ctx = a4Canvas.getContext('2d');
     ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, a4Canvas.width, a4Canvas.height);
-    const ratio = Math.min(a4Canvas.width / rawCanvas.width, a4Canvas.height / rawCanvas.height);
-    ctx.drawImage(
-      rawCanvas,
-      (a4Canvas.width - rawCanvas.width * ratio) / 2,
-      0,
-      rawCanvas.width * ratio,
-      rawCanvas.height * ratio
-    );
+    ctx.fillRect(0, 0, targetW, targetH);
+    ctx.drawImage(rawCanvas, 0, 0, targetW, targetH);
     canvases.push(a4Canvas);
   }
 
@@ -1894,7 +1979,7 @@ async function exportBothJpg() {
 
     const canvases = await renderA4PagesToCanvases();
     const blobs = await Promise.all(
-      canvases.map(c => canvasToJpegBlob(c, 0.95))
+      canvases.map(c => canvasToJpegBlob(c, 0.96))
     );
 
     const cleanName = (formState.fullName || 'CongDan').trim().replace(/\s+/g, '_');
@@ -1908,31 +1993,56 @@ async function exportBothJpg() {
     const url2 = URL.createObjectURL(blobs[1]);
     currentExportUrls = [url1, url2];
 
+    // Cập nhật 02 Đường Link Tải File chính thức (Dành riêng cho iPhone & PC)
+    const linkCt01 = document.getElementById('link-download-ct01');
+    const linkContract = document.getElementById('link-download-contract');
+    const linkViewCt01 = document.getElementById('link-view-ct01');
+    const linkViewContract = document.getElementById('link-view-contract');
+    const labelCt01 = document.getElementById('label-filename-ct01');
+    const labelContract = document.getElementById('label-filename-contract');
+
+    if (linkCt01) {
+      linkCt01.href = url1;
+      linkCt01.download = ct01Filename;
+    }
+    if (linkContract) {
+      linkContract.href = url2;
+      linkContract.download = contractFilename;
+    }
+    if (linkViewCt01) {
+      linkViewCt01.href = url1;
+    }
+    if (linkViewContract) {
+      linkViewContract.href = url2;
+    }
+    if (labelCt01) labelCt01.textContent = ct01Filename;
+    if (labelContract) labelContract.textContent = contractFilename;
+
+    // Cập nhật ảnh xem trước Preview & nút bấm trên từng thẻ
     const imgCt01 = document.getElementById('export-img-preview-ct01');
     const imgContract = document.getElementById('export-img-preview-contract');
-    if (imgCt01) imgCt01.src = url1;
-    if (imgContract) imgContract.src = url2;
+    if (imgCt01) {
+      imgCt01.src = url1;
+      imgCt01.onclick = () => window.open(url1, '_blank');
+    }
+    if (imgContract) {
+      imgContract.src = url2;
+      imgContract.onclick = () => window.open(url2, '_blank');
+    }
 
-    // Action buttons inside modal
     const btnSaveCt01 = document.getElementById('btn-save-single-ct01');
     const btnSaveContract = document.getElementById('btn-save-single-contract');
-    const btnDlZip = document.getElementById('btn-download-both-zip');
-    const btnShareNative = document.getElementById('btn-share-images-native');
-
     if (btnSaveCt01) {
-      btnSaveCt01.onclick = () => {
-        triggerBlobDownload(blobs[0], ct01Filename);
-        showToast('Đang tải ảnh Trang 1 (CT01)...');
-      };
+      btnSaveCt01.href = url1;
+      btnSaveCt01.download = ct01Filename;
     }
-
     if (btnSaveContract) {
-      btnSaveContract.onclick = () => {
-        triggerBlobDownload(blobs[1], contractFilename);
-        showToast('Đang tải ảnh Trang 2 (Hợp đồng)...');
-      };
+      btnSaveContract.href = url2;
+      btnSaveContract.download = contractFilename;
     }
 
+    // Xử lý nút tải trọn bộ ZIP khi người dùng bấm
+    const btnDlZip = document.getElementById('btn-download-both-zip');
     if (btnDlZip) {
       btnDlZip.onclick = async () => {
         try {
@@ -1946,7 +2056,8 @@ async function exportBothJpg() {
       };
     }
 
-    // Native Web Share API (Safari iOS 15+ allows direct Save 2 Images to Photos library)
+    // Native Web Share API (Safari iOS cho phép lưu trực tiếp 2 ảnh vào Camera Roll)
+    const btnShareNative = document.getElementById('btn-share-images-native');
     try {
       const file1 = new File([blobs[0]], ct01Filename, { type: 'image/jpeg' });
       const file2 = new File([blobs[1]], contractFilename, { type: 'image/jpeg' });
@@ -1975,17 +2086,9 @@ async function exportBothJpg() {
       if (btnShareNative) btnShareNative.style.display = 'none';
     }
 
-    // Auto-trigger single ZIP download (Safari iOS & Android permit 1 single download prompt with 100% of both files)
-    try {
-      const zipBlob = await createTwoImagesZipBlob(blobs, cleanName);
-      triggerBlobDownload(zipBlob, zipFilename);
-    } catch (zipErr) {
-      triggerBlobDownload(blobs[0], ct01Filename);
-    }
-
-    // Open modal so user can view both images, download individually, or long-press to save to Photos
+    // Mở cửa sổ hiển thị 02 đường link tải file trực tiếp cho người dùng
     openExportImagesModal();
-    showToast('Đã tải file ZIP trọn bộ & mở cửa sổ lưu ảnh!');
+    showToast('Đã tạo xong 02 đường link tải file CT01 & Hợp đồng!');
   } catch (err) {
     console.error(err);
     showToast('Có lỗi khi tạo ảnh hồ sơ A4. Vui lòng thử lại.', 'error');

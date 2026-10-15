@@ -1458,34 +1458,89 @@
         </button>
       </div>
 
-      <div class="capan-modal-body">
-        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:12px 14px;color:#166534;font-size:13px;line-height:1.5;">
-          <strong>💡 Dành cho iPhone / Safari:</strong> Nếu trình duyệt chặn tải tự động hoặc thiếu file, bạn có thể bấm <strong>"Tải ảnh"</strong> ở từng trang bên dưới, hoặc <strong>chạm giữ trực tiếp vào ảnh</strong> rồi chọn <em>"Lưu vào Ảnh"</em> (Save to Photos).
+      <div class="capan-modal-body" style="display:flex;flex-direction:column;gap:16px;">
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:12px 14px;color:#166534;font-size:13px;line-height:1.5;display:flex;align-items:flex-start;gap:10px;">
+          <i data-lucide="check-circle" style="width:18px;height:18px;color:#16a34a;flex-shrink:0;margin-top:2px;"></i>
+          <div>
+            <strong>Đã tạo xong 02 ảnh hồ sơ A4 sắc nét!</strong><br />
+            Bấm trực tiếp vào từng <strong>đường link tải file</strong> bên dưới để tải về iPhone / máy tính, hoặc chạm giữ vào hình và chọn <em>"Lưu vào Ảnh" (Save to Photos)</em>.
+          </div>
         </div>
 
+        <!-- KHỐI 02 ĐƯỜNG LINK TẢI FILE RIÊNG BIỆT (CHO IPHONE & MÁY TÍNH) -->
+        <div style="background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:8px;color:#0f172a;font-weight:700;font-size:13.5px;">
+            <i data-lucide="link" style="width:16px;height:16px;color:#0284c7;"></i>
+            <span>02 ĐƯỜNG LINK TẢI FILE TRỰC TIẾP:</span>
+          </div>
+
+          <!-- Đường Link 1: CT01 -->
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;min-width:200px;flex:1;">
+              <span style="width:30px;height:30px;border-radius:8px;background:#eff6ff;color:#0284c7;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">1</span>
+              <div>
+                <strong style="font-size:13.5px;color:#0f172a;display:block;">Đường link 1: Tờ khai CT01 (.JPG)</strong>
+                <span id="label-filename-ct01" style="font-size:11px;color:#64748b;font-family:monospace;">01_CT01_ToKhaiCuTru.jpg</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <a id="link-download-ct01" href="#" download="01_CT01_ToKhaiCuTru.jpg" target="_blank" class="capan-btn-coral-large" style="text-decoration:none;height:38px;padding:0 14px;font-size:13px;display:inline-flex;align-items:center;gap:6px;">
+                <i data-lucide="download" style="width:15px;height:15px;"></i>
+                <span>Tải file CT01</span>
+              </a>
+              <a id="link-view-ct01" href="#" target="_blank" class="capan-btn-outline" style="text-decoration:none;height:38px;padding:0 12px;font-size:12.5px;display:inline-flex;align-items:center;gap:5px;">
+                <i data-lucide="external-link" style="width:14px;height:14px;"></i>
+                <span>Mở ảnh</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Đường Link 2: Hợp đồng -->
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;min-width:200px;flex:1;">
+              <span style="width:30px;height:30px;border-radius:8px;background:#fef2f2;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">2</span>
+              <div>
+                <strong style="font-size:13.5px;color:#0f172a;display:block;">Đường link 2: Hợp đồng cư trú (.JPG)</strong>
+                <span id="label-filename-contract" style="font-size:11px;color:#64748b;font-family:monospace;">02_HopDong_ChoONho.jpg</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <a id="link-download-contract" href="#" download="02_HopDong_ChoONho.jpg" target="_blank" class="capan-btn-coral-large" style="text-decoration:none;height:38px;padding:0 14px;font-size:13px;display:inline-flex;align-items:center;gap:6px;">
+                <i data-lucide="download" style="width:15px;height:15px;"></i>
+                <span>Tải file Hợp đồng</span>
+              </a>
+              <a id="link-view-contract" href="#" target="_blank" class="capan-btn-outline" style="text-decoration:none;height:38px;padding:0 12px;font-size:12.5px;display:inline-flex;align-items:center;gap:5px;">
+                <i data-lucide="external-link" style="width:14px;height:14px;"></i>
+                <span>Mở ảnh</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 Khung xem trước A4 chuẩn cân đối -->
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;">
           <!-- Card Trang 1: CT01 -->
           <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;text-align:center;">
             <strong style="font-size:14px;color:#0f172a;">Trang 1: Tờ khai CT01</strong>
-            <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:6px;max-height:280px;overflow:hidden;display:flex;justify-content:center;align-items:center;">
-              <img id="export-img-preview-ct01" src="" alt="Trang 1 CT01" style="max-width:100%;max-height:260px;object-fit:contain;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);" />
+            <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:6px;max-height:300px;overflow:hidden;display:flex;justify-content:center;align-items:center;">
+              <img id="export-img-preview-ct01" src="" alt="Trang 1 CT01" style="max-width:100%;max-height:285px;object-fit:contain;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);cursor:pointer;" title="Bấm để mở ảnh lớn" />
             </div>
-            <button type="button" class="capan-btn-coral-large" style="height:38px;padding:0 14px;font-size:13px;" id="btn-save-single-ct01">
+            <a id="btn-save-single-ct01" href="#" download="01_CT01_ToKhaiCuTru.jpg" target="_blank" class="capan-btn-coral-large" style="text-decoration:none;height:38px;padding:0 14px;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
               <i data-lucide="download" style="width:15px;height:15px;"></i>
               <span>Tải ảnh Trang 1 (CT01)</span>
-            </button>
+            </a>
           </div>
 
           <!-- Card Trang 2: Hợp đồng -->
           <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;text-align:center;">
             <strong style="font-size:14px;color:#0f172a;">Trang 2: Hợp đồng cư trú</strong>
-            <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:6px;max-height:280px;overflow:hidden;display:flex;justify-content:center;align-items:center;">
-              <img id="export-img-preview-contract" src="" alt="Trang 2 Hợp đồng" style="max-width:100%;max-height:260px;object-fit:contain;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);" />
+            <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:6px;max-height:300px;overflow:hidden;display:flex;justify-content:center;align-items:center;">
+              <img id="export-img-preview-contract" src="" alt="Trang 2 Hợp đồng" style="max-width:100%;max-height:285px;object-fit:contain;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);cursor:pointer;" title="Bấm để mở ảnh lớn" />
             </div>
-            <button type="button" class="capan-btn-coral-large" style="height:38px;padding:0 14px;font-size:13px;" id="btn-save-single-contract">
+            <a id="btn-save-single-contract" href="#" download="02_HopDong_ChoONho.jpg" target="_blank" class="capan-btn-coral-large" style="text-decoration:none;height:38px;padding:0 14px;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
               <i data-lucide="download" style="width:15px;height:15px;"></i>
               <span>Tải ảnh Trang 2 (Hợp đồng)</span>
-            </button>
+            </a>
           </div>
         </div>
       </div>
