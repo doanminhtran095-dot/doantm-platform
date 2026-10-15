@@ -77,7 +77,9 @@ let batchState = {
     fullName: '',
     birthYear: '',
     citizenId: '',
-    permanentAddress: ''
+    permanentAddress: '',
+    signatureDataUrl: '',
+    signatureStrokes: []
   },
   house: {
     city: 'TP. Hồ Chí Minh',
@@ -722,6 +724,13 @@ class SmoothSignaturePad {
     const start = (e) => {
       if (e.button !== undefined && e.button !== 0) return;
       e.preventDefault();
+      if (this.wrapper && this.wrapper.clientWidth > 0) {
+        const ratio = Math.max(window.devicePixelRatio || 1, 2);
+        const expectedW = Math.round((this.wrapper.clientWidth || 360) * ratio);
+        if (Math.abs(this.canvas.width - expectedW) > 6) {
+          this.resize();
+        }
+      }
       this.isDrawing = true;
       const pt = this.getPoint(e);
       this.currentStroke = [pt];
@@ -859,6 +868,10 @@ function initSignaturePads() {
 function resizeSignatureCanvases() {
   if (landlordPadInstance) landlordPadInstance.resize();
   if (tenantPadInstance) tenantPadInstance.resize();
+  if (batchLandlordPadInstance) batchLandlordPadInstance.resize();
+  if (batchTenantPadInstances && batchTenantPadInstances.length > 0) {
+    batchTenantPadInstances.forEach(p => { if (p) p.resize(); });
+  }
 }
 
 function undoSignature(role) {
@@ -2563,7 +2576,12 @@ function initBatchWorkspace() {
 
   syncBatchLandlordInputs();
   syncBatchHouseInputs();
+  initBatchLandlordPad();
   renderBatchTenantsList();
+  updateBatchSignaturesSummary();
+  setTimeout(() => {
+    resizeSignatureCanvases();
+  }, 60);
 }
 
 function createDefaultBatchTenant(index) {
@@ -2575,7 +2593,9 @@ function createDefaultBatchTenant(index) {
     citizenId: '',
     phone: '',
     email: '',
-    permanentAddress: ''
+    permanentAddress: '',
+    signatureDataUrl: '',
+    signatureStrokes: []
   };
 }
 
@@ -2664,6 +2684,7 @@ function updateBatchTenantField(index, field, val) {
 
 function fillBatchLandlordSample() {
   batchState.landlord = {
+    ...batchState.landlord,
     fullName: 'TRẦN VĂN HÙNG',
     birthYear: '1975',
     citizenId: '079075009876',
@@ -2813,6 +2834,41 @@ function renderBatchTenantsList() {
             <input type="text" class="capan-input" placeholder="VD: 456 Lê Lợi, Phường Bến Thành, Quận 1, TP. HCM" value="${escapeHtml(t.permanentAddress || '')}" oninput="updateBatchTenantField(${idx}, 'permanentAddress', this.value)" />
           </div>
         </div>
+
+        <!-- Chữ ký điện tử người thuê -->
+        <div class="batch-tenant-sig-box">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <i data-lucide="pen-tool" style="width:15px;height:15px;color:#0284c7;"></i>
+              <strong style="font-size:13px;color:#0f172a;">Chữ ký điện tử Người thuê #${idx + 1} (${escapeHtml(t.fullName || 'Người thuê')}):</strong>
+            </div>
+            <span class="batch-tenant-sig-badge" id="batch-tenant-sig-badge-${idx}" style="font-size:11.5px;font-weight:700;color:${t.signatureDataUrl ? '#15803d' : '#64748b'};background:${t.signatureDataUrl ? '#dcfce7' : '#f1f5f9'};padding:3px 8px;border-radius:4px;">
+              ${t.signatureDataUrl ? '✓ Đã ký tên' : 'Chưa ký (tùy chọn)'}
+            </span>
+          </div>
+
+          <div class="sig-canvas-wrapper" id="batch-sig-wrapper-tenant-${idx}">
+            <canvas id="batch-sig-canvas-tenant-${idx}"></canvas>
+            <div class="sig-placeholder" id="batch-sig-placeholder-tenant-${idx}" style="display:${t.signatureDataUrl ? 'none' : 'flex'};">
+              Người thuê #${idx + 1} ký tên tại đây (ngón tay hoặc chuột)
+            </div>
+          </div>
+
+          <div style="margin-top:6px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <span style="font-size:11px;color:#64748b;">Mực xanh • In vào Người kê khai CT01 &amp; Mục II Hợp đồng</span>
+            <div style="display:flex;gap:6px;">
+              <button type="button" class="sig-btn" id="btn-batch-undo-tenant-${idx}" onclick="undoBatchTenantSig(${idx})" ${t.signatureDataUrl ? '' : 'disabled'} style="height:30px;font-size:12px;padding:0 10px;">
+                <i data-lucide="undo-2" style="width:13px;height:13px;"></i>
+                <span>Hoàn tác</span>
+              </button>
+              <button type="button" class="sig-btn danger" id="btn-batch-clear-tenant-${idx}" onclick="clearBatchTenantSig(${idx})" ${t.signatureDataUrl ? '' : 'disabled'} style="height:30px;font-size:12px;padding:0 10px;">
+                <i data-lucide="trash-2" style="width:13px;height:13px;"></i>
+                <span>Ký lại</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   `).join('');
@@ -2820,6 +2876,154 @@ function renderBatchTenantsList() {
   container.innerHTML = html;
   if (window.lucide) {
     lucide.createIcons();
+  }
+
+  initBatchTenantPads();
+  updateBatchSignaturesSummary();
+}
+
+let batchLandlordPadInstance = null;
+let batchTenantPadInstances = [];
+
+function initBatchLandlordPad() {
+  const canvas = document.getElementById('batch-sig-canvas-landlord');
+  if (!canvas) return;
+
+  // Pre-sync if single landlord signature exists and batch doesn't yet have one
+  if (!batchState.landlord.signatureDataUrl && landlordSignatureDataUrl) {
+    batchState.landlord.signatureDataUrl = landlordSignatureDataUrl;
+    if (landlordPadInstance && landlordPadInstance.strokes && landlordPadInstance.strokes.length > 0) {
+      batchState.landlord.signatureStrokes = [...landlordPadInstance.strokes];
+    }
+  }
+
+  batchLandlordPadInstance = new SmoothSignaturePad(
+    'batch-sig-canvas-landlord',
+    'batch-sig-wrapper-landlord',
+    'batch-sig-placeholder-landlord',
+    'btn-batch-undo-landlord',
+    'btn-batch-clear-landlord',
+    (dataUrl) => {
+      batchState.landlord.signatureDataUrl = dataUrl;
+      if (batchLandlordPadInstance) {
+        batchState.landlord.signatureStrokes = [...batchLandlordPadInstance.strokes];
+      }
+      if (!landlordSignatureDataUrl) {
+        landlordSignatureDataUrl = dataUrl;
+      }
+      updateBatchLandlordSigBadge();
+      updateBatchSignaturesSummary();
+    }
+  );
+
+  if (batchState.landlord.signatureStrokes && batchState.landlord.signatureStrokes.length > 0) {
+    batchLandlordPadInstance.strokes = [...batchState.landlord.signatureStrokes];
+    batchLandlordPadInstance.redrawAll();
+  }
+  updateBatchLandlordSigBadge();
+}
+
+function updateBatchLandlordSigBadge() {
+  const badge = document.getElementById('batch-landlord-sig-badge');
+  if (!badge) return;
+  const hasSig = !!batchState.landlord.signatureDataUrl;
+  badge.style.background = hasSig ? '#dcfce7' : '#fee2e2';
+  badge.style.color = hasSig ? '#15803d' : '#dc2626';
+  badge.textContent = hasSig ? '✓ Đã ký (Áp dụng toàn bộ hồ sơ)' : 'Chưa ký (Chủ nhà ký 1 lần tại đây)';
+}
+
+function undoBatchLandlordSig() {
+  if (batchLandlordPadInstance) {
+    batchLandlordPadInstance.undo();
+  }
+}
+
+function clearBatchLandlordSig() {
+  if (batchLandlordPadInstance) {
+    batchLandlordPadInstance.clear();
+    batchState.landlord.signatureDataUrl = '';
+    batchState.landlord.signatureStrokes = [];
+    updateBatchLandlordSigBadge();
+    updateBatchSignaturesSummary();
+  }
+}
+
+function initBatchTenantPads() {
+  batchTenantPadInstances = [];
+  if (!batchState.tenants) return;
+
+  batchState.tenants.forEach((tenant, idx) => {
+    const canvas = document.getElementById(`batch-sig-canvas-tenant-${idx}`);
+    if (!canvas) return;
+
+    const pad = new SmoothSignaturePad(
+      `batch-sig-canvas-tenant-${idx}`,
+      `batch-sig-wrapper-tenant-${idx}`,
+      `batch-sig-placeholder-tenant-${idx}`,
+      `btn-batch-undo-tenant-${idx}`,
+      `btn-batch-clear-tenant-${idx}`,
+      (dataUrl) => {
+        tenant.signatureDataUrl = dataUrl;
+        tenant.signatureStrokes = [...pad.strokes];
+        updateBatchTenantSigBadge(idx);
+        updateBatchSignaturesSummary();
+      }
+    );
+
+    if (tenant.signatureStrokes && tenant.signatureStrokes.length > 0) {
+      pad.strokes = [...tenant.signatureStrokes];
+      pad.redrawAll();
+    }
+
+    batchTenantPadInstances[idx] = pad;
+    updateBatchTenantSigBadge(idx);
+  });
+}
+
+function updateBatchTenantSigBadge(idx) {
+  const badge = document.getElementById(`batch-tenant-sig-badge-${idx}`);
+  if (!badge) return;
+  const t = batchState.tenants && batchState.tenants[idx];
+  if (!t) return;
+  const hasSig = !!t.signatureDataUrl;
+  badge.style.background = hasSig ? '#dcfce7' : '#f1f5f9';
+  badge.style.color = hasSig ? '#15803d' : '#64748b';
+  badge.textContent = hasSig ? '✓ Đã ký tên' : 'Chưa ký (tùy chọn)';
+}
+
+function undoBatchTenantSig(idx) {
+  if (batchTenantPadInstances[idx]) {
+    batchTenantPadInstances[idx].undo();
+  }
+}
+
+function clearBatchTenantSig(idx) {
+  if (batchTenantPadInstances[idx]) {
+    batchTenantPadInstances[idx].clear();
+    if (batchState.tenants && batchState.tenants[idx]) {
+      batchState.tenants[idx].signatureDataUrl = '';
+      batchState.tenants[idx].signatureStrokes = [];
+    }
+    updateBatchTenantSigBadge(idx);
+    updateBatchSignaturesSummary();
+  }
+}
+
+function updateBatchSignaturesSummary() {
+  const landlordSum = document.getElementById('batch-summary-sig-landlord');
+  const tenantsSum = document.getElementById('batch-summary-sig-tenants');
+  if (landlordSum) {
+    const hasLandlord = !!batchState.landlord.signatureDataUrl;
+    landlordSum.style.background = hasLandlord ? '#dcfce7' : '#fef3c7';
+    landlordSum.style.color = hasLandlord ? '#15803d' : '#92400e';
+    landlordSum.textContent = hasLandlord ? 'Chủ nhà: ✓ Đã ký (áp dụng toàn bộ)' : 'Chủ nhà: Chưa ký (tùy chọn)';
+  }
+  if (tenantsSum) {
+    const total = batchState.tenants ? batchState.tenants.length : 0;
+    const signed = batchState.tenants ? batchState.tenants.filter(t => !!t.signatureDataUrl).length : 0;
+    tenantsSum.style.background = signed > 0 ? '#eff6ff' : '#f1f5f9';
+    tenantsSum.style.color = signed > 0 ? '#1d4ed8' : '#475569';
+    tenantsSum.textContent = `Người thuê: ${signed}/${total} đã ký`;
   }
 }
 
@@ -2973,6 +3177,8 @@ async function exportBatchZip() {
 
     const zip = new JSZip();
     const originalFormState = JSON.parse(JSON.stringify(formState));
+    const originalLandlordSig = landlordSignatureDataUrl;
+    const originalTenantSig = tenantSignatureDataUrl;
     const batchResults = [];
 
     // Temporarily make wsCt01 visible off-screen so html2canvas can measure & render A4
@@ -3025,6 +3231,12 @@ async function exportBatchZip() {
         const dd = String(now.getDate()).padStart(2, '0');
         formState.moveInDate = `${yyyy}-${mm}-${dd}T10:00`;
       }
+
+      // Map signatures:
+      // Landlord signs once (batchState.landlord.signatureDataUrl) or fallback to single workspace sig
+      landlordSignatureDataUrl = batchState.landlord.signatureDataUrl || originalLandlordSig || '';
+      // Each tenant has their own signature in tenant.signatureDataUrl
+      tenantSignatureDataUrl = tenant.signatureDataUrl || '';
 
       renderAllA4AndCards();
 
@@ -3102,15 +3314,17 @@ async function exportBatchZip() {
 
     updateProgress(100, `Hoàn tất! Đã xuất ${total} bộ hồ sơ.`);
     showToast(`Đã xuất thành công gói hồ sơ tạm trú cho ${total} người thuê!`);
-
-    // Restore original form state
-    formState = originalFormState;
-    renderAllA4AndCards();
   } catch (err) {
     console.error('Batch export error:', err);
     showToast('Có lỗi trong quá trình kết xuất và nén file ZIP.', 'error');
     if (progressText) progressText.textContent = 'Quá trình xuất bị gián đoạn. Vui lòng thử lại.';
   } finally {
+    // Restore original state and signatures
+    formState = originalFormState;
+    landlordSignatureDataUrl = originalLandlordSig;
+    tenantSignatureDataUrl = originalTenantSig;
+    renderAllA4AndCards();
+
     if (wsCt01) {
       wsCt01.hidden = prevHidden;
       if (prevStyle) wsCt01.setAttribute('style', prevStyle);

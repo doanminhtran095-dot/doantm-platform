@@ -941,6 +941,51 @@
                     <input type="text" id="batch-house-street" class="capan-input" placeholder="VD: 123 Nguyễn Huệ" oninput="updateBatchHouseField('street', this.value)" />
                   </div>
                 </div>
+
+                <div class="batch-divider" style="margin:16px 0;"></div>
+
+                <!-- CHỮ KÝ ĐIỆN TỬ CHỦ NHÀ (BÊN A) - CHỈ KÝ 1 LẦN DUY NHẤT -->
+                <div class="batch-landlord-sig-panel">
+                  <div style="background:linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);border:1.5px solid #fdba74;border-radius:14px;padding:14px 16px;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+                      <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg, #ea580c 0%, #c2410c 100%);color:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(234, 88, 12, 0.3);flex-shrink:0;">
+                          <i data-lucide="pen-tool" style="width:18px;height:18px;"></i>
+                        </span>
+                        <div>
+                          <strong style="font-size:14px;color:#9a3412;display:block;">Chữ ký điện tử Chủ nhà (Bên A) — Chỉ ký 1 lần duy nhất</strong>
+                          <span style="font-size:12px;color:#7c2d12;">Chữ ký này sẽ được tự động in vào toàn bộ tờ khai CT01 &amp; Hợp đồng của tất cả người thuê</span>
+                        </div>
+                      </div>
+                      <span class="batch-sig-badge" id="batch-landlord-sig-badge" style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;background:#fee2e2;color:#dc2626;white-space:nowrap;">
+                        Chưa ký (Chủ nhà ký 1 lần tại đây)
+                      </span>
+                    </div>
+
+                    <!-- Canvas Wrapper -->
+                    <div class="sig-canvas-wrapper" id="batch-sig-wrapper-landlord">
+                      <canvas id="batch-sig-canvas-landlord"></canvas>
+                      <div class="sig-placeholder" id="batch-sig-placeholder-landlord">
+                        Chủ nhà (Bên A) ký tên điện tử tại đây (ngón tay hoặc chuột)
+                      </div>
+                    </div>
+
+                    <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                      <span style="font-size:11.5px;color:#9a3412;">✓ Mực xanh chuẩn văn bản hành chính • Tự động áp dụng cho tất cả hồ sơ</span>
+                      <div style="display:flex;gap:6px;">
+                        <button type="button" class="sig-btn" id="btn-batch-undo-landlord" onclick="undoBatchLandlordSig()" disabled style="height:32px;font-size:12px;padding:0 12px;">
+                          <i data-lucide="undo-2" style="width:14px;height:14px;"></i>
+                          <span>Hoàn tác nét</span>
+                        </button>
+                        <button type="button" class="sig-btn danger" id="btn-batch-clear-landlord" onclick="clearBatchLandlordSig()" disabled style="height:32px;font-size:12px;padding:0 12px;">
+                          <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+                          <span>Ký lại</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
 
@@ -987,6 +1032,18 @@
                     <div id="batch-progress-bar-fill" class="batch-progress-bar-fill" style="width: 0%;"></div>
                   </div>
                   <p id="batch-progress-text" class="batch-progress-status">Đang chuẩn bị dữ liệu xuất hồ sơ...</p>
+                </div>
+
+                <!-- Signature Status Checklist in Step 4 -->
+                <div class="batch-export-summary-box" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <i data-lucide="shield-check" style="width:18px;height:18px;color:#10b981;"></i>
+                    <strong style="font-size:13px;color:#1e293b;">Tình trạng chữ ký điện tử hồ sơ:</strong>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:12px;">
+                    <span id="batch-summary-sig-landlord" style="padding:4px 9px;border-radius:6px;background:#fef3c7;color:#92400e;font-weight:700;">Chủ nhà: Chưa ký</span>
+                    <span id="batch-summary-sig-tenants" style="padding:4px 9px;border-radius:6px;background:#f1f5f9;color:#475569;font-weight:700;">Người thuê: 0/3 đã ký</span>
+                  </div>
                 </div>
 
                 <!-- Action Button -->

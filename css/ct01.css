@@ -2121,6 +2121,39 @@ input[type="date"].capan-input {
   cursor: not-allowed;
 }
 
+/* Batch Residence Electronic Signature Styles */
+.batch-landlord-sig-panel {
+  margin-top: 14px;
+}
+
+.batch-landlord-sig-panel .sig-canvas-wrapper {
+  background: #ffffff;
+  border: 1.5px dashed #ea580c;
+  height: 125px;
+}
+
+.batch-landlord-sig-panel .sig-canvas-wrapper:hover {
+  border-color: #c2410c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12);
+}
+
+.batch-tenant-sig-box {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1.5px dashed #e2e8f0;
+}
+
+.batch-tenant-sig-box .sig-canvas-wrapper {
+  background: #ffffff;
+  border: 1.5px dashed #0284c7;
+  height: 115px;
+}
+
+.batch-tenant-sig-box .sig-canvas-wrapper:hover {
+  border-color: #0369a1;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+}
+
 /* ==========================================================================
    8. BOTTOM EXPORT ACTIONS BAR
    ========================================================================== */
