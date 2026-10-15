@@ -1101,11 +1101,25 @@ function parseCccdOcrText(rawText) {
   return null;
 }
 
+let memberModalWasOpen = false;
+
 function openQrScannerModal(target) {
   qrScannerTarget = target || 'tenant';
   scannedQrResult = null;
   uploadedQrImageObj = null;
   cropRect = null;
+
+  const memberModal = document.getElementById('member-modal');
+  if (target === 'member') {
+    if (memberModal && !memberModal.hidden) {
+      memberModalWasOpen = true;
+      memberModal.hidden = true;
+    } else {
+      memberModalWasOpen = false;
+    }
+  } else {
+    memberModalWasOpen = false;
+  }
 
   const modal = document.getElementById('qr-scanner-modal');
   const titleEl = document.getElementById('qr-modal-title');
@@ -1147,6 +1161,12 @@ function closeQrScannerModal() {
   stopQrCameraStream();
   const modal = document.getElementById('qr-scanner-modal');
   if (modal) modal.hidden = true;
+
+  if (memberModalWasOpen) {
+    const memberModal = document.getElementById('member-modal');
+    if (memberModal) memberModal.hidden = false;
+    memberModalWasOpen = false;
+  }
 }
 
 async function startQrCameraStream() {
@@ -1463,18 +1483,22 @@ function confirmApplyScannedQr() {
     renderAllA4AndCards();
     showToast(`Đã tự động điền thông tin Người kê khai (Bên B) từ CCCD của ${t.fullName}`);
   } else if (qrScannerTarget === 'member') {
+    const memberModal = document.getElementById('member-modal');
+    if (memberModal) memberModal.hidden = false;
+    memberModalWasOpen = false;
+
     const nameEl = document.getElementById('member-fullName');
     const dobEl = document.getElementById('member-birthDate');
     const genderEl = document.getElementById('member-gender');
     const idEl = document.getElementById('member-citizenId');
-    if (nameEl) nameEl.value = t.fullName || '';
+    if (nameEl) nameEl.value = (t.fullName || '').toUpperCase();
     if (dobEl && t.birthDate) {
-      const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(t.birthDate);
-      if (m) dobEl.value = `${m[3]}-${m[2]}-${m[1]}`;
+      const iso = convertDdMmYyyyToIso(t.birthDate) || t.birthDate;
+      dobEl.value = iso;
     }
-    if (genderEl) genderEl.value = t.gender || '';
+    if (genderEl && t.gender) genderEl.value = t.gender;
     if (idEl) idEl.value = t.citizenId || '';
-    showToast(`Đã điền thông tin thành viên: ${t.fullName}`);
+    showToast(`Đã tự động nhận diện thành viên: ${t.fullName}`);
   } else if (qrScannerTarget === 'citizen-app') {
     citizenAppState.fullName = t.fullName || citizenAppState.fullName;
     citizenAppState.birthDate = convertDdMmYyyyToIso(t.birthDate) || citizenAppState.birthDate;
@@ -1512,6 +1536,15 @@ function confirmApplyScannedQr() {
 // ============================================================================
 let editingMemberId = null;
 
+function openDirectMemberScan() {
+  if (formState.members && formState.members.length >= 9) {
+    showToast('Tối đa 9 thành viên trong bảng Mục 11.', 'warn');
+    return;
+  }
+  openMemberModal(null);
+  openQrScannerModal('member');
+}
+
 function openMemberModal(memberId = null) {
   editingMemberId = memberId;
   const modal = document.getElementById('member-modal');
@@ -1531,10 +1564,13 @@ function openMemberModal(memberId = null) {
       document.getElementById('member-relationship').value = existing.relationship || '';
     }
   } else {
-    if (title) title.textContent = 'Thêm thành viên';
+    if (title) title.textContent = 'Thêm thành viên cùng thay đổi';
   }
 
   modal.hidden = false;
+  if (window.lucide) {
+    lucide.createIcons();
+  }
 }
 
 function closeMemberModal() {
@@ -1716,10 +1752,18 @@ async function renderA4PagesToCanvases() {
           p.style.width = '1240px';
           p.style.minWidth = '1240px';
           p.style.maxWidth = 'none';
+          p.style.opacity = '1';
+          p.style.visibility = 'visible';
+          p.style.position = 'static';
+          p.style.left = '0';
+          p.style.top = '0';
         }
 
         // Apply strict A4 dimensions to cloned element
         clonedEl.classList.add('a4-export-page');
+        clonedEl.style.opacity = '1';
+        clonedEl.style.visibility = 'visible';
+        clonedEl.style.display = 'block';
         clonedEl.style.width = `${A4_SRC_W}px`;
         clonedEl.style.minWidth = `${A4_SRC_W}px`;
         clonedEl.style.maxWidth = `${A4_SRC_W}px`;
@@ -2779,6 +2823,108 @@ function renderBatchTenantsList() {
   }
 }
 
+let currentBatchExportUrls = [];
+let currentBatchFilesForShare = [];
+
+function openBatchExportModal() {
+  const modal = document.getElementById('batch-export-modal');
+  if (modal) modal.hidden = false;
+  if (window.lucide) lucide.createIcons();
+}
+
+function closeBatchExportModal() {
+  const modal = document.getElementById('batch-export-modal');
+  if (modal) modal.hidden = true;
+}
+
+async function shareBatchFilesNative() {
+  if (navigator.share && currentBatchFilesForShare.length > 0) {
+    try {
+      const shareData = {
+        title: 'Hồ sơ tạm trú số lượng',
+        text: 'Hồ sơ đăng ký tạm trú CT01 và hợp đồng',
+        files: currentBatchFilesForShare.slice(0, 10)
+      };
+      if (navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        showToast('Đã mở menu chia sẻ / lưu ảnh thành công!');
+        return;
+      }
+    } catch (e) {
+      if (e.name !== 'AbortError') {
+        console.warn('Native share failed:', e);
+      }
+    }
+  }
+  showToast('Chạm vào nút "Tải file" hoặc "Mở" ở từng mục để tải hoặc lưu ảnh vào iPhone.', 'info');
+}
+
+function renderBatchExportResultsList(results) {
+  const container = document.getElementById('batch-export-results-list');
+  if (!container) return;
+
+  container.innerHTML = results.map(r => `
+    <div class="batch-result-tenant-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid #f1f5f9;padding-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:26px;height:26px;border-radius:6px;background:#fee2e2;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;">#${r.index}</span>
+          <strong style="font-size:14px;color:#0f172a;text-transform:uppercase;">${escapeHtml(r.displayName)}</strong>
+          ${r.citizenId ? `<span style="font-size:12px;color:#64748b;font-family:monospace;background:#f1f5f9;padding:2px 8px;border-radius:4px;">${escapeHtml(r.citizenId)}</span>` : ''}
+        </div>
+        <span style="font-size:12px;color:#16a34a;font-weight:700;">✓ Đã tạo 02 file A4</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:10px;">
+        <!-- Link 1: CT01 -->
+        <div class="batch-result-file-item">
+          <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
+            <i data-lucide="file-text" style="width:16px;height:16px;color:#dc2626;flex-shrink:0;"></i>
+            <div style="min-width:0;">
+              <div style="font-size:12.5px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(r.ct01Filename)}</div>
+              <span style="font-size:11px;color:#64748b;">Tờ khai CT01 (.JPG)</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">
+            <a href="${r.urlCt01}" download="${escapeHtml(r.ct01Filename)}" target="_blank" class="capan-btn-coral-large" style="text-decoration:none;height:34px;padding:0 12px;font-size:12px;display:inline-flex;align-items:center;gap:4px;">
+              <i data-lucide="download" style="width:13px;height:13px;"></i>
+              <span>Tải file</span>
+            </a>
+            <a href="${r.urlCt01}" target="_blank" class="capan-btn-outline" style="text-decoration:none;height:34px;padding:0 8px;font-size:11.5px;display:inline-flex;align-items:center;gap:3px;" title="Mở ảnh để chạm giữ Lưu vào Ảnh trên iPhone">
+              <i data-lucide="external-link" style="width:13px;height:13px;"></i>
+              <span>Mở</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Link 2: Hợp đồng -->
+        <div class="batch-result-file-item">
+          <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
+            <i data-lucide="file-check" style="width:16px;height:16px;color:#0284c7;flex-shrink:0;"></i>
+            <div style="min-width:0;">
+              <div style="font-size:12.5px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(r.contractFilename)}</div>
+              <span style="font-size:11px;color:#64748b;">Hợp đồng cư trú (.JPG)</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">
+            <a href="${r.urlContract}" download="${escapeHtml(r.contractFilename)}" target="_blank" class="capan-btn-coral-large" style="text-decoration:none;height:34px;padding:0 12px;font-size:12px;display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+              <i data-lucide="download" style="width:13px;height:13px;"></i>
+              <span>Tải file</span>
+            </a>
+            <a href="${r.urlContract}" target="_blank" class="capan-btn-outline" style="text-decoration:none;height:34px;padding:0 8px;font-size:11.5px;display:inline-flex;align-items:center;gap:3px;" title="Mở ảnh để chạm giữ Lưu vào Ảnh trên iPhone">
+              <i data-lucide="external-link" style="width:13px;height:13px;"></i>
+              <span>Mở</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+}
+
 async function exportBatchZip() {
   if (typeof JSZip === 'undefined') {
     showToast('Thư viện tạo file ZIP (JSZip) chưa tải xong. Vui lòng thử lại sau vài giây.', 'error');
@@ -2820,8 +2966,14 @@ async function exportBatchZip() {
     if (btnLabel) btnLabel.textContent = 'Đang khởi tạo nén file ZIP...';
     updateProgress(5, 'Đang chuẩn bị dữ liệu xuất hồ sơ...');
 
+    // Clean up previous blob URLs
+    currentBatchExportUrls.forEach(u => URL.revokeObjectURL(u));
+    currentBatchExportUrls = [];
+    currentBatchFilesForShare = [];
+
     const zip = new JSZip();
     const originalFormState = JSON.parse(JSON.stringify(formState));
+    const batchResults = [];
 
     // Temporarily make wsCt01 visible off-screen so html2canvas can measure & render A4
     if (wsCt01) {
@@ -2829,9 +2981,10 @@ async function exportBatchZip() {
       wsCt01.style.position = 'fixed';
       wsCt01.style.left = '-9999px';
       wsCt01.style.top = '0';
-      wsCt01.style.width = '1200px';
+      wsCt01.style.width = '1240px';
       wsCt01.style.zIndex = '-9999';
-      wsCt01.style.opacity = '0';
+      wsCt01.style.opacity = '1';
+      wsCt01.style.visibility = 'visible';
       wsCt01.style.pointerEvents = 'none';
     }
 
@@ -2880,15 +3033,37 @@ async function exportBatchZip() {
 
       // Render canvases
       const canvases = await renderA4PagesToCanvases();
-      const blobCt01 = await new Promise(r => canvases[0].toBlob(r, 'image/jpeg', 0.96));
-      const blobContract = await new Promise(r => canvases[1].toBlob(r, 'image/jpeg', 0.96));
+      const blobCt01 = await canvasToJpegBlob(canvases[0], 0.96);
+      const blobContract = await canvasToJpegBlob(canvases[1], 0.96);
 
       // Subfolder named after tenant: [Tên người thuê]
       const cleanTenantName = displayName.replace(/[\\/:*?"<>|]/g, '_');
       const folderName = `${cleanTenantName}${tenant.citizenId ? '_' + tenant.citizenId : ''}`;
+      const ct01Filename = `01_CT01_${cleanTenantName}.jpg`;
+      const contractFilename = `02_HopDongCuTru_${cleanTenantName}.jpg`;
+
       const tenantFolder = zip.folder(folderName);
-      tenantFolder.file(`01_CT01_${cleanTenantName}.jpg`, blobCt01);
-      tenantFolder.file(`02_HopDongCuTru_${cleanTenantName}.jpg`, blobContract);
+      tenantFolder.file(ct01Filename, blobCt01);
+      tenantFolder.file(contractFilename, blobContract);
+
+      const urlCt01 = URL.createObjectURL(blobCt01);
+      const urlContract = URL.createObjectURL(blobContract);
+      currentBatchExportUrls.push(urlCt01, urlContract);
+
+      try {
+        currentBatchFilesForShare.push(new File([blobCt01], ct01Filename, { type: 'image/jpeg' }));
+        currentBatchFilesForShare.push(new File([blobContract], contractFilename, { type: 'image/jpeg' }));
+      } catch (e) {}
+
+      batchResults.push({
+        index: i + 1,
+        displayName,
+        citizenId: tenant.citizenId || '',
+        urlCt01,
+        urlContract,
+        ct01Filename,
+        contractFilename
+      });
     }
 
     updateProgress(92, 'Đang đóng gói và nén tất cả hồ sơ thành file ZIP...');
@@ -2900,10 +3075,33 @@ async function exportBatchZip() {
 
     const nowStr = new Date().toISOString().slice(0, 10);
     const filename = `HoSoTamTru_SoLuong_${total}_Nguoi_${nowStr}.zip`;
-    triggerBlobDownload(zipBlob, filename);
+    const zipUrl = URL.createObjectURL(zipBlob);
+    currentBatchExportUrls.push(zipUrl);
 
-    updateProgress(100, `Hoàn tất! Đã xuất và tải về ${filename}`);
-    showToast(`Đã xuất thành công gói hồ sơ tạm trú cho ${total} người thuê (.ZIP)!`);
+    // Update modal controls
+    const zipBtn = document.getElementById('btn-batch-download-zip');
+    const zipLabel = document.getElementById('batch-zip-filename-label');
+    const modalSubtitle = document.getElementById('batch-export-modal-subtitle');
+    if (zipBtn) {
+      zipBtn.href = zipUrl;
+      zipBtn.download = filename;
+    }
+    if (zipLabel) zipLabel.textContent = filename;
+    if (modalSubtitle) modalSubtitle.textContent = `Đã xuất thành công ${total} bộ hồ sơ (${total * 2} file ảnh JPG A4)`;
+
+    // Render results into batch modal
+    renderBatchExportResultsList(batchResults);
+
+    // On non-iOS devices, attempt automatic download
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (!isIOS) {
+      triggerBlobDownload(zipBlob, filename);
+    }
+
+    openBatchExportModal();
+
+    updateProgress(100, `Hoàn tất! Đã xuất ${total} bộ hồ sơ.`);
+    showToast(`Đã xuất thành công gói hồ sơ tạm trú cho ${total} người thuê!`);
 
     // Restore original form state
     formState = originalFormState;

@@ -1149,15 +1149,36 @@ button, input, select, textarea {
 }
 
 .capan-input {
+  box-sizing: border-box;
   width: 100%;
-  height: 38px;
-  padding: 6px 12px;
+  height: 42px;
+  min-height: 42px;
+  padding: 8px 12px;
   font-size: 13.5px;
   color: #0f172a;
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  border-radius: 10px;
+  -webkit-appearance: none;
+  appearance: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+select.capan-input {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px 14px;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+input[type="date"].capan-input {
+  -webkit-appearance: none;
+  appearance: none;
+  display: flex;
+  align-items: center;
+  line-height: 24px;
 }
 
 .capan-input:hover {
@@ -1168,6 +1189,97 @@ button, input, select, textarea {
   outline: none;
   border-color: #0284c7;
   box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.14);
+}
+
+/* Row containing Date of birth & Gender in Member Modal */
+.member-dob-gender-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: end;
+}
+
+.member-dob-gender-row .ct01-address-input-field {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* Hero Scan Button in Member Modal */
+.member-scan-action-wrap {
+  margin-bottom: 4px;
+}
+
+.btn-scan-member-hero {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+  border: 1.5px solid #93c5fd;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+  box-sizing: border-box;
+}
+
+.btn-scan-member-hero:hover {
+  background: linear-gradient(135deg, #dbeafe 0%, #dcfce7 100%);
+  border-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.16);
+}
+
+.btn-scan-member-hero:active {
+  transform: scale(0.99);
+}
+
+.btn-scan-member-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.3);
+}
+
+.btn-scan-member-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.btn-scan-member-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1e3a8a;
+  line-height: 1.3;
+}
+
+.btn-scan-member-desc {
+  font-size: 11.5px;
+  color: #475569;
+  line-height: 1.3;
+}
+
+.btn-scan-member-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .ct01-contract-datetime-field {
@@ -2255,9 +2367,62 @@ button, input, select, textarea {
   display: none !important;
 }
 
-#qr-scanner-modal,
+#qr-scanner-modal {
+  z-index: 99999 !important;
+}
+
+#member-modal {
+  z-index: 500 !important;
+}
+
+#batch-export-modal {
+  z-index: 450 !important;
+}
+
 #export-images-modal {
+  z-index: 400 !important;
+}
+
+#citizen-app-modal {
   z-index: 350 !important;
+}
+
+/* Batch Export Results Modal & Cards */
+#batch-export-modal .capan-modal-box {
+  max-width: 840px;
+}
+
+.batch-result-tenant-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.batch-result-tenant-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.batch-result-file-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.batch-result-file-item:hover {
+  background: #f1f5f9;
 }
 
 .capan-modal-box {

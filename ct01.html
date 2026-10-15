@@ -431,10 +431,16 @@
                 <!-- Fieldset 11: Những thành viên trong hộ gia đình cùng thay đổi -->
                 <fieldset class="ct01-members-editor no-print">
                   <legend>11. Những thành viên trong hộ gia đình cùng thay đổi</legend>
-                  <button type="button" class="capan-btn-outline" id="btn-add-member" onclick="openMemberModal()">
-                    <i data-lucide="plus" style="width:15px;height:15px;"></i>
-                    <span id="btn-add-member-label">Thêm thành viên (0/9)</span>
-                  </button>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+                    <button type="button" class="capan-btn-coral-large" id="btn-add-member" onclick="openMemberModal()" style="height:38px;padding:0 16px;font-size:13px;">
+                      <i data-lucide="plus" style="width:15px;height:15px;"></i>
+                      <span id="btn-add-member-label">Thêm thành viên (0/9)</span>
+                    </button>
+                    <button type="button" class="capan-btn-outline" onclick="openDirectMemberScan()" style="height:38px;padding:0 16px;font-size:13px;border-color:#2563eb;color:#1d4ed8;background:#eff6ff;">
+                      <i data-lucide="qr-code" style="width:15px;height:15px;color:#2563eb;"></i>
+                      <span>Quét CCCD thêm nhanh</span>
+                    </button>
+                  </div>
                   <div id="members-summary-list"></div>
                 </fieldset>
 
@@ -1343,36 +1349,44 @@
        MODAL 2: THÊM / SỬA THÀNH VIÊN CÙNG THAY ĐỔI (MỤC 11 CT01)
        ======================================================================= -->
   <div class="capan-modal-backdrop no-print" id="member-modal" hidden>
-    <div class="capan-modal-box" style="max-width:520px;">
+    <div class="capan-modal-box" style="max-width:540px;">
       <div class="capan-modal-header">
         <div class="qr-scanner-heading">
-          <span class="qr-scanner-title-icon">
+          <span class="qr-scanner-title-icon" style="background:#eff6ff;color:#2563eb;border-color:#bfdbfe;">
             <i data-lucide="users" style="width:22px;height:22px;"></i>
           </span>
           <div>
-            <div class="qr-scanner-title" id="member-modal-title">Thêm thành viên</div>
+            <div class="qr-scanner-title" id="member-modal-title">Thêm thành viên cùng thay đổi</div>
+            <div style="font-size:12px;color:#64748b;">Mục 11 Tờ khai CT01 &amp; Phần II Hợp đồng cư trú</div>
           </div>
         </div>
-        <button type="button" class="capan-modal-close" onclick="closeMemberModal()">
+        <button type="button" class="capan-modal-close" onclick="closeMemberModal()" aria-label="Đóng">
           <i data-lucide="x" style="width:18px;height:18px;"></i>
         </button>
       </div>
 
       <form id="member-form" onsubmit="saveMemberForm(event)">
         <div class="capan-modal-body">
-          <div>
-            <button type="button" class="capan-btn-outline" onclick="openQrScannerModal('member')">
-              <i data-lucide="qr-code" style="width:15px;height:15px;color:#dc2626;"></i>
-              <span>Quét thẻ CCCD thành viên</span>
+          <!-- Hero scan action button -->
+          <div class="member-scan-action-wrap">
+            <button type="button" class="btn-scan-member-hero" onclick="openQrScannerModal('member')">
+              <span class="btn-scan-member-icon">
+                <i data-lucide="qr-code" style="width:22px;height:22px;"></i>
+              </span>
+              <div class="btn-scan-member-content">
+                <strong class="btn-scan-member-title">Quét mã QR / Tải ảnh thẻ CCCD thành viên</strong>
+                <span class="btn-scan-member-desc">Tự động nhận diện Họ tên, Ngày sinh, Giới tính, Số CCCD</span>
+              </div>
+              <span class="btn-scan-member-badge">Quét nhanh</span>
             </button>
           </div>
 
           <div class="ct01-address-input-field">
             <label for="member-fullName">Họ, chữ đệm và tên <span style="color:#dc2626;">*</span></label>
-            <input type="text" id="member-fullName" class="capan-input" required maxlength="100" placeholder="VD: NGUYỄN MINH KHÔI" />
+            <input type="text" id="member-fullName" class="capan-input text-uppercase" required maxlength="100" placeholder="VD: NGUYỄN MINH KHÔI" />
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="member-dob-gender-row">
             <div class="ct01-address-input-field">
               <label for="member-birthDate">Ngày sinh <span style="color:#dc2626;">*</span></label>
               <input type="date" id="member-birthDate" class="capan-input" required />
@@ -1557,6 +1571,75 @@
             <span>Tải trọn bộ 2 ảnh (.ZIP)</span>
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 5: KẾT QUẢ XUẤT HỒ SƠ TẠM TRÚ THEO SỐ LƯỢNG (IPHONE / SAFARI & PC)
+       ======================================================================= -->
+  <div class="capan-modal-backdrop no-print" id="batch-export-modal" hidden>
+    <div class="capan-modal-box" style="max-width:840px;">
+      <div class="capan-modal-header">
+        <div class="qr-scanner-heading">
+          <span class="qr-scanner-title-icon" style="background:#ecfdf5;color:#059669;border-color:#a7f3d0;">
+            <i data-lucide="check-circle" style="width:24px;height:24px;"></i>
+          </span>
+          <div>
+            <div class="qr-scanner-title" id="batch-export-modal-title">Kết Quả Xuất Hồ Sơ Tạm Trú Theo Số Lượng</div>
+            <div style="font-size:12px;color:#64748b;" id="batch-export-modal-subtitle">Đã tạo xong hồ sơ CT01 và Hợp đồng cho tất cả người thuê</div>
+          </div>
+        </div>
+        <button type="button" class="capan-modal-close" onclick="closeBatchExportModal()" aria-label="Đóng">
+          <i data-lucide="x" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+
+      <div class="capan-modal-body" style="display:flex;flex-direction:column;gap:16px;max-height:calc(85vh - 130px);overflow-y:auto;">
+        
+        <!-- Hướng dẫn cho iPhone / Safari & PC -->
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px 14px;color:#1e40af;font-size:13px;line-height:1.5;display:flex;align-items:flex-start;gap:10px;">
+          <i data-lucide="info" style="width:18px;height:18px;color:#2563eb;flex-shrink:0;margin-top:2px;"></i>
+          <div>
+            <strong>Hướng dẫn tải file trên iPhone / Safari &amp; Máy tính:</strong><br />
+            - <strong>Trên iPhone / Safari:</strong> Bấm trực tiếp nút <em>"Tải file"</em> hoặc bấm <em>"Mở"</em> rồi chạm giữ 2 giây để chọn <em>"Lưu vào Ảnh" (Save to Photos)</em>.<br />
+            - <strong>Trên Máy tính / Android:</strong> Bấm <em>"Tải trọn bộ file .ZIP"</em> hoặc tải từng file theo danh sách bên dưới.
+          </div>
+        </div>
+
+        <!-- Thanh nút tải toàn bộ file ZIP & Chia sẻ -->
+        <div style="background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:14px;padding:14px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;">
+          <div>
+            <strong style="display:block;font-size:14px;color:#0f172a;">Gói tất cả hồ sơ (.ZIP):</strong>
+            <span id="batch-zip-filename-label" style="font-size:12px;color:#64748b;font-family:monospace;">HoSoTamTru_SoLuong.zip</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <a id="btn-batch-download-zip" href="#" download="" class="capan-btn-coral-large" style="text-decoration:none;height:40px;padding:0 18px;font-size:13px;background:linear-gradient(135deg, #10b981 0%, #059669 100%);">
+              <i data-lucide="archive" style="width:16px;height:16px;"></i>
+              <span>Tải trọn bộ file .ZIP</span>
+            </a>
+            <button type="button" id="btn-batch-share-native" class="capan-btn-outline" style="height:40px;padding:0 14px;font-size:13px;border-color:#0284c7;color:#0369a1;background:#f0f9ff;" onclick="shareBatchFilesNative()">
+              <i data-lucide="share-2" style="width:16px;height:16px;color:#0284c7;"></i>
+              <span>Chia sẻ / Lưu tất cả</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Danh sách từng người thuê với đường link tải riêng CT01 & Hợp đồng -->
+        <div>
+          <div style="font-size:13.5px;font-weight:700;color:#0f172a;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+            <i data-lucide="users" style="width:16px;height:16px;color:#dc2626;"></i>
+            <span>DANH SÁCH ĐƯỜNG LINK TẢI RIÊNG TỪNG NGƯỜI THUÊ:</span>
+          </div>
+          <div id="batch-export-results-list" style="display:flex;flex-direction:column;gap:12px;">
+            <!-- Rendered dynamically by JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <div class="capan-modal-footer">
+        <button type="button" class="capan-btn-outline" onclick="closeBatchExportModal()">Đóng cửa sổ</button>
       </div>
     </div>
   </div>
