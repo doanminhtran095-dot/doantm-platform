@@ -82,16 +82,23 @@ let batchState = {
     signatureStrokes: []
   },
   house: {
-    city: 'TP. Hồ Chí Minh',
-    district: 'Quận Gò Vấp',
+    houseNo: '',
+    street: '',
     ward: 'Phường An Nhơn',
-    street: ''
+    city: 'TP. Hồ Chí Minh'
   },
   tenants: []
 };
 
-// Sample QR Presets for instant testing
+// Sample QR & Text Presets for instant testing
 const SAMPLE_QR_PRESETS = {
+  text_sample_doan: `Số CCCD: 079095010595
+Số CMND: 025272720
+Họ và tên: Trần Minh Đoàn
+Giới tính: Nam
+Ngày sinh: 18/03/1995
+Nơi thường trú: Căn Hộ 11.18, Tầng 11, Tòa Nhà Gh3, Dự Án Khu Dân Cư Và Công Viên Phước Thiện , 88 Đường Phước Thiện, Khu Phố 29, Long Bình, TP. Thủ Đức, TP. Hồ Chí Minh
+Ngày cấp CCCD: 15/04/2025`,
   landlord_sample: '079075009876|024567890|TRẦN VĂN HÙNG|12051975|Nam|Số 123/45 Đường Nguyễn Văn Nghi, Phường An Nhơn, TP. Hồ Chí Minh|15042022',
   tenant_sample_1: '079095012345|025123456|NGUYỄN VĂN AN|15081995|Nam|456 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh|10052022',
   tenant_sample_2: '048198006789|201789123|LÊ THỊ NGỌC MAI|22111998|Nữ|78 Nguyễn Văn Linh, Quận Hải Châu, TP. Đà Nẵng|20082022'
@@ -978,36 +985,177 @@ let cropStartPt = null;
 
 function parseCccdQrPayload(rawText) {
   if (!rawText || typeof rawText !== 'string') return null;
-  const parts = rawText.trim().split('|');
-  if (parts.length < 5) return null;
+  const trimmed = rawText.trim();
 
-  const citizenId = (parts[0] || '').trim();
-  const oldId = (parts[1] || '').trim();
-  const fullName = (parts[2] || '').trim();
-  const rawDob = (parts[3] || '').trim();
-  const gender = (parts[4] || '').trim();
-  const address = (parts[5] || '').trim();
-  const rawIssueDate = (parts[6] || '').trim();
+  // 1. Standard QR format with pipe delimiters (|)
+  if (trimmed.includes('|')) {
+    const parts = trimmed.split('|');
+    if (parts.length >= 5) {
+      const citizenId = (parts[0] || '').trim();
+      const oldId = (parts[1] || '').trim();
+      const fullName = (parts[2] || '').trim();
+      const rawDob = (parts[3] || '').trim();
+      const gender = (parts[4] || '').trim();
+      const address = (parts[5] || '').trim();
+      const rawIssueDate = (parts[6] || '').trim();
 
-  let birthDate = rawDob;
+      let birthDate = rawDob;
+      let birthYear = '';
+      if (rawDob.length === 8 && /^\d{8}$/.test(rawDob)) {
+        birthDate = `${rawDob.slice(0, 2)}/${rawDob.slice(2, 4)}/${rawDob.slice(4)}`;
+        birthYear = rawDob.slice(4);
+      } else if (rawDob.includes('/')) {
+        birthDate = rawDob;
+        birthYear = extractBirthYearOnly(rawDob);
+      }
+
+      let issueDate = rawIssueDate;
+      if (rawIssueDate.length === 8 && /^\d{8}$/.test(rawIssueDate)) {
+        issueDate = `${rawIssueDate.slice(0, 2)}/${rawIssueDate.slice(2, 4)}/${rawIssueDate.slice(4)}`;
+      }
+
+      return {
+        citizenId,
+        oldId,
+        fullName: (fullName || '').toUpperCase(),
+        birthDate,
+        birthYear: birthYear || extractBirthYearOnly(birthDate),
+        gender,
+        address,
+        issueDate
+      };
+    }
+  }
+
+  // 2. Key-Value Text format (Số CCCD: ..., Họ và tên: ..., Ngày sinh: ...)
+  const kv = parseKeyValueCccdText(trimmed);
+  if (kv) return kv;
+
+  // 3. Fallback to freeform OCR text parser
+  return parseCccdOcrText(trimmed);
+}
+
+// Parser for labeled text format (e.g. from VNeID, scanning apps, or clipboard text)
+function parseKeyValueCccdText(rawText) {
+  if (!rawText || typeof rawText !== 'string') return null;
+
+  const lines = rawText
+    .split(/\r?\n/)
+    .map(l => l.trim())
+    .filter(Boolean);
+  if (lines.length === 0) return null;
+
+  let citizenId = '';
+  let oldId = '';
+  let fullName = '';
+  let birthDate = '';
   let birthYear = '';
-  if (rawDob.length === 8 && /^\d{8}$/.test(rawDob)) {
-    birthDate = `${rawDob.slice(0, 2)}/${rawDob.slice(2, 4)}/${rawDob.slice(4)}`;
-    birthYear = rawDob.slice(4);
+  let gender = '';
+  let address = '';
+  let issueDate = '';
+
+  const reCccd = /^(?:Số\s*(?:thẻ\s*)?CCCD|Số\s*ĐDCN|Số\s*định\s*danh|CCCD|Số\s*căn\s*cước)\s*[:：]\s*(.+)$/i;
+  const reCmnd = /^(?:Số\s*CMND|CMND|Số\s*chứng\s*minh)\s*[:：]\s*(.+)$/i;
+  const reName = /^(?:Họ\s*(?:và|chữ\s*đệm\s*và)?\s*tên|Họ\s*tên)\s*[:：]\s*(.+)$/i;
+  const reGender = /^(?:Giới\s*tính|Phái)\s*[:：]\s*(.+)$/i;
+  const reDob = /^(?:Ngày\s*(?:tháng\s*năm\s*)?sinh|Sinh\s*ngày|Năm\s*sinh)\s*[:：]\s*(.+)$/i;
+  const reAddress = /^(?:Nơi\s*thường\s*trú|Thường\s*trú|Địa\s*chỉ\s*thường\s*trú|Địa\s*chỉ|Nơi\s*cư\s*trú)\s*[:：]\s*(.+)$/i;
+  const reIssue = /^(?:Ngày\s*cấp\s*(?:CCCD|thẻ)?|Cấp\s*ngày)\s*[:：]\s*(.+)$/i;
+
+  let currentKey = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    let m;
+    if ((m = line.match(reCccd))) {
+      citizenId = m[1].replace(/\D/g, '').slice(0, 12);
+      currentKey = 'cccd';
+    } else if ((m = line.match(reCmnd))) {
+      oldId = m[1].replace(/\D/g, '');
+      currentKey = 'cmnd';
+    } else if ((m = line.match(reName))) {
+      fullName = m[1].trim();
+      currentKey = 'name';
+    } else if ((m = line.match(reGender))) {
+      const gStr = m[1].trim().toLowerCase();
+      gender = gStr.startsWith('nữ') || gStr === 'nu' || gStr === 'female' ? 'Nữ' : 'Nam';
+      currentKey = 'gender';
+    } else if ((m = line.match(reDob))) {
+      const val = m[1].trim();
+      const dm = val.match(/(\d{1,2})[/\.-](\d{1,2})[/\.-](\d{4})/);
+      if (dm) {
+        birthDate = `${dm[1].padStart(2, '0')}/${dm[2].padStart(2, '0')}/${dm[3]}`;
+        birthYear = dm[3];
+      } else if (/^\d{8}$/.test(val)) {
+        birthDate = `${val.slice(0, 2)}/${val.slice(2, 4)}/${val.slice(4)}`;
+        birthYear = val.slice(4);
+      } else {
+        birthDate = val;
+        const ym = val.match(/\b(19\d{2}|20\d{2})\b/);
+        if (ym) birthYear = ym[1];
+      }
+      currentKey = 'dob';
+    } else if ((m = line.match(reAddress))) {
+      address = m[1].trim();
+      currentKey = 'address';
+    } else if ((m = line.match(reIssue))) {
+      const val = m[1].trim();
+      const im = val.match(/(\d{1,2})[/\.-](\d{1,2})[/\.-](\d{4})/);
+      if (im) {
+        issueDate = `${im[1].padStart(2, '0')}/${im[2].padStart(2, '0')}/${im[3]}`;
+      } else if (/^\d{8}$/.test(val)) {
+        issueDate = `${val.slice(0, 2)}/${val.slice(2, 4)}/${val.slice(4)}`;
+      } else {
+        issueDate = val;
+      }
+      currentKey = 'issue';
+    } else {
+      // Continuation line for address if no new key matched
+      if (currentKey === 'address' && !line.includes(':')) {
+        address += (address ? ', ' : '') + line;
+      }
+    }
   }
 
-  let issueDate = rawIssueDate;
-  if (rawIssueDate.length === 8 && /^\d{8}$/.test(rawIssueDate)) {
-    issueDate = `${rawIssueDate.slice(0, 2)}/${rawIssueDate.slice(2, 4)}/${rawIssueDate.slice(4)}`;
+  // Fallback extractions in case lines didn't have standard prefixes
+  if (!citizenId) {
+    const idMatch = rawText.match(/(?:CCCD|ĐDCN|định\s*danh)[^\d\n]*(\d{12})/i) || rawText.match(/\b(0\d{11})\b/);
+    if (idMatch) citizenId = idMatch[1];
   }
+  if (!fullName) {
+    const nameMatch = rawText.match(/(?:Họ\s*(?:và\s*)?tên|Full\s*name)[:\s]*([^\n\r]+)/i);
+    if (nameMatch) {
+      const clean = nameMatch[1].trim();
+      if (clean && !clean.includes(':')) fullName = clean;
+    }
+  }
+  if (!gender) {
+    if (/Giới\s*tính[:\s]*(Nữ|Nu)/i.test(rawText)) gender = 'Nữ';
+    else if (/Giới\s*tính[:\s]*Nam/i.test(rawText)) gender = 'Nam';
+  }
+  if (!birthDate) {
+    const dobMatch = rawText.match(/(?:Ngày\s*sinh|Sinh\s*ngày|DOB)[^\d\n]*(\d{1,2}[/\.-]\d{1,2}[/\.-]\d{4})/i);
+    if (dobMatch) {
+      const dm = dobMatch[1].split(/[/\.-]/);
+      birthDate = `${dm[0].padStart(2, '0')}/${dm[1].padStart(2, '0')}/${dm[2]}`;
+      birthYear = dm[2];
+    }
+  }
+  if (!address) {
+    const addrMatch = rawText.match(/(?:thường\s*trú|residence)[:\s]*([^\n\r]+)/i);
+    if (addrMatch) address = addrMatch[1].trim();
+  }
+
+  if (!citizenId && !fullName) return null;
 
   return {
     citizenId,
     oldId,
-    fullName,
+    fullName: (fullName || '').toUpperCase(),
     birthDate,
-    birthYear,
-    gender,
+    birthYear: birthYear || extractBirthYearOnly(birthDate),
+    gender: gender || 'Nam',
     address,
     issueDate
   };
@@ -1163,6 +1311,7 @@ function openQrScannerModal(target) {
   if (cropPanel) cropPanel.hidden = true;
   if (cameraWrapper) cameraWrapper.hidden = false;
   if (rawInput) rawInput.value = '';
+  initAiVisionUI();
 
   if (modal) {
     modal.hidden = false;
@@ -1375,75 +1524,287 @@ async function scanUploadedImage(useCrop, silentIfFail = false) {
     }
   }
 
-  // 2. Fallback to image text recognition (OCR) using Tesseract.js
-  if (window.Tesseract) {
-    const btnScanCropped = document.getElementById('btn-scan-cropped');
-    const originalBtnText = btnScanCropped ? btnScanCropped.innerHTML : '';
-    try {
-      if (btnScanCropped) {
-        btnScanCropped.disabled = true;
-        btnScanCropped.innerHTML = '<span>⏳ Đang quét chữ (OCR)...</span>';
-      }
-      showToast('Không thấy mã QR rõ nét, đang nhận diện chữ (OCR) trên ảnh CCCD...', 'info');
+  // 2. TẦNG 2: MÃ QR BỊ MỜ -> MỞ THÔNG BÁO LÝ DO ẢNH MỜ & HƯỚNG DẪN CHUYỂN KHOẢN PHÍ CÔNG NGHỆ AI VISION
+  showToast('Ảnh mã QR bị mờ! Đang chuyển sang công nghệ AI Vision...', 'info');
+  openAiVisionPaymentModal();
+  return;
+}
 
-      // Contrast enhancement on canvas for better OCR
-      const ocrCanvas = document.createElement('canvas');
-      ocrCanvas.width = sw;
-      ocrCanvas.height = sh;
-      const ocrCtx = ocrCanvas.getContext('2d');
-      ocrCtx.drawImage(canvas, 0, 0);
-      const idata = ocrCtx.getImageData(0, 0, sw, sh);
-      const d = idata.data;
-      for (let i = 0; i < d.length; i += 4) {
-        const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-        const v = gray > 135 ? Math.min(255, gray * 1.15) : Math.max(0, gray * 0.85);
-        d[i] = v;
-        d[i + 1] = v;
-        d[i + 2] = v;
-      }
-      ocrCtx.putImageData(idata, 0, 0);
+// ============================================================================
+// 8.5 AI VISION OCR FOR CCCD (GOOGLE GEMINI FLASH VISION INTEGRATION)
+// ============================================================================
+// 👉 DÁN MÃ GOOGLE GEMINI API KEY CỦA BẠN VÀO GIỮA DẤU NGOẶC KÉP DƯỚI ĐÂY:
+const DEFAULT_GEMINI_API_KEY = ""; // Ví dụ: "AIzaSyD-xxxxxxxxxxxxxxxxxxxxxxxx"
+const GEMINI_API_STORAGE_KEY = 'gemini_cccd_api_key';
 
-      const workerRes = await Tesseract.recognize(ocrCanvas, 'vie+eng', {
-        logger: m => {
-          if (m.status === 'recognizing text' && m.progress) {
-            console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
-          }
-        }
-      });
+function getStoredGeminiKey() {
+  try {
+    return localStorage.getItem(GEMINI_API_STORAGE_KEY) || DEFAULT_GEMINI_API_KEY || '';
+  } catch (e) {
+    return DEFAULT_GEMINI_API_KEY || '';
+  }
+}
 
-      const ocrText = workerRes && workerRes.data ? workerRes.data.text : '';
-      const ocrParsed = parseCccdOcrText(ocrText);
-      if (ocrParsed && (ocrParsed.citizenId || ocrParsed.fullName)) {
-        setScannedQrResult(ocrParsed);
-        showToast(`Đã trích xuất thông tin CCCD qua nhận diện ảnh: ${ocrParsed.fullName || ocrParsed.citizenId}`);
-        return;
-      }
-    } catch (err) {
-      console.warn('Tesseract OCR error:', err);
-    } finally {
-      if (btnScanCropped && originalBtnText) {
-        btnScanCropped.disabled = false;
-        btnScanCropped.innerHTML = originalBtnText;
-      }
+function openAiVisionPaymentModal() {
+  const modal = document.getElementById('ai-vision-payment-modal');
+  if (modal) {
+    modal.hidden = false;
+    if (window.lucide && window.lucide.createIcons) {
+      window.lucide.createIcons();
     }
   }
+}
 
-  if (!silentIfFail) {
-    showToast('Không đọc được mã QR hoặc chữ rõ ràng. Hãy khoanh sát vùng thông tin trên ảnh.', 'warn');
+function closeAiPaymentModal() {
+  const modal = document.getElementById('ai-vision-payment-modal');
+  if (modal) modal.hidden = true;
+}
+
+async function confirmPaidAndRunAiVision() {
+  closeAiPaymentModal();
+  showToast('Đang kích hoạt AI Vision phân tích chữ trên mặt thẻ CCCD...', 'info');
+  await executeAiVisionOcr();
+}
+
+function copyAiPaymentText(text, successMsg) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast(successMsg || 'Đã sao chép!');
+    }).catch(() => {
+      prompt('Nhấn Ctrl+C để sao chép:', text);
+    });
   } else {
-    showToast('Hãy kéo chuột khoanh vùng mã QR hoặc thông tin trên ảnh rồi bấm "Quét vùng đã khoanh".', 'warn');
+    prompt('Nhấn Ctrl+C để sao chép:', text);
+  }
+}
+
+function initAiVisionUI() {
+  const key = getStoredGeminiKey();
+  const statusEl = document.getElementById('ai-vision-key-status');
+  const inputEl = document.getElementById('gemini-api-key-input');
+  if (statusEl) {
+    if (key) {
+      statusEl.textContent = '✓ Khóa API: Đã kết nối';
+      statusEl.style.color = '#059669';
+    } else {
+      statusEl.textContent = 'Cài đặt Khóa API';
+      statusEl.style.color = '#0284c7';
+    }
+  }
+  if (inputEl && key) {
+    inputEl.value = key;
+  }
+}
+
+function toggleAiVisionKeyConfig(forceOpen) {
+  const drawer = document.getElementById('ai-vision-key-drawer');
+  if (!drawer) return;
+  const isHidden = drawer.style.display === 'none' || drawer.style.display === '';
+  const shouldOpen = forceOpen !== undefined ? forceOpen : isHidden;
+  drawer.style.display = shouldOpen ? 'flex' : 'none';
+  if (shouldOpen) {
+    const inputEl = document.getElementById('gemini-api-key-input');
+    if (inputEl) inputEl.focus();
+  }
+}
+
+function saveGeminiApiKey() {
+  const inputEl = document.getElementById('gemini-api-key-input');
+  if (!inputEl) return;
+  const val = inputEl.value.trim();
+  if (!val) {
+    localStorage.removeItem(GEMINI_API_STORAGE_KEY);
+    initAiVisionUI();
+    showToast('Đã xóa khóa Gemini API.', 'info');
+    toggleAiVisionKeyConfig(false);
+    return;
+  }
+  localStorage.setItem(GEMINI_API_STORAGE_KEY, val);
+  initAiVisionUI();
+  toggleAiVisionKeyConfig(false);
+  showToast('✓ Đã lưu Google Gemini API Key an toàn trong trình duyệt của bạn!');
+}
+
+async function triggerAiVisionScan() {
+  if (!uploadedQrImageObj) {
+    showToast('Vui lòng chọn ảnh CCCD trước khi kích hoạt AI Vision.', 'info');
+    const fileInput = document.getElementById('qr-file-input');
+    if (fileInput) fileInput.click();
+    return;
+  }
+  await executeAiVisionOcr();
+}
+
+async function executeAiVisionOcr() {
+  if (!uploadedQrImageObj) return;
+
+  const apiKey = getStoredGeminiKey();
+  if (!apiKey) {
+    toggleAiVisionKeyConfig(true);
+    showToast('Vui lòng nhập Google Gemini API Key (Miễn phí) để AI phân tích hình ảnh CCCD.', 'warn');
+    return;
+  }
+
+  const indicator = document.getElementById('ai-vision-status-indicator');
+  const statusText = document.getElementById('ai-vision-status-text');
+  const btnTrigger = document.getElementById('btn-trigger-ai-vision');
+  const originalBtnHtml = btnTrigger ? btnTrigger.innerHTML : '';
+
+  try {
+    if (indicator) {
+      indicator.style.display = 'flex';
+      if (statusText) statusText.textContent = '🤖 Đang gửi ảnh sang AI Vision để đọc chữ trên mặt thẻ CCCD...';
+    }
+    if (btnTrigger) {
+      btnTrigger.disabled = true;
+      btnTrigger.innerHTML = '<span>⏳ Đang đọc CCCD...</span>';
+    }
+
+    // 1. Prepare base64 image from uploadedQrImageObj
+    const region = cropRect ? cropRect : { left: 0, top: 0, width: 1, height: 1 };
+    const sx = Math.round(uploadedQrImageObj.width * region.left);
+    const sy = Math.round(uploadedQrImageObj.height * region.top);
+    const sw = Math.max(1, Math.round(uploadedQrImageObj.width * region.width));
+    const sh = Math.max(1, Math.round(uploadedQrImageObj.height * region.height));
+
+    // Limit dimensions to 1280px for fast transmission
+    const maxDim = 1280;
+    let targetW = sw;
+    let targetH = sh;
+    if (targetW > maxDim || targetH > maxDim) {
+      if (targetW > targetH) {
+        targetH = Math.round((targetH * maxDim) / targetW);
+        targetW = maxDim;
+      } else {
+        targetW = Math.round((targetW * maxDim) / targetH);
+        targetH = maxDim;
+      }
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(uploadedQrImageObj.element, sx, sy, sw, sh, 0, 0, targetW, targetH);
+
+    const base64Jpeg = canvas.toDataURL('image/jpeg', 0.85);
+    const base64Data = base64Jpeg.replace(/^data:image\/[a-z]+;base64,/, '');
+
+    if (statusText) statusText.textContent = '🤖 AI đang trích xuất Họ tên, Số CCCD, Ngày sinh, Địa chỉ...';
+
+    // 2. Call Google Gemini 1.5 Flash Vision API
+    const systemPrompt = `Bạn là hệ thống AI trích xuất thông tin Căn cước công dân (CCCD) Việt Nam.
+Hãy đọc các chữ in trên mặt trước (hoặc mặt sau) của thẻ CCCD trong ảnh và trả về một đối tượng JSON duy nhất có các trường:
+- citizenId: Số CCCD 12 chữ số (hoặc số CMND 9 số)
+- fullName: Họ và tên in hoa có dấu tiếng Việt (ví dụ: NGUYỄN VĂN AN)
+- birthDate: Ngày tháng năm sinh định dạng DD/MM/YYYY (ví dụ: 18/03/1995)
+- gender: Giới tính ('Nam' hoặc 'Nữ')
+- permanentAddress: Nơi thường trú đầy đủ ghi trên thẻ (đầy đủ số nhà, đường, thôn/xóm, phường/xã, quận/huyện, tỉnh/thành phố)
+- issueDate: Ngày cấp thẻ nếu thấy (DD/MM/YYYY)
+
+Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào khác.`;
+
+    const requestBody = {
+      contents: [{
+        parts: [
+          { text: systemPrompt },
+          {
+            inline_data: {
+              mime_type: "image/jpeg",
+              data: base64Data
+            }
+          }
+        ]
+      }],
+      generationConfig: {
+        response_mime_type: "application/json",
+        temperature: 0.1
+      }
+    };
+
+    // Try gemini-1.5-flash first, fallback to gemini-2.0-flash
+    let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      // Fallback try with gemini-2.0-flash
+      response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+    }
+
+    if (!response.ok) {
+      const errJson = await response.json().catch(() => ({}));
+      const msg = errJson.error && errJson.error.message ? errJson.error.message : response.statusText;
+      throw new Error(`Lỗi kết nối Gemini API (${response.status}): ${msg}`);
+    }
+
+    const data = await response.json();
+    const rawText = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] ? data.candidates[0].content.parts[0].text : '';
+
+    if (!rawText) {
+      throw new Error('AI không nhận diện được văn bản từ ảnh CCCD.');
+    }
+
+    // Clean potential markdown wrap
+    let cleanJson = rawText.trim();
+    if (cleanJson.startsWith('```json')) {
+      cleanJson = cleanJson.replace(/^```json\s*/i, '').replace(/\s*```$/, '');
+    } else if (cleanJson.startsWith('```')) {
+      cleanJson = cleanJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    }
+
+    const parsedData = JSON.parse(cleanJson);
+
+    // Validate extracted data
+    const cleanId = (parsedData.citizenId || '').replace(/\D/g, '');
+    const cleanName = (parsedData.fullName || '').trim().toUpperCase();
+    const cleanDob = (parsedData.birthDate || '').trim();
+    const cleanGender = (parsedData.gender || '').trim();
+    const cleanAddress = (parsedData.permanentAddress || parsedData.address || '').trim();
+    const cleanIssue = (parsedData.issueDate || '').trim();
+
+    if (!cleanId && !cleanName) {
+      throw new Error('Không trích xuất được số CCCD hoặc Họ tên từ ảnh.');
+    }
+
+    const finalParsed = {
+      citizenId: cleanId,
+      fullName: cleanName,
+      birthDate: cleanDob,
+      gender: cleanGender || 'Nam',
+      address: cleanAddress,
+      issueDate: cleanIssue
+    };
+
+    setScannedQrResult(finalParsed);
+    showToast(`✨ AI Vision đã nhận diện thành công: ${finalParsed.fullName} (${finalParsed.citizenId})`);
+  } catch (err) {
+    console.error('AI Vision OCR Error:', err);
+    showToast(err.message || 'Không thể đọc được CCCD bằng AI Vision. Vui lòng kiểm tra lại ảnh hoặc khóa API.', 'error');
+  } finally {
+    if (indicator) indicator.style.display = 'none';
+    if (btnTrigger && originalBtnHtml) {
+      btnTrigger.disabled = false;
+      btnTrigger.innerHTML = originalBtnHtml;
+    }
   }
 }
 
 function parseRawQrInput() {
   const input = document.getElementById('qr-raw-string-input');
   if (!input || !input.value.trim()) {
-    showToast('Vui lòng dán chuỗi mã QR CCCD vào ô.', 'warn');
+    showToast('Vui lòng dán chuỗi mã QR hoặc văn bản thông tin CCCD vào ô.', 'warn');
     return;
   }
   const parsed = parseCccdQrPayload(input.value.trim());
   if (!parsed) {
-    showToast('Chuỗi QR không đúng định dạng CCCD (Số CCCD|CMND|Họ tên|Ngày sinh|Giới tính|Địa chỉ|Ngày cấp).', 'error');
+    showToast('Không nhận diện được định dạng CCCD (Hỗ trợ mã QR dạng | hoặc dạng văn bản: Số CCCD, Họ tên, Ngày sinh...).', 'error');
     return;
   }
   setScannedQrResult(parsed);
@@ -2574,6 +2935,11 @@ function initBatchWorkspace() {
     btn.classList.toggle('active', num === batchState.tenants.length);
   });
 
+  if (!batchState.house.houseNo && formState.houseNo) batchState.house.houseNo = formState.houseNo;
+  if (!batchState.house.street && formState.street) batchState.house.street = formState.street;
+  if (formState.ward) batchState.house.ward = formState.ward;
+  if (formState.city) batchState.house.city = formState.city;
+
   syncBatchLandlordInputs();
   syncBatchHouseInputs();
   initBatchLandlordPad();
@@ -2611,14 +2977,14 @@ function syncBatchLandlordInputs() {
 }
 
 function syncBatchHouseInputs() {
-  const cityEl = document.getElementById('batch-house-city');
-  const distEl = document.getElementById('batch-house-district');
-  const wardEl = document.getElementById('batch-house-ward');
+  const houseNoEl = document.getElementById('batch-house-no');
   const streetEl = document.getElementById('batch-house-street');
-  if (cityEl && document.activeElement !== cityEl) cityEl.value = batchState.house.city || '';
-  if (distEl && document.activeElement !== distEl) distEl.value = batchState.house.district || '';
-  if (wardEl && document.activeElement !== wardEl) wardEl.value = batchState.house.ward || '';
+  const wardEl = document.getElementById('batch-house-ward');
+  const cityEl = document.getElementById('batch-house-city');
+  if (houseNoEl && document.activeElement !== houseNoEl) houseNoEl.value = batchState.house.houseNo || '';
   if (streetEl && document.activeElement !== streetEl) streetEl.value = batchState.house.street || '';
+  if (wardEl && document.activeElement !== wardEl) wardEl.value = batchState.house.ward || '';
+  if (cityEl && document.activeElement !== cityEl) cityEl.value = batchState.house.city || '';
 }
 
 function setBatchTenantCount(n) {
@@ -2691,10 +3057,10 @@ function fillBatchLandlordSample() {
     permanentAddress: 'Số 123/45 Đường Nguyễn Văn Nghi, Phường An Nhơn, TP. Hồ Chí Minh'
   };
   batchState.house = {
-    city: 'TP. Hồ Chí Minh',
-    district: 'Quận Gò Vấp',
+    houseNo: '123/45',
+    street: 'Nguyễn Văn Nghi',
     ward: 'Phường An Nhơn',
-    street: '123/45 Đường Nguyễn Văn Nghi'
+    city: 'TP. Hồ Chí Minh'
   };
   syncBatchLandlordInputs();
   syncBatchHouseInputs();
@@ -2840,22 +3206,21 @@ function renderBatchTenantsList() {
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
             <div style="display:flex;align-items:center;gap:6px;">
               <i data-lucide="pen-tool" style="width:15px;height:15px;color:#0284c7;"></i>
-              <strong style="font-size:13px;color:#0f172a;">Chữ ký điện tử Người thuê #${idx + 1} (${escapeHtml(t.fullName || 'Người thuê')}):</strong>
+              <strong style="font-size:13px;color:#0f172a;">Chữ ký Người thuê #${idx + 1}:</strong>
             </div>
             <span class="batch-tenant-sig-badge" id="batch-tenant-sig-badge-${idx}" style="font-size:11.5px;font-weight:700;color:${t.signatureDataUrl ? '#15803d' : '#64748b'};background:${t.signatureDataUrl ? '#dcfce7' : '#f1f5f9'};padding:3px 8px;border-radius:4px;">
-              ${t.signatureDataUrl ? '✓ Đã ký tên' : 'Chưa ký (tùy chọn)'}
+              ${t.signatureDataUrl ? '✓ Đã ký' : 'Chưa ký'}
             </span>
           </div>
 
           <div class="sig-canvas-wrapper" id="batch-sig-wrapper-tenant-${idx}">
             <canvas id="batch-sig-canvas-tenant-${idx}"></canvas>
             <div class="sig-placeholder" id="batch-sig-placeholder-tenant-${idx}" style="display:${t.signatureDataUrl ? 'none' : 'flex'};">
-              Người thuê #${idx + 1} ký tên tại đây (ngón tay hoặc chuột)
+              Ký tại đây
             </div>
           </div>
 
-          <div style="margin-top:6px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
-            <span style="font-size:11px;color:#64748b;">Mực xanh • In vào Người kê khai CT01 &amp; Mục II Hợp đồng</span>
+          <div style="margin-top:6px;display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:6px;">
             <div style="display:flex;gap:6px;">
               <button type="button" class="sig-btn" id="btn-batch-undo-tenant-${idx}" onclick="undoBatchTenantSig(${idx})" ${t.signatureDataUrl ? '' : 'disabled'} style="height:30px;font-size:12px;padding:0 10px;">
                 <i data-lucide="undo-2" style="width:13px;height:13px;"></i>
@@ -2929,7 +3294,7 @@ function updateBatchLandlordSigBadge() {
   const hasSig = !!batchState.landlord.signatureDataUrl;
   badge.style.background = hasSig ? '#dcfce7' : '#fee2e2';
   badge.style.color = hasSig ? '#15803d' : '#dc2626';
-  badge.textContent = hasSig ? '✓ Đã ký (Áp dụng toàn bộ hồ sơ)' : 'Chưa ký (Chủ nhà ký 1 lần tại đây)';
+  badge.textContent = hasSig ? '✓ Đã ký' : 'Chưa ký';
 }
 
 function undoBatchLandlordSig() {
@@ -2988,7 +3353,7 @@ function updateBatchTenantSigBadge(idx) {
   const hasSig = !!t.signatureDataUrl;
   badge.style.background = hasSig ? '#dcfce7' : '#f1f5f9';
   badge.style.color = hasSig ? '#15803d' : '#64748b';
-  badge.textContent = hasSig ? '✓ Đã ký tên' : 'Chưa ký (tùy chọn)';
+  badge.textContent = hasSig ? '✓ Đã ký' : 'Chưa ký';
 }
 
 function undoBatchTenantSig(idx) {
@@ -3016,7 +3381,7 @@ function updateBatchSignaturesSummary() {
     const hasLandlord = !!batchState.landlord.signatureDataUrl;
     landlordSum.style.background = hasLandlord ? '#dcfce7' : '#fef3c7';
     landlordSum.style.color = hasLandlord ? '#15803d' : '#92400e';
-    landlordSum.textContent = hasLandlord ? 'Chủ nhà: ✓ Đã ký (áp dụng toàn bộ)' : 'Chủ nhà: Chưa ký (tùy chọn)';
+    landlordSum.textContent = hasLandlord ? 'Chủ nhà: Đã ký' : 'Chủ nhà: Chưa ký';
   }
   if (tenantsSum) {
     const total = batchState.tenants ? batchState.tenants.length : 0;
@@ -3075,7 +3440,7 @@ function renderBatchExportResultsList(results) {
           <strong style="font-size:14px;color:#0f172a;text-transform:uppercase;">${escapeHtml(r.displayName)}</strong>
           ${r.citizenId ? `<span style="font-size:12px;color:#64748b;font-family:monospace;background:#f1f5f9;padding:2px 8px;border-radius:4px;">${escapeHtml(r.citizenId)}</span>` : ''}
         </div>
-        <span style="font-size:12px;color:#16a34a;font-weight:700;">✓ Đã tạo 02 file A4</span>
+        <span style="font-size:12px;color:#16a34a;font-weight:700;">✓ Sẵn sàng tải</span>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:10px;">
@@ -3207,9 +3572,9 @@ async function exportBatchZip() {
       formState.landlordId = batchState.landlord.citizenId || '';
       formState.landlordAddress = batchState.landlord.permanentAddress || '';
 
-      formState.houseNo = '';
+      formState.houseNo = batchState.house.houseNo || '';
       formState.street = batchState.house.street || '';
-      formState.quarter = batchState.house.district || '';
+      formState.quarter = '';
       formState.ward = batchState.house.ward || '';
       formState.city = batchState.house.city || '';
 

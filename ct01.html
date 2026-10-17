@@ -153,7 +153,7 @@
                   BIỂU MẪU DỊCH VỤ CÔNG DÂN
                 </span>
                 <h3>
-                  <span class="text-desktop">Điền hồ sơ và mẫu đơn trực tuyến</span>
+                  <span class="text-desktop">Điền hồ sơ điện tử</span>
                   <span class="text-mobile">Điền hồ sơ và mẫu đơn</span>
                 </h3>
               </div>
@@ -163,7 +163,7 @@
               <!-- Card 1: CT01 -->
               <button type="button" class="capan-form-tab-card active" data-form-key="ct01" onclick="selectFormCard('ct01')">
                 <div class="form-tab-badge-row">
-                  <span class="form-code-badge">Điền hồ sơ Đăng kí Tạm trú</span>
+                  <span class="form-code-badge">Đăng kí Tạm trú</span>
                   <span class="form-status-ready">Sẵn sàng</span>
                 </div>
               </button>
@@ -184,10 +184,10 @@
                 </div>
               </button>
 
-              <!-- Card 4: Điền hồ sơ Đăng kí Thường Trú -->
+              <!-- Card 4: Đăng kí Thường Trú -->
               <button type="button" class="capan-form-tab-card" data-form-key="ct04" onclick="selectFormCard('ct04')">
                 <div class="form-tab-badge-row">
-                  <span class="form-code-badge">Điền hồ sơ Đăng kí Thường Trú</span>
+                  <span class="form-code-badge">Đăng kí Thường Trú</span>
                   <span class="form-status-ready">Sẵn sàng</span>
                 </div>
               </button>
@@ -214,8 +214,8 @@
             <div class="capan-steps-card no-print">
               <div class="capan-steps-intro">
                 <h3>
-                  <span class="text-desktop" id="workspace-steps-title-desktop">Điền hồ sơ Đăng kí Tạm trú</span>
-                  <span class="text-mobile" id="workspace-steps-title-mobile">Điền hồ sơ Đăng kí Tạm trú</span>
+                  <span class="text-desktop" id="workspace-steps-title-desktop">Đăng kí Tạm trú</span>
+                  <span class="text-mobile" id="workspace-steps-title-mobile">Đăng kí Tạm trú</span>
                 </h3>
               </div>
 
@@ -266,26 +266,26 @@
 
                   <div class="qr-card-body" id="landlord-card-summary">
                     <div class="qr-empty-hint">
-                      Chưa có thông tin Chủ nhà (Bên A)
+                      Thông tin chủ nhà
                     </div>
                   </div>
 
                   <!-- Optional Inline Manual Input Drawer for Landlord -->
                   <div id="manual-drawer-landlord" class="qr-manual-drawer" hidden>
                     <div>
-                      <label for="manual-landlordName">Họ tên Chủ nhà (Bên A)</label>
+                      <label for="manual-landlordName">Họ và tên</label>
                       <input type="text" id="manual-landlordName" placeholder="VD: TRẦN VĂN HÙNG" oninput="updateFormField('landlordName', this.value)" />
                     </div>
                     <div>
-                      <label for="manual-landlordId">Số CCCD Chủ nhà (12 số)</label>
+                      <label for="manual-landlordId">Số CCCD</label>
                       <input type="text" id="manual-landlordId" maxlength="12" placeholder="VD: 079075009876" oninput="updateFormField('landlordId', this.value)" />
                     </div>
                     <div>
-                      <label for="manual-landlordBirthYear">Ngày / Năm sinh</label>
+                      <label for="manual-landlordBirthYear">Năm sinh / Ngày sinh</label>
                       <input type="text" id="manual-landlordBirthYear" placeholder="VD: 12/05/1975" oninput="updateFormField('landlordBirthYear', this.value)" />
                     </div>
                     <div>
-                      <label for="manual-landlordAddress">Nơi thường trú Chủ nhà</label>
+                      <label for="manual-landlordAddress">Nơi thường trú</label>
                       <input type="text" id="manual-landlordAddress" placeholder="Số nhà, đường, phường, TP..." oninput="updateFormField('landlordAddress', this.value)" />
                     </div>
                   </div>
@@ -318,22 +318,22 @@
 
                   <div class="qr-card-body" id="tenant-card-summary">
                     <div class="qr-empty-hint">
-                      Chưa có thông tin Người kê khai (Bên B)
+                      Thông tin người kê khai
                     </div>
                   </div>
 
                   <!-- Optional Inline Manual Input Drawer for Tenant -->
                   <div id="manual-drawer-tenant" class="qr-manual-drawer" hidden>
                     <div>
-                      <label for="manual-fullName">Họ và tên Người kê khai (Bên B)</label>
+                      <label for="manual-fullName">Họ và tên</label>
                       <input type="text" id="manual-fullName" placeholder="VD: NGUYỄN VĂN AN" oninput="updateFormField('fullName', this.value)" />
                     </div>
                     <div>
-                      <label for="manual-citizenId">Số ĐDCN / CCCD (12 số)</label>
+                      <label for="manual-citizenId">Số CCCD</label>
                       <input type="text" id="manual-citizenId" maxlength="12" placeholder="VD: 079095012345" oninput="updateFormField('citizenId', this.value)" />
                     </div>
                     <div>
-                      <label for="manual-birthDate">Ngày, tháng, năm sinh</label>
+                      <label for="manual-birthDate">Ngày sinh</label>
                       <input type="text" id="manual-birthDate" placeholder="VD: 15/08/1995" oninput="updateFormField('birthDate', this.value)" />
                     </div>
                     <div>
@@ -346,8 +346,8 @@
                       </select>
                     </div>
                     <div class="full-col">
-                      <label for="manual-permanentAddress">Nơi thường trú (Bên B)</label>
-                      <input type="text" id="manual-permanentAddress" placeholder="Nhập địa chỉ thường trú trên CCCD..." oninput="updateFormField('permanentAddress', this.value)" />
+                      <label for="manual-permanentAddress">Nơi thường trú</label>
+                      <input type="text" id="manual-permanentAddress" placeholder="Địa chỉ thường trú..." oninput="updateFormField('permanentAddress', this.value)" />
                     </div>
                   </div>
                 </div>
@@ -362,7 +362,7 @@
               <div class="capan-preview-card-head no-print">
                 <div class="capan-panel-header">
                   <i data-lucide="file-check-2" class="panel-icon"></i>
-                  <span class="preview-title-desktop" id="preview-title-desktop">Xem trước văn bản A4 (Mẫu CT01 &amp; Hợp đồng cư trú)</span>
+                  <span class="preview-title-desktop" id="preview-title-desktop">Xem trước văn bản A4 (Mẫu CT01 &amp; Hợp đồng)</span>
                   <span class="preview-title-mobile" id="preview-title-mobile">Xem trước văn bản A4</span>
                 </div>
 
@@ -388,7 +388,7 @@
                     </label>
                     <label class="ct01-radio-label">
                       <input type="radio" id="radio-req-delete" name="ct01-request-content" value="Xoá đăng kí tạm trú do không còn chỗ ở hợp pháp tại căn nhà địa chỉ" onchange="updateFormField('requestContent', this.value)" />
-                      <span id="radio-req-delete-label">Xoá đăng kí tạm trú do không còn chỗ ở hợp pháp</span>
+                      <span id="radio-req-delete-label">Xoá đăng ký tạm trú</span>
                     </label>
                   </div>
 
@@ -399,13 +399,13 @@
                     </div>
                     <div class="ct01-address-input-field">
                       <label for="ct01-street">Tên đường</label>
-                      <input type="text" id="ct01-street" class="capan-input" placeholder="Ví dụ: Đường Nguyễn Văn Nghi" oninput="updateFormField('street', this.value)" />
+                      <input type="text" id="ct01-street" class="capan-input" placeholder="Ví dụ: Nguyễn Văn Nghi" oninput="updateFormField('street', this.value)" />
                     </div>
                   </div>
 
                   <div class="ct01-extra-inputs-grid">
                     <div class="ct01-address-input-field">
-                      <label for="ct01-ward">Phường / Xã (Nơi nộp)</label>
+                      <label for="ct01-ward">Phường / Xã</label>
                       <input type="text" id="ct01-ward" class="capan-input" value="Phường An Nhơn" placeholder="VD: Phường An Nhơn" oninput="updateFormField('ward', this.value)" />
                     </div>
                     <div class="ct01-address-input-field">
@@ -413,17 +413,17 @@
                       <input type="text" id="ct01-city" class="capan-input" value="TP. Hồ Chí Minh" placeholder="VD: TP. Hồ Chí Minh" oninput="updateFormField('city', this.value)" />
                     </div>
                     <div class="ct01-address-input-field">
-                      <label for="ct01-phone">5. Số điện thoại liên hệ</label>
+                      <label for="ct01-phone">Số điện thoại</label>
                       <input type="tel" id="ct01-phone" class="capan-input" placeholder="VD: 0909 123 456" oninput="updateFormField('phone', this.value)" />
                     </div>
                     <div class="ct01-address-input-field">
-                      <label for="ct01-email">6. Email liên hệ</label>
+                      <label for="ct01-email">Email</label>
                       <input type="email" id="ct01-email" class="capan-input" placeholder="VD: congdan@gmail.com" oninput="updateFormField('email', this.value)" />
                     </div>
                   </div>
 
                   <div class="ct01-address-input-field ct01-contract-datetime-field">
-                    <label for="ct01-contract-datetime">Ngày, giờ bắt đầu hợp đồng</label>
+                    <label for="ct01-contract-datetime">Thời gian bắt đầu hợp đồng</label>
                     <input type="datetime-local" id="ct01-contract-datetime" class="capan-input" onchange="updateFormField('moveInDate', this.value)" />
                   </div>
                 </fieldset>
@@ -701,7 +701,7 @@
                       <div class="sig-block">
                         <div class="sig-label">
                           <i data-lucide="pen-tool" style="width:16px;height:16px;color:#dc2626;"></i>
-                          <span>Bên A – Chủ nhà</span>
+                          <span>Chủ nhà</span>
                         </div>
                         <div class="sig-canvas-wrapper" id="sig-wrapper-landlord">
                           <canvas id="sig-canvas-landlord"></canvas>
@@ -710,7 +710,7 @@
                         <div class="sig-actions">
                           <button type="button" class="sig-btn" id="btn-undo-landlord" onclick="undoSignature('landlord')" disabled>
                             <i data-lucide="undo-2" style="width:14px;height:14px;"></i>
-                            <span>Hoàn tác nét</span>
+                            <span>Hoàn tác</span>
                           </button>
                           <button type="button" class="sig-btn danger" id="btn-clear-landlord" onclick="clearSignature('landlord')" disabled>
                             <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
@@ -723,7 +723,7 @@
                       <div class="sig-block">
                         <div class="sig-label">
                           <i data-lucide="pen-tool" style="width:16px;height:16px;color:#0284c7;"></i>
-                          <span>Bên B – Người kê khai</span>
+                          <span>Người kê khai</span>
                         </div>
                         <div class="sig-canvas-wrapper" id="sig-wrapper-tenant">
                           <canvas id="sig-canvas-tenant"></canvas>
@@ -732,7 +732,7 @@
                         <div class="sig-actions">
                           <button type="button" class="sig-btn" id="btn-undo-tenant" onclick="undoSignature('tenant')" disabled>
                             <i data-lucide="undo-2" style="width:14px;height:14px;"></i>
-                            <span>Hoàn tác nét</span>
+                            <span>Hoàn tác</span>
                           </button>
                           <button type="button" class="sig-btn danger" id="btn-clear-tenant" onclick="clearSignature('tenant')" disabled>
                             <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
@@ -749,7 +749,7 @@
                 <!-- Bottom Export Actions Bar -->
                 <div class="capan-preview-bottom-actions no-print" id="bottom-export-bar">
                   <div class="capan-output-copy">
-                    <strong>Xuất hồ sơ A4 hoàn chỉnh</strong>
+                    <strong>Xuất hồ sơ</strong>
                   </div>
                   <div class="capan-output-buttons">
                     <button type="button" class="capan-btn-coral-large" id="btn-download-pdf" onclick="exportTwoPagePdf()">
@@ -779,7 +779,7 @@
             <div class="citizen-application-toolbar no-print">
               <div class="citizen-application-toolbar-content">
                 <div>
-                  <strong id="citizen-app-toolbar-title">Điền Đơn Cớ Mất</strong>
+                  <strong id="citizen-app-toolbar-title">Đơn Cớ Mất</strong>
                 </div>
                 <div class="citizen-application-toolbar-actions">
                   <button type="button" class="capan-btn-coral-large" style="height:38px;padding:0 16px;font-size:13px;" onclick="openCitizenAppModal()">
@@ -832,11 +832,11 @@
                 <div class="batch-hero-badge-wrap">
                   <span class="batch-hero-badge">
                     <i data-lucide="star" style="width:13px;height:13px;fill:#f59e0b;color:#f59e0b;"></i>
-                    CÓ PHÍ • XUẤT TẬP TIN HỒ SƠ (.ZIP) TỰ ĐỘNG
+                    CÓ PHÍ • XUẤT HỒ SƠ ZIP
                   </span>
                   <span class="batch-hero-counter" id="batch-progress-stat">Đã điền: 0 / 3 người</span>
                 </div>
-                <h3>Điền hồ sơ tạm trú theo số lượng (Chủ nhà trọ &amp; Doanh nghiệp)</h3>
+                <h3>Điền hồ sơ tạm trú theo số lượng</h3>
               </div>
             </div>
 
@@ -845,7 +845,7 @@
               <div class="batch-card-head">
                 <div class="batch-step-badge">1</div>
                 <div>
-                  <h4 class="batch-card-title">Chọn số lượng người đăng ký tạm trú</h4>
+                  <h4 class="batch-card-title">Chọn số lượng người</h4>
                 </div>
               </div>
 
@@ -876,17 +876,17 @@
               </div>
             </div>
 
-            <!-- STEP 2: THÔNG TIN CHỦ NHÀ (BÊN A) & CĂN NHÀ CHO THUÊ -->
+            <!-- STEP 2: THÔNG TIN CHỦ NHÀ & CĂN NHÀ CHO THUÊ -->
             <div class="capan-batch-card no-print">
               <div class="batch-card-head">
                 <div class="batch-step-badge">2</div>
                 <div>
-                  <h4 class="batch-card-title">Thông tin Chủ nhà (Bên A) &amp; Căn nhà cho thuê</h4>
+                  <h4 class="batch-card-title">Thông tin Chủ nhà &amp; Căn nhà cho thuê</h4>
                 </div>
                 <div class="batch-head-actions">
                   <button type="button" class="capan-btn-outline" onclick="openQrScannerModal('batch-landlord')">
                     <i data-lucide="qr-code" style="width:15px;height:15px;color:#dc2626;"></i>
-                    <span>Quét / Tải ảnh CCCD Chủ nhà</span>
+                    <span>Quét / Tải CCCD</span>
                   </button>
                   <button type="button" class="capan-btn-outline" onclick="fillBatchLandlordSample()" title="Nạp nhanh mẫu thử chủ nhà">
                     <i data-lucide="wand-2" style="width:14px;height:14px;color:#0284c7;"></i>
@@ -899,7 +899,7 @@
                 <!-- Landlord Fields Grid -->
                 <div class="batch-form-grid">
                   <div class="ct01-address-input-field">
-                    <label>Họ, chữ đệm và tên Chủ nhà <span style="color:#dc2626;">*</span></label>
+                    <label>Họ và tên <span style="color:#dc2626;">*</span></label>
                     <input type="text" id="batch-landlord-name" class="capan-input text-uppercase" placeholder="VD: NGUYỄN VĂN HÙNG" oninput="updateBatchLandlordField('fullName', this.value)" />
                   </div>
                   <div class="ct01-address-input-field">
@@ -907,11 +907,11 @@
                     <input type="text" id="batch-landlord-birth" class="capan-input" placeholder="VD: 1975 hoặc 15/05/1975" oninput="updateBatchLandlordField('birthYear', this.value)" />
                   </div>
                   <div class="ct01-address-input-field">
-                    <label>Số định danh CCCD (12 số) <span style="color:#dc2626;">*</span></label>
+                    <label>Số CCCD <span style="color:#dc2626;">*</span></label>
                     <input type="text" id="batch-landlord-id" class="capan-input" maxlength="12" placeholder="VD: 079075001234" oninput="updateBatchLandlordField('citizenId', this.value)" />
                   </div>
                   <div class="ct01-address-input-field">
-                    <label>Nơi thường trú của Chủ nhà <span style="color:#dc2626;">*</span></label>
+                    <label>Nơi thường trú <span style="color:#dc2626;">*</span></label>
                     <input type="text" id="batch-landlord-address" class="capan-input" placeholder="VD: 45 Lê Duẩn, P. Bến Nghé, Quận 1, TP. HCM" oninput="updateBatchLandlordField('permanentAddress', this.value)" />
                   </div>
                 </div>
@@ -921,30 +921,30 @@
                 <!-- House Address Fields Grid -->
                 <h5 class="batch-subhead">
                   <i data-lucide="home" style="width:15px;height:15px;color:#059669;"></i>
-                  <span>Địa chỉ căn nhà / phòng trọ cho thuê (Nơi đăng ký tạm trú):</span>
+                  <span>Địa chỉ căn nhà / phòng trọ cho thuê:</span>
                 </h5>
                 <div class="batch-form-grid" style="margin-top:8px;">
                   <div class="ct01-address-input-field">
+                    <label>Số nhà <span style="color:#dc2626;">*</span></label>
+                    <input type="text" id="batch-house-no" class="capan-input" placeholder="VD: 123/45" oninput="updateBatchHouseField('houseNo', this.value)" />
+                  </div>
+                  <div class="ct01-address-input-field">
+                    <label>Tên đường <span style="color:#dc2626;">*</span></label>
+                    <input type="text" id="batch-house-street" class="capan-input" placeholder="VD: Nguyễn Văn Nghi" oninput="updateBatchHouseField('street', this.value)" />
+                  </div>
+                  <div class="ct01-address-input-field">
+                    <label>Phường / Xã <span style="color:#dc2626;">*</span></label>
+                    <input type="text" id="batch-house-ward" class="capan-input" placeholder="VD: Phường An Nhơn" oninput="updateBatchHouseField('ward', this.value)" />
+                  </div>
+                  <div class="ct01-address-input-field">
                     <label>Tỉnh / Thành phố <span style="color:#dc2626;">*</span></label>
                     <input type="text" id="batch-house-city" class="capan-input" placeholder="VD: TP. Hồ Chí Minh" oninput="updateBatchHouseField('city', this.value)" />
-                  </div>
-                  <div class="ct01-address-input-field">
-                    <label>Quận / Huyện / Thị xã <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="batch-house-district" class="capan-input" placeholder="VD: Quận 1" oninput="updateBatchHouseField('district', this.value)" />
-                  </div>
-                  <div class="ct01-address-input-field">
-                    <label>Phường / Xã / Thị trấn <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="batch-house-ward" class="capan-input" placeholder="VD: Phường Bến Nghé" oninput="updateBatchHouseField('ward', this.value)" />
-                  </div>
-                  <div class="ct01-address-input-field">
-                    <label>Số nhà, ngõ/ngách, đường, khu phố <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="batch-house-street" class="capan-input" placeholder="VD: 123 Nguyễn Huệ" oninput="updateBatchHouseField('street', this.value)" />
                   </div>
                 </div>
 
                 <div class="batch-divider" style="margin:16px 0;"></div>
 
-                <!-- CHỮ KÝ ĐIỆN TỬ CHỦ NHÀ (BÊN A) - CHỈ KÝ 1 LẦN DUY NHẤT -->
+                <!-- CHỮ KÝ ĐIỆN TỬ CHỦ NHÀ (BÊN A) -->
                 <div class="batch-landlord-sig-panel">
                   <div style="background:linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);border:1.5px solid #fdba74;border-radius:14px;padding:14px 16px;">
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
@@ -953,12 +953,11 @@
                           <i data-lucide="pen-tool" style="width:18px;height:18px;"></i>
                         </span>
                         <div>
-                          <strong style="font-size:14px;color:#9a3412;display:block;">Chữ ký điện tử Chủ nhà (Bên A) — Chỉ ký 1 lần duy nhất</strong>
-                          <span style="font-size:12px;color:#7c2d12;">Chữ ký này sẽ được tự động in vào toàn bộ tờ khai CT01 &amp; Hợp đồng của tất cả người thuê</span>
+                          <strong style="font-size:14px;color:#9a3412;display:block;">Chữ ký điện tử Chủ nhà</strong>
                         </div>
                       </div>
                       <span class="batch-sig-badge" id="batch-landlord-sig-badge" style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;background:#fee2e2;color:#dc2626;white-space:nowrap;">
-                        Chưa ký (Chủ nhà ký 1 lần tại đây)
+                        Chưa ký
                       </span>
                     </div>
 
@@ -966,16 +965,15 @@
                     <div class="sig-canvas-wrapper" id="batch-sig-wrapper-landlord">
                       <canvas id="batch-sig-canvas-landlord"></canvas>
                       <div class="sig-placeholder" id="batch-sig-placeholder-landlord">
-                        Chủ nhà (Bên A) ký tên điện tử tại đây (ngón tay hoặc chuột)
+                        Chủ nhà ký tại đây
                       </div>
                     </div>
 
-                    <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-                      <span style="font-size:11.5px;color:#9a3412;">✓ Mực xanh chuẩn văn bản hành chính • Tự động áp dụng cho tất cả hồ sơ</span>
+                    <div style="margin-top:8px;display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:8px;">
                       <div style="display:flex;gap:6px;">
                         <button type="button" class="sig-btn" id="btn-batch-undo-landlord" onclick="undoBatchLandlordSig()" disabled style="height:32px;font-size:12px;padding:0 12px;">
                           <i data-lucide="undo-2" style="width:14px;height:14px;"></i>
-                          <span>Hoàn tác nét</span>
+                          <span>Hoàn tác</span>
                         </button>
                         <button type="button" class="sig-btn danger" id="btn-batch-clear-landlord" onclick="clearBatchLandlordSig()" disabled style="height:32px;font-size:12px;padding:0 12px;">
                           <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
@@ -994,16 +992,16 @@
               <div class="batch-card-head">
                 <div class="batch-step-badge">3</div>
                 <div>
-                  <h4 class="batch-card-title">Quét CCCD của từng người thuê</h4>
+                  <h4 class="batch-card-title">Danh sách người thuê</h4>
                 </div>
                 <div class="batch-head-actions">
                   <button type="button" class="capan-btn-outline" onclick="fillAllBatchTenantsSample()" title="Nạp mẫu dữ liệu thử nghiệm cho toàn bộ người thuê">
                     <i data-lucide="sparkles" style="width:14px;height:14px;color:#10b981;"></i>
-                    <span>Nạp dữ liệu mẫu thử</span>
+                    <span>Mẫu thử</span>
                   </button>
                   <button type="button" class="capan-btn-outline" onclick="addNewBatchTenant()">
                     <i data-lucide="user-plus" style="width:14px;height:14px;"></i>
-                    <span>+ Thêm 1 người</span>
+                    <span>+ Thêm người</span>
                   </button>
                 </div>
               </div>
@@ -1021,7 +1019,7 @@
               <div class="batch-card-head" style="border-bottom:none;padding-bottom:0;">
                 <div class="batch-step-badge" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%);">4</div>
                 <div>
-                  <h4 class="batch-card-title">Xuất và Tải về toàn bộ hồ sơ (.ZIP)</h4>
+                  <h4 class="batch-card-title">Xuất hồ sơ (.ZIP)</h4>
                 </div>
               </div>
 
@@ -1038,7 +1036,7 @@
                 <div class="batch-export-summary-box" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;">
                   <div style="display:flex;align-items:center;gap:8px;">
                     <i data-lucide="shield-check" style="width:18px;height:18px;color:#10b981;"></i>
-                    <strong style="font-size:13px;color:#1e293b;">Tình trạng chữ ký điện tử hồ sơ:</strong>
+                    <strong style="font-size:13px;color:#1e293b;">Chữ ký:</strong>
                   </div>
                   <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:12px;">
                     <span id="batch-summary-sig-landlord" style="padding:4px 9px;border-radius:6px;background:#fef3c7;color:#92400e;font-weight:700;">Chủ nhà: Chưa ký</span>
@@ -1050,7 +1048,7 @@
                 <div class="batch-export-action-row">
                   <button type="button" id="btn-export-batch-zip" class="capan-btn-coral-large batch-big-btn" onclick="exportBatchZip()">
                     <i data-lucide="archive" style="width:20px;height:20px;"></i>
-                    <span id="btn-export-batch-zip-label">Xuất &amp; Tải về toàn bộ hồ sơ (.ZIP)</span>
+                    <span id="btn-export-batch-zip-label">Xuất hồ sơ (.ZIP)</span>
                   </button>
                 </div>
               </div>
@@ -1073,11 +1071,11 @@
                   Hệ thống dịch vụ công đang số hóa và kết nối biểu mẫu điện tử theo quy chuẩn mới nhất của Bộ Công An.
                 </p>
                 <div class="developing-hints">
-                  <p style="margin:4px 0;">• Quý công dân có nhu cầu đăng ký thường trú, tạm trú hoặc thay đổi thông tin cư trú có thể sử dụng ngay <strong>Điền hồ sơ Đăng kí Tạm trú (Mẫu CT01 &amp; Hợp đồng)</strong>.</p>
+                  <p style="margin:4px 0;">• Quý công dân có nhu cầu đăng ký thường trú, tạm trú hoặc thay đổi thông tin cư trú có thể sử dụng ngay <strong>Đăng kí Tạm trú (Mẫu CT01 &amp; Hợp đồng)</strong>.</p>
                   <p style="margin:4px 0;">• Hoặc tham khảo cẩm nang <strong><a href="huong-dan-nop-ho-so.html" style="color:#0284c7;text-decoration:underline;">Hướng dẫn nộp hồ sơ</a></strong> để nắm rõ chi tiết quy trình nộp trực tuyến.</p>
                 </div>
                 <button type="button" class="capan-btn-coral-large" onclick="selectFormCard('ct01')">
-                  <span>Điền hồ sơ Đăng kí Tạm trú (Mẫu CT01)</span>
+                  <span>Đăng kí Tạm trú </span>
                 </button>
               </div>
             </div>
@@ -1320,11 +1318,61 @@
             <button type="button" class="capan-btn-outline" style="height:36px;font-size:12.5px;" onclick="scanUploadedImage(false)">
               <span>Quét toàn ảnh</span>
             </button>
+            <button type="button" class="capan-btn-coral-large" style="height:36px;padding:0 14px;font-size:12.5px;background:linear-gradient(135deg,#0284c7,#0d9488);border:none;" onclick="triggerAiVisionScan()">
+              <i data-lucide="sparkles" style="width:14px;height:14px;"></i>
+              <span>Đọc chữ CCCD bằng AI (99%)</span>
+            </button>
             <label class="capan-btn-outline" style="height:36px;font-size:12.5px;cursor:pointer;">
               <i data-lucide="image" style="width:14px;height:14px;"></i>
               <span>Chọn ảnh khác</span>
               <input type="file" accept="image/*" hidden onchange="handleQrImageUpload(event)" />
             </label>
+          </div>
+        </div>
+
+        <!-- AI VISION OCR PANEL (ĐỌC THẲNG CHỮ TRÊN THẺ CCCD KHI MÃ QR BỊ MỜ) -->
+        <div id="ai-vision-panel" style="background:linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);border:1.5px solid #7dd3fc;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#0284c7,#059669);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;box-shadow:0 2px 6px rgba(2,132,199,0.3);">
+                <i data-lucide="sparkles" style="width:18px;height:18px;"></i>
+              </span>
+              <div>
+                <strong style="font-size:13.5px;color:#0f172a;display:block;">AI Vision OCR – Đọc chữ CCCD (Chính xác 99%)</strong>
+                <span style="font-size:11.5px;color:#475569;">Tự động nhận diện Họ tên, CCCD, Ngày sinh, Địa chỉ khi mã QR bị mờ hoặc không quét được</span>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              <button type="button" class="sig-btn" onclick="toggleAiVisionKeyConfig()" title="Cài đặt khóa Gemini API" style="height:32px;font-size:12px;padding:0 10px;background:#ffffff;border-color:#cbd5e1;">
+                <i data-lucide="key" style="width:13px;height:13px;color:#0284c7;"></i>
+                <span id="ai-vision-key-status">Khóa API</span>
+              </button>
+              <button type="button" id="btn-trigger-ai-vision" class="capan-btn-coral-large" onclick="triggerAiVisionScan()" style="height:32px;font-size:12px;padding:0 14px;background:linear-gradient(135deg,#0284c7,#0d9488);border:none;">
+                <i data-lucide="bot" style="width:14px;height:14px;"></i>
+                <span id="btn-trigger-ai-vision-text">Đọc bằng AI</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Drawer cấu hình API Key Google Gemini (Lưu tại trình duyệt) -->
+          <div id="ai-vision-key-drawer" style="background:#ffffff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 12px;display:none;flex-direction:column;gap:8px;">
+            <div style="font-size:12px;color:#334155;line-height:1.45;">
+              Nhập <strong>Google Gemini API Key</strong> (Miễn phí 100%) để kích hoạt tính năng AI đọc ảnh CCCD trực tiếp trên trình duyệt của bạn:
+            </div>
+            <div style="display:flex;gap:6px;">
+              <input type="password" id="gemini-api-key-input" class="capan-input" style="height:34px;font-size:12px;" placeholder="Dán mã API Key của bạn (AIzaSy...)" />
+              <button type="button" class="capan-btn-coral-large" style="height:34px;font-size:12px;padding:0 14px;background:#0284c7;border:none;" onclick="saveGeminiApiKey()">Lưu Key</button>
+            </div>
+            <div style="font-size:11px;color:#64748b;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+              <span>Key được lưu an toàn trong máy của bạn (LocalStorage).</span>
+              <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color:#0284c7;font-weight:700;text-decoration:underline;">Lấy API Key Google miễn phí tại đây &rarr;</a>
+            </div>
+          </div>
+
+          <!-- AI Status Indicator during scan -->
+          <div id="ai-vision-status-indicator" style="display:none;background:#ffffff;border:1px dashed #0284c7;border-radius:8px;padding:8px 12px;font-size:12px;color:#0369a1;display:none;align-items:center;gap:8px;">
+            <span class="animate-spin"><i data-lucide="loader-2" style="width:15px;height:15px;"></i></span>
+            <span id="ai-vision-status-text">Đang phân tích hình ảnh CCCD bằng mô hình AI Vision...</span>
           </div>
         </div>
 
@@ -1343,16 +1391,20 @@
         <!-- Quick Raw QR String & Preset Selector -->
         <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;">
           <div style="font-size:12px;font-weight:700;color:#334155;margin-bottom:8px;">
-            Nhập chuỗi mã QR hoặc chọn dữ liệu mẫu:
+            <span>Nhập chuỗi mã QR hoặc chọn dữ liệu mẫu:</span>
           </div>
-          <div style="display:flex;gap:8px;margin-bottom:8px;">
-            <input type="text" id="qr-raw-string-input" class="capan-input" style="height:34px;font-size:12px;font-family:monospace;" placeholder="079095012345|025123456|NGUYỄN VĂN AN|15081995|Nam|123 Nguyễn Huệ, Q1, TP.HCM|10052022" />
-            <button type="button" class="capan-btn-outline" style="height:34px;font-size:12px;flex-shrink:0;" onclick="parseRawQrInput()">Nhận diện</button>
+          <div style="display:flex;gap:8px;margin-bottom:8px;align-items:stretch;">
+            <textarea id="qr-raw-string-input" class="capan-input" rows="3" style="min-height:62px;height:auto;font-size:12px;font-family:monospace;resize:vertical;line-height:1.45;padding:8px 10px;" placeholder="Dán chuỗi QR (079...|...|...) hoặc văn bản:&#10;Số CCCD: 079095010595&#10;Số CMND: 025272720&#10;Họ và tên: Trần Minh Đoàn&#10;Giới tính: Nam&#10;Ngày sinh: 18/03/1995&#10;Nơi thường trú: ..."></textarea>
+            <button type="button" class="capan-btn-coral-large" style="height:auto;min-height:62px;font-size:13px;padding:0 16px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;gap:6px;" onclick="parseRawQrInput()">
+              <i data-lucide="scan" style="width:16px;height:16px;"></i>
+              <span>Nhận diện</span>
+            </button>
           </div>
           <div style="display:flex;flex-wrap:wrap;gap:6px;">
-            <button type="button" class="sig-btn" onclick="applySampleQrPreset('landlord_sample')">👤 Mẫu Chủ nhà: Trần Văn Hùng (1975)</button>
-            <button type="button" class="sig-btn" onclick="applySampleQrPreset('tenant_sample_1')">👤 Mẫu Người thuê 1: Nguyễn Văn An (1995)</button>
-            <button type="button" class="sig-btn" onclick="applySampleQrPreset('tenant_sample_2')">👤 Mẫu Người thuê 2: Lê Thị Ngọc Mai (1998)</button>
+            <button type="button" class="sig-btn" style="background:#fef2f2;border-color:#fca5a5;color:#dc2626;font-weight:700;" onclick="applySampleQrPreset('text_sample_doan')">📋 Mẫu văn bản</button>
+            <button type="button" class="sig-btn" onclick="applySampleQrPreset('landlord_sample')">👤 Mẫu Chủ nhà</button>
+            <button type="button" class="sig-btn" onclick="applySampleQrPreset('tenant_sample_1')">👤 Mẫu Người thuê 1</button>
+            <button type="button" class="sig-btn" onclick="applySampleQrPreset('tenant_sample_2')">👤 Mẫu Người thuê 2</button>
           </div>
         </div>
 
@@ -1414,7 +1466,6 @@
           </span>
           <div>
             <div class="qr-scanner-title" id="member-modal-title">Thêm thành viên cùng thay đổi</div>
-            <div style="font-size:12px;color:#64748b;">Mục 11 Tờ khai CT01 &amp; Phần II Hợp đồng cư trú</div>
           </div>
         </div>
         <button type="button" class="capan-modal-close" onclick="closeMemberModal()" aria-label="Đóng">
@@ -1432,7 +1483,6 @@
               </span>
               <div class="btn-scan-member-content">
                 <strong class="btn-scan-member-title">Quét mã QR / Tải ảnh thẻ CCCD thành viên</strong>
-                <span class="btn-scan-member-desc">Tự động nhận diện Họ tên, Ngày sinh, Giới tính, Số CCCD</span>
               </div>
               <span class="btn-scan-member-badge">Quét nhanh</span>
             </button>
@@ -1534,7 +1584,7 @@
           <i data-lucide="check-circle" style="width:18px;height:18px;color:#16a34a;flex-shrink:0;margin-top:2px;"></i>
           <div>
             <strong>Đã tạo xong 02 ảnh hồ sơ A4 sắc nét!</strong><br />
-            Bấm trực tiếp vào từng <strong>đường link tải file</strong> bên dưới để tải về iPhone / máy tính, hoặc chạm giữ vào hình và chọn <em>"Lưu vào Ảnh" (Save to Photos)</em>.
+            Bấm nút tải file bên dưới hoặc chạm giữ vào hình để lưu vào thiết bị.
           </div>
         </div>
 
@@ -1550,7 +1600,7 @@
             <div style="display:flex;align-items:center;gap:10px;min-width:200px;flex:1;">
               <span style="width:30px;height:30px;border-radius:8px;background:#eff6ff;color:#0284c7;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">1</span>
               <div>
-                <strong style="font-size:13.5px;color:#0f172a;display:block;">Đường link 1: Tờ khai CT01 (.JPG)</strong>
+                <strong style="font-size:13.5px;color:#0f172a;display:block;">Tờ khai CT01 (.JPG)</strong>
                 <span id="label-filename-ct01" style="font-size:11px;color:#64748b;font-family:monospace;">01_CT01_ToKhaiCuTru.jpg</span>
               </div>
             </div>
@@ -1571,7 +1621,7 @@
             <div style="display:flex;align-items:center;gap:10px;min-width:200px;flex:1;">
               <span style="width:30px;height:30px;border-radius:8px;background:#fef2f2;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">2</span>
               <div>
-                <strong style="font-size:13.5px;color:#0f172a;display:block;">Đường link 2: Hợp đồng cư trú (.JPG)</strong>
+                <strong style="font-size:13.5px;color:#0f172a;display:block;">Hợp đồng cư trú (.JPG)</strong>
                 <span id="label-filename-contract" style="font-size:11px;color:#64748b;font-family:monospace;">02_HopDong_ChoONho.jpg</span>
               </div>
             </div>
@@ -1658,16 +1708,16 @@
         <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px 14px;color:#1e40af;font-size:13px;line-height:1.5;display:flex;align-items:flex-start;gap:10px;">
           <i data-lucide="info" style="width:18px;height:18px;color:#2563eb;flex-shrink:0;margin-top:2px;"></i>
           <div>
-            <strong>Hướng dẫn tải file trên iPhone / Safari &amp; Máy tính:</strong><br />
-            - <strong>Trên iPhone / Safari:</strong> Bấm trực tiếp nút <em>"Tải file"</em> hoặc bấm <em>"Mở"</em> rồi chạm giữ 2 giây để chọn <em>"Lưu vào Ảnh" (Save to Photos)</em>.<br />
-            - <strong>Trên Máy tính / Android:</strong> Bấm <em>"Tải trọn bộ file .ZIP"</em> hoặc tải từng file theo danh sách bên dưới.
+            <strong>Hướng dẫn tải file:</strong><br />
+            - <strong>iPhone / Safari:</strong> Bấm nút <em>"Tải file"</em> hoặc bấm <em>"Mở"</em> rồi chạm giữ để lưu ảnh.<br />
+            - <strong>Máy tính / Android:</strong> Bấm <em>"Tải trọn bộ file .ZIP"</em> hoặc tải từng file bên dưới.
           </div>
         </div>
 
         <!-- Thanh nút tải toàn bộ file ZIP & Chia sẻ -->
         <div style="background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:14px;padding:14px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;">
           <div>
-            <strong style="display:block;font-size:14px;color:#0f172a;">Gói tất cả hồ sơ (.ZIP):</strong>
+            <strong style="display:block;font-size:14px;color:#0f172a;">Tập tin nén (.ZIP):</strong>
             <span id="batch-zip-filename-label" style="font-size:12px;color:#64748b;font-family:monospace;">HoSoTamTru_SoLuong.zip</span>
           </div>
           <div style="display:flex;flex-wrap:wrap;gap:8px;">
@@ -1686,7 +1736,7 @@
         <div>
           <div style="font-size:13.5px;font-weight:700;color:#0f172a;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
             <i data-lucide="users" style="width:16px;height:16px;color:#dc2626;"></i>
-            <span>DANH SÁCH ĐƯỜNG LINK TẢI RIÊNG TỪNG NGƯỜI THUÊ:</span>
+            <span>DANH SÁCH FILE TỪNG NGƯỜI THUÊ:</span>
           </div>
           <div id="batch-export-results-list" style="display:flex;flex-direction:column;gap:12px;">
             <!-- Rendered dynamically by JS -->
@@ -1698,6 +1748,106 @@
       <div class="capan-modal-footer">
         <button type="button" class="capan-btn-outline" onclick="closeBatchExportModal()">Đóng cửa sổ</button>
       </div>
+    </div>
+  </div>
+
+  <!-- =======================================================================
+       MODAL 6: THÔNG BÁO CHUYỂN SANG AI VISION & THANH TOÁN PHÍ CÔNG NGHỆ
+       ======================================================================= -->
+  <div class="capan-modal-backdrop no-print" id="ai-vision-payment-modal" hidden>
+    <div class="capan-modal-box" style="max-width:560px;">
+      
+      <!-- Modal Header -->
+      <div class="capan-modal-header" style="background:linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);border-bottom:1.5px solid #fed7aa;">
+        <div class="qr-scanner-heading">
+          <span class="qr-scanner-title-icon" style="background:#ffedd5;color:#ea580c;border-color:#fdba74;">
+            <i data-lucide="sparkles" style="width:24px;height:24px;"></i>
+          </span>
+          <div>
+            <div class="qr-scanner-title" style="color:#9a3412;">Chuyển Sang Công Nghệ AI Vision</div>
+            <div style="font-size:12px;color:#c2410c;">Ảnh mã QR bị mờ – Cần dùng công nghệ AI đọc trực tiếp chữ trên thẻ CCCD</div>
+          </div>
+        </div>
+        <button type="button" class="capan-modal-close" onclick="closeAiPaymentModal()" aria-label="Đóng">
+          <i data-lucide="x" style="width:18px;height:18px;"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="capan-modal-body" style="display:flex;flex-direction:column;gap:14px;max-height:calc(85vh - 120px);overflow-y:auto;">
+        
+        <!-- Reason Alert Box -->
+        <div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:12px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;font-size:12.5px;line-height:1.5;color:#991b1b;">
+          <i data-lucide="alert-triangle" style="width:18px;height:18px;color:#dc2626;flex-shrink:0;margin-top:2px;"></i>
+          <div>
+            <strong style="font-size:13px;display:block;margin-bottom:2px;color:#b91c1c;">Ảnh mã QR trên CCCD của bạn bị mờ / lóa sáng:</strong>
+            Mã QR trên ảnh chụp không đủ độ nét để quét tự động miễn phí. Để trích xuất chính xác 99% thông tin hồ sơ (Số CCCD, Họ tên, Ngày sinh, Địa chỉ), hệ thống cần chuyển sang <strong>công nghệ AI Vision chuyên sâu</strong> đọc trực tiếp chữ in trên mặt thẻ.
+          </div>
+        </div>
+
+        <!-- Fee Notice -->
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:10px 14px;font-size:12.5px;color:#166534;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <span>Phí sử dụng công nghệ AI Vision:</span>
+          <span style="font-size:16px;font-weight:800;color:#dc2626;background:#ffffff;padding:2px 12px;border-radius:8px;border:1px solid #fecaca;box-shadow:0 1px 3px rgba(220,38,38,0.1);">10.000 VNĐ</span>
+        </div>
+
+        <!-- VietQR Box -->
+        <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:12px;">
+          <div style="font-size:12px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.04em;">
+            Quét mã VietQR bằng ứng dụng mọi ngân hàng:
+          </div>
+
+          <div style="background:#ffffff;padding:8px;border-radius:12px;border:1px solid #cbd5e1;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <img 
+              id="ai-pay-vietqr-image" 
+              src="https://img.vietqr.io/image/TCB-5930073169-compact2.png?amount=10000&addInfo=phi%20su%20dung%20cong%20nghe%20quet%20hinh%20anh&accountName=TRAN%20MINH%20DOAN" 
+              alt="Mã QR Chuyển khoản VietQR" 
+              style="width:200px;height:200px;object-fit:contain;display:block;"
+            />
+          </div>
+
+          <!-- Bank Details Table -->
+          <div style="width:100%;background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:12px;display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed #f1f5f9;padding-bottom:5px;">
+              <span style="color:#64748b;">Ngân hàng:</span>
+              <strong style="color:#0f172a;">Techcombank (TCB)</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed #f1f5f9;padding-bottom:5px;">
+              <span style="color:#64748b;">Số tài khoản:</span>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <strong style="color:#0284c7;font-family:monospace;font-size:13.5px;">5930073169</strong>
+                <button type="button" class="sig-btn" style="height:24px;font-size:10.5px;padding:0 8px;" onclick="copyAiPaymentText('5930073169', 'Đã chép số tài khoản!')">Chép STK</button>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed #f1f5f9;padding-bottom:5px;">
+              <span style="color:#64748b;">Chủ tài khoản:</span>
+              <strong style="color:#0f172a;">Trần Minh Đoàn</strong>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;padding-top:2px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="color:#64748b;">Nội dung chuyển khoản:</span>
+                <button type="button" class="sig-btn" style="height:24px;font-size:10.5px;padding:0 8px;background:#fef3c7;border-color:#fde68a;color:#92400e;font-weight:700;" onclick="copyAiPaymentText('phi su dung cong nghe quet hinh anh', 'Đã chép nội dung chuyển khoản!')">Chép nội dung</button>
+              </div>
+              <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:6px 10px;font-family:monospace;font-weight:700;color:#b45309;font-size:12px;text-align:center;">
+                phi su dung cong nghe quet hinh anh
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="capan-modal-footer" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <button type="button" class="capan-btn-outline" onclick="closeAiPaymentModal()">
+          <span>Đóng (Chụp lại ảnh khác)</span>
+        </button>
+        <button type="button" class="capan-btn-coral-large" style="height:40px;padding:0 18px;font-size:13px;background:linear-gradient(135deg, #0284c7 0%, #0d9488 100%);border:none;" onclick="confirmPaidAndRunAiVision()">
+          <i data-lucide="check-circle" style="width:16px;height:16px;"></i>
+          <span>Tôi đã chuyển khoản &rarr; Kích hoạt AI ngay</span>
+        </button>
+      </div>
+
     </div>
   </div>
 
