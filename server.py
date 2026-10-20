@@ -147,19 +147,38 @@ class SecureServerHandler(SimpleHTTPRequestHandler):
                 }
             }
 
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-            req = urllib.request.Request(
-                url,
-                data=json.dumps(req_payload).encode('utf-8'),
-                headers={
-                    'Content-Type': 'application/json',
-                    'x-goog-api-key': api_key
-                }
-            )
+            # Thử model mới nhất được Google hỗ trợ (gemini-3.5-flash-lite, fallback sang gemini-3.5-flash)
+            models_to_try = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.8-flash']
+            resp_data = None
+            last_err = None
 
-            with urllib.request.urlopen(req, timeout=25) as resp:
-                resp_data = json.loads(resp.read().decode('utf-8'))
-                raw_text = resp_data['candidates'][0]['content']['parts'][0]['text']
+            for model_name in models_to_try:
+                try:
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+                    req = urllib.request.Request(
+                        url,
+                        data=json.dumps(req_payload).encode('utf-8'),
+                        headers={
+                            'Content-Type': 'application/json',
+                            'x-goog-api-key': api_key
+                        }
+                    )
+                    with urllib.request.urlopen(req, timeout=25) as resp:
+                        resp_data = json.loads(resp.read().decode('utf-8'))
+                        break
+                except urllib.error.HTTPError as he:
+                    last_err = he
+                    if he.code == 404:
+                        continue
+                    else:
+                        raise he
+
+            if not resp_data:
+                if last_err:
+                    raise last_err
+                raise Exception("Khong the ket noi den model Gemini")
+
+            raw_text = resp_data['candidates'][0]['content']['parts'][0]['text']
 
             clean_json = raw_text.strip()
             if clean_json.startswith('```json'):
