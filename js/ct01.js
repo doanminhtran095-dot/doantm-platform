@@ -1531,11 +1531,61 @@ async function scanUploadedImage(useCrop, silentIfFail = false) {
 }
 
 // ============================================================================
-// 8.5 AI VISION OCR FOR CCCD (GOOGLE GEMINI FLASH VISION INTEGRATION)
+// 8.5 AI VISION OCR FOR CCCD (GIẢI PHÁP 2: BACKEND PROXY & GIẢI PHÁP 3: CHỐNG SPAM)
 // ============================================================================
-// 👉 DÁN MÃ GOOGLE GEMINI API KEY CỦA BẠN VÀO GIỮA DẤU NGOẶC KÉP DƯỚI ĐÂY:
-const DEFAULT_GEMINI_API_KEY = ""; // Ví dụ: "AIzaSyD-xxxxxxxxxxxxxxxxxxxxxxxx"
+// Khóa dự phòng (chỉ dùng khi không chạy qua Backend Proxy)
+const DEFAULT_GEMINI_API_KEY = ""; 
 const GEMINI_API_STORAGE_KEY = 'gemini_cccd_api_key';
+
+// GIẢI PHÁP 3: Quản lý Cooldown & Hạn mức phiên chống Click tặc
+let isAiVisionScanBusy = false;
+let aiVisionCooldownTimer = null;
+const AI_COOLDOWN_SECONDS = 15;        // Thời gian chờ 15s giữa 2 lần quét
+const MAX_DAILY_AI_SCANS = 10;          // Tối đa 10 lượt quét/ngày mỗi thiết bị
+const AI_SCAN_TRACKER_KEY = 'doantm_ai_scan_daily_quota';
+
+function getDailyAiScanCount() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const raw = localStorage.getItem(AI_SCAN_TRACKER_KEY);
+    if (!raw) return 0;
+    const data = JSON.parse(raw);
+    return data.date === today ? (data.count || 0) : 0;
+  } catch (e) {
+    return 0;
+  }
+}
+
+function incrementDailyAiScanCount() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const current = getDailyAiScanCount();
+    localStorage.setItem(AI_SCAN_TRACKER_KEY, JSON.stringify({ date: today, count: current + 1 }));
+  } catch (e) {}
+}
+
+function startAiVisionCooldown(seconds = AI_COOLDOWN_SECONDS) {
+  const btnTrigger = document.getElementById('btn-trigger-ai-vision');
+  if (!btnTrigger) return;
+  let remain = seconds;
+  btnTrigger.disabled = true;
+
+  if (aiVisionCooldownTimer) clearInterval(aiVisionCooldownTimer);
+  btnTrigger.innerHTML = `<span>⏳ Chờ (${remain}s)...</span>`;
+
+  aiVisionCooldownTimer = setInterval(() => {
+    remain--;
+    if (remain <= 0) {
+      clearInterval(aiVisionCooldownTimer);
+      aiVisionCooldownTimer = null;
+      btnTrigger.disabled = false;
+      btnTrigger.innerHTML = '<i data-lucide="bot" style="width:14px;height:14px;"></i><span>Đọc bằng AI</span>';
+      if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
+    } else {
+      btnTrigger.innerHTML = `<span>⏳ Chờ (${remain}s)...</span>`;
+    }
+  }, 1000);
+}
 
 function getStoredGeminiKey() {
   try {
@@ -1638,10 +1688,22 @@ async function triggerAiVisionScan() {
 async function executeAiVisionOcr() {
   if (!uploadedQrImageObj) return;
 
-  const apiKey = getStoredGeminiKey();
-  if (!apiKey) {
-    toggleAiVisionKeyConfig(true);
-    showToast('Vui lòng nhập Google Gemini API Key (Miễn phí) để AI phân tích hình ảnh CCCD.', 'warn');
+  // GIẢI PHÁP 3: Chặn click liên hồi
+  if (isAiVisionScanBusy) {
+    showToast('Hệ thống đang phân tích ảnh, vui lòng không bấm liên tục.', 'warn');
+    return;
+  }
+
+  // GIẢI PHÁP 3: Chặn khi đang trong thời gian Cooldown đếm ngược
+  if (aiVisionCooldownTimer) {
+    showToast('Vui lòng chờ hết thời gian đếm ngược trước khi quét tiếp.', 'warn');
+    return;
+  }
+
+  // GIẢI PHÁP 3: Kiểm tra hạn mức quét tối đa trong ngày (Chống spam cạn token)
+  const dailyUsed = getDailyAiScanCount();
+  if (dailyUsed >= MAX_DAILY_AI_SCANS) {
+    showToast(`Bạn đã đạt hạn mức tối đa ${MAX_DAILY_AI_SCANS} lượt quét AI trong ngày để chống spam. Vui lòng quay lại vào ngày mai!`, 'error');
     return;
   }
 
@@ -1651,23 +1713,24 @@ async function executeAiVisionOcr() {
   const originalBtnHtml = btnTrigger ? btnTrigger.innerHTML : '';
 
   try {
+    isAiVisionScanBusy = true;
+
     if (indicator) {
       indicator.style.display = 'flex';
-      if (statusText) statusText.textContent = '🤖 Đang gửi ảnh sang AI Vision để đọc chữ trên mặt thẻ CCCD...';
+      if (statusText) statusText.textContent = '🤖 Đang chuẩn bị hình ảnh và gửi yêu cầu đến AI Vision...';
     }
     if (btnTrigger) {
       btnTrigger.disabled = true;
       btnTrigger.innerHTML = '<span>⏳ Đang đọc CCCD...</span>';
     }
 
-    // 1. Prepare base64 image from uploadedQrImageObj
+    // 1. Chuẩn bị ảnh Base64
     const region = cropRect ? cropRect : { left: 0, top: 0, width: 1, height: 1 };
     const sx = Math.round(uploadedQrImageObj.width * region.left);
     const sy = Math.round(uploadedQrImageObj.height * region.top);
     const sw = Math.max(1, Math.round(uploadedQrImageObj.width * region.width));
     const sh = Math.max(1, Math.round(uploadedQrImageObj.height * region.height));
 
-    // Limit dimensions to 1280px for fast transmission
     const maxDim = 1280;
     let targetW = sw;
     let targetH = sh;
@@ -1690,10 +1753,56 @@ async function executeAiVisionOcr() {
     const base64Jpeg = canvas.toDataURL('image/jpeg', 0.85);
     const base64Data = base64Jpeg.replace(/^data:image\/[a-z]+;base64,/, '');
 
-    if (statusText) statusText.textContent = '🤖 AI đang trích xuất Họ tên, Số CCCD, Ngày sinh, Địa chỉ...';
+    // GIẢI PHÁP 3: Kiểm tra dung lượng ảnh hợp lệ (> 10KB)
+    if (base64Data.length < 1000) {
+      throw new Error('Ảnh chụp quá nhỏ hoặc không hợp lệ để phân tích.');
+    }
 
-    // 2. Call Google Gemini 1.5 Flash Vision API
-    const systemPrompt = `Bạn là hệ thống AI trích xuất thông tin Căn cước công dân (CCCD) Việt Nam.
+    if (statusText) statusText.textContent = '🤖 AI đang phân tích Số CCCD, Họ tên, Ngày sinh, Địa chỉ...';
+
+    let parsedData = null;
+    let usedBackend = false;
+
+    // 2. GIẢI PHÁP 2: Thử gọi qua Backend Proxy (/api/scan-cccd) trước để giấu 100% API Key
+    try {
+      const proxyResp = await fetch('/api/scan-cccd', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64Jpeg })
+      });
+
+      if (proxyResp.ok) {
+        const json = await proxyResp.json();
+        if (json && json.ok && json.data) {
+          parsedData = json.data;
+          usedBackend = true;
+        }
+      } else if (proxyResp.status === 429) {
+        const errJson = await proxyResp.json().catch(() => ({}));
+        throw new Error(errJson.error || 'Bạn thao tác quá nhanh, vui lòng chờ 1 phút.');
+      } else if (proxyResp.status === 500) {
+        const errJson = await proxyResp.json().catch(() => ({}));
+        if (errJson.error && errJson.error.includes('GEMINI_API_KEY')) {
+          console.warn('Backend chưa cấu hình GEMINI_API_KEY trong .env');
+        }
+      }
+    } catch (proxyErr) {
+      if (proxyErr.message && proxyErr.message.includes('thao tác quá nhanh')) {
+        throw proxyErr;
+      }
+      console.log('Backend proxy không phản hồi, chuyển sang phương án Client Key:', proxyErr.message);
+    }
+
+    // 3. Nếu Backend Proxy chưa triển khai, dùng Client Key làm Fallback:
+    if (!usedBackend) {
+      const apiKey = getStoredGeminiKey();
+      if (!apiKey) {
+        toggleAiVisionKeyConfig(true);
+        showToast('Vui lòng thêm GEMINI_API_KEY vào file .env hoặc nhập Khóa API trên web.', 'warn');
+        return;
+      }
+
+      const systemPrompt = `Bạn là hệ thống AI trích xuất thông tin Căn cước công dân (CCCD) Việt Nam.
 Hãy đọc các chữ in trên mặt trước (hoặc mặt sau) của thẻ CCCD trong ảnh và trả về một đối tượng JSON duy nhất có các trường:
 - citizenId: Số CCCD 12 chữ số (hoặc số CMND 9 số)
 - fullName: Họ và tên in hoa có dấu tiếng Việt (ví dụ: NGUYỄN VĂN AN)
@@ -1704,64 +1813,55 @@ Hãy đọc các chữ in trên mặt trước (hoặc mặt sau) của thẻ CC
 
 Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào khác.`;
 
-    const requestBody = {
-      contents: [{
-        parts: [
-          { text: systemPrompt },
-          {
-            inline_data: {
-              mime_type: "image/jpeg",
-              data: base64Data
-            }
-          }
-        ]
-      }],
-      generationConfig: {
-        response_mime_type: "application/json",
-        temperature: 0.1
-      }
-    };
+      const requestBody = {
+        contents: [{
+          parts: [
+            { text: systemPrompt },
+            { inline_data: { mime_type: "image/jpeg", data: base64Data } }
+          ]
+        }],
+        generationConfig: {
+          response_mime_type: "application/json",
+          temperature: 0.1
+        }
+      };
 
-    // Try gemini-1.5-flash first, fallback to gemini-2.0-flash
-    let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody)
-    });
-
-    if (!response.ok) {
-      // Fallback try with gemini-2.0-flash
-      response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+      let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody)
       });
+
+      if (!response.ok) {
+        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestBody)
+        });
+      }
+
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({}));
+        const msg = errJson.error && errJson.error.message ? errJson.error.message : response.statusText;
+        throw new Error(`Lỗi kết nối Gemini API (${response.status}): ${msg}`);
+      }
+
+      const data = await response.json();
+      const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      if (!rawText) throw new Error('AI không nhận diện được văn bản từ ảnh CCCD.');
+
+      let cleanJson = rawText.trim();
+      if (cleanJson.startsWith('```json')) cleanJson = cleanJson.replace(/^```json\s*/i, '').replace(/\s*```$/, '');
+      else if (cleanJson.startsWith('```')) cleanJson = cleanJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
+
+      parsedData = JSON.parse(cleanJson);
     }
 
-    if (!response.ok) {
-      const errJson = await response.json().catch(() => ({}));
-      const msg = errJson.error && errJson.error.message ? errJson.error.message : response.statusText;
-      throw new Error(`Lỗi kết nối Gemini API (${response.status}): ${msg}`);
+    if (!parsedData) {
+      throw new Error('Không thể phân tích dữ liệu CCCD từ hình ảnh.');
     }
 
-    const data = await response.json();
-    const rawText = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] ? data.candidates[0].content.parts[0].text : '';
-
-    if (!rawText) {
-      throw new Error('AI không nhận diện được văn bản từ ảnh CCCD.');
-    }
-
-    // Clean potential markdown wrap
-    let cleanJson = rawText.trim();
-    if (cleanJson.startsWith('```json')) {
-      cleanJson = cleanJson.replace(/^```json\s*/i, '').replace(/\s*```$/, '');
-    } else if (cleanJson.startsWith('```')) {
-      cleanJson = cleanJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
-    }
-
-    const parsedData = JSON.parse(cleanJson);
-
-    // Validate extracted data
+    // 4. Chuẩn hóa dữ liệu nhận diện
     const cleanId = (parsedData.citizenId || '').replace(/\D/g, '');
     const cleanName = (parsedData.fullName || '').trim().toUpperCase();
     const cleanDob = (parsedData.birthDate || '').trim();
@@ -1770,7 +1870,7 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
     const cleanIssue = (parsedData.issueDate || '').trim();
 
     if (!cleanId && !cleanName) {
-      throw new Error('Không trích xuất được số CCCD hoặc Họ tên từ ảnh.');
+      throw new Error('Không trích xuất được số CCCD hoặc Họ tên từ ảnh. Vui lòng chụp rõ hơn.');
     }
 
     const finalParsed = {
@@ -1782,14 +1882,19 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
       issueDate: cleanIssue
     };
 
+    // GIẢI PHÁP 3: Cập nhật hạn mức ngày & Bắt đầu Cooldown 15 giây
+    incrementDailyAiScanCount();
+    startAiVisionCooldown(AI_COOLDOWN_SECONDS);
+
     setScannedQrResult(finalParsed);
-    showToast(`✨ AI Vision đã nhận diện thành công: ${finalParsed.fullName} (${finalParsed.citizenId})`);
+    showToast(`✨ AI Vision (${usedBackend ? 'Bảo mật Backend' : 'Client'}) nhận diện thành công: ${finalParsed.fullName}`);
   } catch (err) {
     console.error('AI Vision OCR Error:', err);
     showToast(err.message || 'Không thể đọc được CCCD bằng AI Vision. Vui lòng kiểm tra lại ảnh hoặc khóa API.', 'error');
   } finally {
+    isAiVisionScanBusy = false;
     if (indicator) indicator.style.display = 'none';
-    if (btnTrigger && originalBtnHtml) {
+    if (btnTrigger && originalBtnHtml && !aiVisionCooldownTimer) {
       btnTrigger.disabled = false;
       btnTrigger.innerHTML = originalBtnHtml;
     }

@@ -1,0 +1,125 @@
+// ============================================================================
+// API/SCAN-CCCD.JS - SERVERLESS BACKEND PROXY (VERCEL / NODE.JS)
+// GIẢI PHÁP 2: Giấu hoàn toàn API Key trên Server, người dùng F12 không thấy được
+// GIẢI PHÁP 3: Chống spam, Rate Limiting theo địa chỉ IP
+// ============================================================================
+
+const ipRateLimits = new Map();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // Khung thời gian: 1 phút
+const MAX_REQUESTS_PER_WINDOW = 5;      // Tối đa 5 lượt quét / phút mỗi IP
+
+export default async function handler(req, res) {
+  // 1. Cấu hình CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ ok: false, error: 'Chỉ chấp nhận phương thức POST' });
+  }
+
+  // 2. GIẢI PHÁP 3: Rate Limiting & Chống Spam theo IP
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown-client';
+  const now = Date.now();
+  const userRate = ipRateLimits.get(clientIp) || { count: 0, resetAt: now + RATE_LIMIT_WINDOW_MS };
+
+  if (now > userRate.resetAt) {
+    userRate.count = 0;
+    userRate.resetAt = now + RATE_LIMIT_WINDOW_MS;
+  }
+
+  userRate.count += 1;
+  ipRateLimits.set(clientIp, userRate);
+
+  if (userRate.count > MAX_REQUESTS_PER_WINDOW) {
+    const waitSeconds = Math.ceil((userRate.resetAt - now) / 1000);
+    return res.status(429).json({
+      ok: false,
+      error: `Bạn thao tác quá nhanh! Vui lòng chờ ${waitSeconds} giây trước khi thực hiện lượt quét tiếp theo.`
+    });
+  }
+
+  // 3. GIẢI PHÁP 2: Lấy API Key từ Biến Môi Trường Bí Mật (Environment Variable)
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({
+      ok: false,
+      error: 'Máy chủ chưa cấu hình GEMINI_API_KEY trong biến môi trường.'
+    });
+  }
+
+  try {
+    const { image } = req.body || {};
+    if (!image || typeof image !== 'string' || image.length < 50) {
+      return res.status(400).json({ ok: false, error: 'Dữ liệu hình ảnh CCCD không hợp lệ.' });
+    }
+
+    const base64Data = image.replace(/^data:image\/[a-z]+;base64,/, '');
+
+    const systemPrompt = `Bạn là hệ thống AI trích xuất thông tin Căn cước công dân (CCCD) Việt Nam.
+Hãy đọc các chữ in trên mặt trước (hoặc mặt sau) của thẻ CCCD trong ảnh và trả về một đối tượng JSON duy nhất có các trường:
+- citizenId: Số CCCD 12 chữ số (hoặc số CMND 9 số)
+- fullName: Họ và tên in hoa có dấu tiếng Việt (ví dụ: NGUYỄN VĂN AN)
+- birthDate: Ngày tháng năm sinh định dạng DD/MM/YYYY (ví dụ: 18/03/1995)
+- gender: Giới tính ('Nam' hoặc 'Nữ')
+- permanentAddress: Nơi thường trú đầy đủ ghi trên thẻ (đầy đủ số nhà, đường, thôn/xóm, phường/xã, quận/huyện, tỉnh/thành phố)
+- issueDate: Ngày cấp thẻ nếu thấy (DD/MM/YYYY)
+
+Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào khác.`;
+
+    const requestBody = {
+      contents: [{
+        parts: [
+          { text: systemPrompt },
+          { inline_data: { mime_type: 'image/jpeg', data: base64Data } }
+        ]
+      }],
+      generationConfig: {
+        response_mime_type: 'application/json',
+        temperature: 0.1
+      }
+    };
+
+    let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+    }
+
+    if (!response.ok) {
+      const errJson = await response.json().catch(() => ({}));
+      const msg = errJson.error?.message || response.statusText;
+      return res.status(502).json({ ok: false, error: `Google AI trả về lỗi (${response.status}): ${msg}` });
+    }
+
+    const data = await response.json();
+    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    if (!rawText) {
+      return res.status(422).json({ ok: false, error: 'AI không nhận diện được chữ trên ảnh thẻ CCCD.' });
+    }
+
+    let cleanJson = rawText.trim();
+    if (cleanJson.startsWith('```json')) {
+      cleanJson = cleanJson.replace(/^```json\s*/i, '').replace(/\s*```$/, '');
+    } else if (cleanJson.startsWith('```')) {
+      cleanJson = cleanJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    }
+
+    const parsed = JSON.parse(cleanJson);
+    return res.status(200).json({ ok: true, data: parsed });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: err.message || 'Lỗi xử lý AI trên máy chủ.' });
+  }
+}
