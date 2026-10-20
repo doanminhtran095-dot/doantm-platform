@@ -1343,29 +1343,10 @@
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-              <button type="button" class="sig-btn" onclick="toggleAiVisionKeyConfig()" title="Cài đặt khóa Gemini API" style="height:32px;font-size:12px;padding:0 10px;background:#ffffff;border-color:#cbd5e1;">
-                <i data-lucide="key" style="width:13px;height:13px;color:#0284c7;"></i>
-                <span id="ai-vision-key-status">Khóa API</span>
-              </button>
               <button type="button" id="btn-trigger-ai-vision" class="capan-btn-coral-large" onclick="triggerAiVisionScan()" style="height:32px;font-size:12px;padding:0 14px;background:linear-gradient(135deg,#0284c7,#0d9488);border:none;">
                 <i data-lucide="bot" style="width:14px;height:14px;"></i>
                 <span id="btn-trigger-ai-vision-text">Đọc bằng AI</span>
               </button>
-            </div>
-          </div>
-
-          <!-- Drawer cấu hình API Key Google Gemini (Lưu tại trình duyệt) -->
-          <div id="ai-vision-key-drawer" style="background:#ffffff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 12px;display:none;flex-direction:column;gap:8px;">
-            <div style="font-size:12px;color:#334155;line-height:1.45;">
-              Nhập <strong>Google Gemini API Key</strong> (Miễn phí 100%) để kích hoạt tính năng AI đọc ảnh CCCD trực tiếp trên trình duyệt của bạn:
-            </div>
-            <div style="display:flex;gap:6px;">
-              <input type="password" id="gemini-api-key-input" class="capan-input" style="height:34px;font-size:12px;" placeholder="Dán mã API Key của bạn (AIzaSy...)" />
-              <button type="button" class="capan-btn-coral-large" style="height:34px;font-size:12px;padding:0 14px;background:#0284c7;border:none;" onclick="saveGeminiApiKey()">Lưu Key</button>
-            </div>
-            <div style="font-size:11px;color:#64748b;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
-              <span>Key được lưu an toàn trong máy của bạn (LocalStorage).</span>
-              <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color:#0284c7;font-weight:700;text-decoration:underline;">Lấy API Key Google miễn phí tại đây &rarr;</a>
             </div>
           </div>
 
@@ -1754,7 +1735,7 @@
   <!-- =======================================================================
        MODAL 6: THÔNG BÁO CHUYỂN SANG AI VISION & THANH TOÁN PHÍ CÔNG NGHỆ
        ======================================================================= -->
-  <div class="capan-modal-backdrop no-print" id="ai-vision-payment-modal" hidden>
+  <div class="capan-modal-backdrop no-print" id="ai-vision-payment-modal" style="z-index: 100005 !important;" hidden>
     <div class="capan-modal-box" style="max-width:560px;">
       
       <!-- Modal Header -->

@@ -1675,14 +1675,14 @@ function saveGeminiApiKey() {
   showToast('✓ Đã lưu Google Gemini API Key an toàn trong trình duyệt của bạn!');
 }
 
-async function triggerAiVisionScan() {
+function triggerAiVisionScan() {
   if (!uploadedQrImageObj) {
     showToast('Vui lòng chọn ảnh CCCD trước khi kích hoạt AI Vision.', 'info');
     const fileInput = document.getElementById('qr-file-input');
     if (fileInput) fileInput.click();
     return;
   }
-  await executeAiVisionOcr();
+  openAiVisionPaymentModal();
 }
 
 async function executeAiVisionOcr() {
@@ -1763,9 +1763,16 @@ async function executeAiVisionOcr() {
     let parsedData = null;
     let usedBackend = false;
 
-    // 2. GIẢI PHÁP 2: Thử gọi qua Backend Proxy (/api/scan-cccd) trước để giấu 100% API Key
+    // 2. GIẢI PHÁP 2: Thử gọi qua Backend Proxy (/api/scan-cccd) để giấu 100% API Key
+    let backendErrorMsg = '';
     try {
-      const proxyResp = await fetch('/api/scan-cccd', {
+      // Tự động nhận diện: Nếu mở trực tiếp dạng file:// trên ổ đĩa, trỏ thẳng tới http://localhost:8000/api/scan-cccd
+      let backendUrl = '/api/scan-cccd';
+      if (window.location.protocol === 'file:' || !window.location.host) {
+        backendUrl = 'http://localhost:8000/api/scan-cccd';
+      }
+
+      const proxyResp = await fetch(backendUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: base64Jpeg })
@@ -1780,26 +1787,36 @@ async function executeAiVisionOcr() {
       } else if (proxyResp.status === 429) {
         const errJson = await proxyResp.json().catch(() => ({}));
         throw new Error(errJson.error || 'Bạn thao tác quá nhanh, vui lòng chờ 1 phút.');
-      } else if (proxyResp.status === 500) {
+      } else if (proxyResp.status === 500 || proxyResp.status === 502) {
         const errJson = await proxyResp.json().catch(() => ({}));
-        if (errJson.error && errJson.error.includes('GEMINI_API_KEY')) {
-          console.warn('Backend chưa cấu hình GEMINI_API_KEY trong .env');
+        let serverErr = errJson.error || 'Lỗi xử lý từ máy chủ AI.';
+        if (serverErr.includes('GEMINI_API_KEY') && serverErr.includes('chua duoc cau hinh')) {
+          serverErr = 'Máy chủ chưa được cấu hình GEMINI_API_KEY trong file .env trên máy.';
+        } else if (serverErr.includes('ACCESS_TOKEN_TYPE_UNSUPPORTED') || serverErr.includes('401')) {
+          serverErr = 'Khóa GEMINI_API_KEY trong file .env chưa hợp lệ hoặc chưa được kích hoạt dịch vụ Generative Language.';
         }
+        throw new Error(serverErr);
       }
     } catch (proxyErr) {
-      if (proxyErr.message && proxyErr.message.includes('thao tác quá nhanh')) {
+      if (proxyErr.message && (
+        proxyErr.message.includes('thao tác quá nhanh') || 
+        proxyErr.message.includes('GEMINI_API_KEY') || 
+        proxyErr.message.includes('Khóa GEMINI_API_KEY')
+      )) {
         throw proxyErr;
       }
-      console.log('Backend proxy không phản hồi, chuyển sang phương án Client Key:', proxyErr.message);
+      console.warn('Backend proxy không phản hồi:', proxyErr.message);
+      backendErrorMsg = proxyErr.message;
     }
 
-    // 3. Nếu Backend Proxy chưa triển khai, dùng Client Key làm Fallback:
+    // 3. Nếu Backend Proxy chưa có kết quả:
     if (!usedBackend) {
       const apiKey = getStoredGeminiKey();
       if (!apiKey) {
-        toggleAiVisionKeyConfig(true);
-        showToast('Vui lòng thêm GEMINI_API_KEY vào file .env hoặc nhập Khóa API trên web.', 'warn');
-        return;
+        if (window.location.protocol === 'file:') {
+          throw new Error('Bạn đang mở file trực tiếp (file://). Máy chủ Python chưa nhận được kết nối. Hãy đảm bảo bạn chạy server.py và mở web tại địa chỉ: http://localhost:8000/ct01.html');
+        }
+        throw new Error(backendErrorMsg ? `Lỗi kết nối máy chủ AI: ${backendErrorMsg}` : 'Máy chủ AI đang bận hoặc chưa khởi động server.py. Vui lòng kiểm tra lại!');
       }
 
       const systemPrompt = `Bạn là hệ thống AI trích xuất thông tin Căn cước công dân (CCCD) Việt Nam.

@@ -151,7 +151,10 @@ class SecureServerHandler(SimpleHTTPRequestHandler):
             req = urllib.request.Request(
                 url,
                 data=json.dumps(req_payload).encode('utf-8'),
-                headers={'Content-Type': 'application/json'}
+                headers={
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': api_key
+                }
             )
 
             with urllib.request.urlopen(req, timeout=25) as resp:

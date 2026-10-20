@@ -2404,6 +2404,10 @@ input[type="date"].capan-input {
   z-index: 99999 !important;
 }
 
+#ai-vision-payment-modal {
+  z-index: 100005 !important;
+}
+
 #member-modal {
   z-index: 500 !important;
 }
