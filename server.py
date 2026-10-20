@@ -123,14 +123,14 @@ class SecureServerHandler(SimpleHTTPRequestHandler):
                 base64_data = image_raw
 
             system_prompt = (
-                "Ban la he thong AI trich xuat thong tin Can cuoc cong dan (CCCD) Viet Nam.\n"
-                "Hay doc cac chu in tren mat truoc (hoac mat sau) cua the CCCD trong anh va tra ve mot doi tuong JSON duy nhat co cac truong:\n"
-                "- citizenId: So CCCD 12 chu so (hoac so CMND 9 so)\n"
-                "- fullName: Ho va ten in hoa co dau tieng Viet (vi du: NGUYEN VAN AN)\n"
+                "Ban la he thong AI trich xuat thong tin Can cuoc cong dan / The Can cuoc Viet Nam (ca mau cu va mau moi 2024).\n"
+                "Hay doc cac chu in tren mat the trong anh va tra ve mot doi tuong JSON duy nhat co cac truong:\n"
+                "- citizenId: So CCCD / So Dinh danh ca nhan 12 chu so (hoac so CMND 9 so)\n"
+                "- fullName: Ho va ten in hoa co dau tieng Viet chinh xac nhu in tren the (vi du: TRẦN MINH ĐOÀN, NGUYỄN VĂN AN)\n"
                 "- birthDate: Ngay thang nam sinh dinh dang DD/MM/YYYY (vi du: 18/03/1995)\n"
                 "- gender: Gioi tinh ('Nam' hoac 'Nu')\n"
-                "- permanentAddress: Noi thuong tru day du ghi tren the (day du so nha, duong, thon/xom, phuong/xa, quan/huyen, tinh/thanh pho)\n"
-                "- issueDate: Ngay cap the neu thay (DD/MM/YYYY)\n\n"
+                "- permanentAddress: Noi thuong tru / Noi cu tru day du neu ghi tren the (neu anh la the Can cuoc moi 2024 khong in dia chi o mat truoc thi de null)\n"
+                "- issueDate: Ngay cap the neu co (DD/MM/YYYY, neu khong co thi de null)\n\n"
                 "Chi tra ve JSON thuan, khong boc markdown hay text giai thich nao khac."
             )
 
@@ -147,8 +147,8 @@ class SecureServerHandler(SimpleHTTPRequestHandler):
                 }
             }
 
-            # Thử model mới nhất được Google hỗ trợ (gemini-3.5-flash-lite, fallback sang gemini-3.5-flash)
-            models_to_try = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.8-flash']
+            # Thử model có thị giác OCR tốt nhất & nhanh nhất (gemini-3-flash-preview)
+            models_to_try = ['gemini-3-flash-preview', 'gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest']
             resp_data = None
             last_err = None
 
@@ -163,15 +163,18 @@ class SecureServerHandler(SimpleHTTPRequestHandler):
                             'x-goog-api-key': api_key
                         }
                     )
-                    with urllib.request.urlopen(req, timeout=25) as resp:
+                    with urllib.request.urlopen(req, timeout=35) as resp:
                         resp_data = json.loads(resp.read().decode('utf-8'))
                         break
                 except urllib.error.HTTPError as he:
                     last_err = he
-                    if he.code == 404:
+                    if he.code in (404, 503):
                         continue
                     else:
                         raise he
+                except Exception as ex:
+                    last_err = ex
+                    continue
 
             if not resp_data:
                 if last_err:

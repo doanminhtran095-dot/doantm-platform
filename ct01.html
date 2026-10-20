@@ -1275,131 +1275,125 @@
       </div>
 
       <!-- Modal Body -->
-      <div class="capan-modal-body">
+      <div class="capan-modal-body" style="display:flex;flex-direction:column;gap:12px;">
 
-        <!-- Live Camera Viewport -->
-        <div class="camera-viewport-wrapper" id="qr-camera-wrapper">
-          <div class="camera-viewport" id="qr-camera-viewport" title="Chạm để lấy nét vào mã QR">
-            <video id="qr-camera-video" playsinline muted class="camera-video"></video>
-            <div class="scanner-laser-overlay">
-              <div class="scanner-frame">
-                <div class="corner corner-tl"></div>
-                <div class="corner corner-tr"></div>
-                <div class="corner corner-bl"></div>
-                <div class="corner corner-br"></div>
-                <div class="scanner-laser-line"></div>
-              </div>
-            </div>
-          </div>
-          <div style="text-align:center;">
-            <p style="margin:0;font-size:13px;font-weight:700;color:#1e293b;">Đặt mã QR trên CCCD vào khung quét</p>
-          </div>
-        </div>
-
-        <!-- Camera Warning Box (if camera unavailable) -->
-        <div id="qr-camera-warning" style="background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:12px 14px;border-radius:10px;font-size:13px;" hidden></div>
-
-        <!-- Image Cropper Panel (When user uploads an image) -->
-        <div class="qr-upload-crop-panel" id="qr-crop-panel" hidden>
-          <div>
-            <h3 style="margin:0;font-size:14.5px;font-weight:700;color:#0f172a;">Khoanh vùng mã QR hoặc chữ trên ảnh CCCD</h3>
-          </div>
-
-          <button type="button" class="qr-upload-cropper" id="qr-cropper-area" aria-label="Khoanh vùng mã QR trên ảnh CCCD">
-            <img id="qr-uploaded-img" src="" alt="Ảnh CCCD đã tải lên" draggable="false" />
-            <span class="qr-upload-crop-selection" id="qr-crop-selection-box" hidden></span>
-          </button>
-
-          <div style="display:flex;flex-wrap:wrap;gap:8px;">
-            <button type="button" class="capan-btn-coral-large" style="height:36px;padding:0 14px;font-size:12.5px;" id="btn-scan-cropped" onclick="scanUploadedImage(true)" disabled>
-              <i data-lucide="scan" style="width:14px;height:14px;"></i>
-              <span>Quét vùng đã khoanh</span>
-            </button>
-            <button type="button" class="capan-btn-outline" style="height:36px;font-size:12.5px;" onclick="scanUploadedImage(false)">
-              <span>Quét toàn ảnh</span>
-            </button>
-            <button type="button" class="capan-btn-coral-large" style="height:36px;padding:0 14px;font-size:12.5px;background:linear-gradient(135deg,#0284c7,#0d9488);border:none;" onclick="triggerAiVisionScan()">
-              <i data-lucide="sparkles" style="width:14px;height:14px;"></i>
-              <span>Đọc chữ CCCD bằng AI (99%)</span>
-            </button>
-            <label class="capan-btn-outline" style="height:36px;font-size:12.5px;cursor:pointer;">
-              <i data-lucide="image" style="width:14px;height:14px;"></i>
-              <span>Chọn ảnh khác</span>
-              <input type="file" accept="image/*" hidden onchange="handleQrImageUpload(event)" />
-            </label>
-          </div>
-        </div>
-
-        <!-- AI VISION OCR PANEL (ĐỌC THẲNG CHỮ TRÊN THẺ CCCD KHI MÃ QR BỊ MỜ) -->
-        <div id="ai-vision-panel" style="background:linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);border:1.5px solid #7dd3fc;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;">
+        <!-- 1. QUÉT MÃ QR CĂN CƯỚC -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#0284c7,#059669);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;box-shadow:0 2px 6px rgba(2,132,199,0.3);">
-                <i data-lucide="sparkles" style="width:18px;height:18px;"></i>
-              </span>
-              <div>
-                <strong style="font-size:13.5px;color:#0f172a;display:block;">AI Vision OCR – Đọc chữ CCCD (Chính xác 99%)</strong>
-                <span style="font-size:11.5px;color:#475569;">Tự động nhận diện Họ tên, CCCD, Ngày sinh, Địa chỉ khi mã QR bị mờ hoặc không quét được</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#ef4444;color:#fff;font-size:12px;font-weight:700;">1</span>
+              <strong style="font-size:13.5px;color:#0f172a;">Quét mã QR căn cước</strong>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <button type="button" class="capan-btn-coral-large" style="height:32px;font-size:12px;padding:0 12px;display:inline-flex;align-items:center;gap:6px;" onclick="requestQrCamera()">
+                <i data-lucide="camera" style="width:14px;height:14px;"></i>
+                <span>Quét QR căn cước</span>
+              </button>
+              <label id="qr-upload-option-box" class="capan-btn-outline" style="height:32px;font-size:12px;padding:0 10px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;" title="Tải ảnh thẻ CCCD">
+                <i data-lucide="upload" style="width:14px;height:14px;color:#dc2626;"></i>
+                <span>Tải ảnh</span>
+                <input type="file" id="qr-file-input" accept="image/*" hidden onchange="handleQrImageUpload(event)" />
+              </label>
+            </div>
+          </div>
+
+          <!-- Live Camera Viewport -->
+          <div class="camera-viewport-wrapper" id="qr-camera-wrapper" style="margin:0;">
+            <div class="camera-viewport" id="qr-camera-viewport" title="Chạm để lấy nét">
+              <video id="qr-camera-video" playsinline muted class="camera-video"></video>
+              <div class="scanner-laser-overlay">
+                <div class="scanner-frame">
+                  <div class="corner corner-tl"></div>
+                  <div class="corner corner-tr"></div>
+                  <div class="corner corner-bl"></div>
+                  <div class="corner corner-br"></div>
+                  <div class="scanner-laser-line"></div>
+                </div>
               </div>
             </div>
-            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-              <button type="button" id="btn-trigger-ai-vision" class="capan-btn-coral-large" onclick="triggerAiVisionScan()" style="height:32px;font-size:12px;padding:0 14px;background:linear-gradient(135deg,#0284c7,#0d9488);border:none;">
-                <i data-lucide="bot" style="width:14px;height:14px;"></i>
-                <span id="btn-trigger-ai-vision-text">Đọc bằng AI</span>
-              </button>
+            <div style="text-align:center;">
+              <span style="font-size:12px;color:#64748b;">Hướng camera vào mã QR ở góc phải thẻ CCCD</span>
             </div>
+          </div>
+
+          <!-- Camera Warning Box (if camera unavailable) -->
+          <div id="qr-camera-warning" style="background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:10px 12px;border-radius:8px;font-size:12px;" hidden></div>
+
+          <!-- Image Cropper Panel (When user uploads an image) -->
+          <div class="qr-upload-crop-panel" id="qr-crop-panel" hidden style="margin:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:12px;font-weight:600;color:#0f172a;">Khoanh vùng mã QR hoặc quét cả ảnh:</span>
+            </div>
+
+            <button type="button" class="qr-upload-cropper" id="qr-cropper-area" aria-label="Khoanh vùng mã QR trên ảnh CCCD">
+              <img id="qr-uploaded-img" src="" alt="Ảnh CCCD đã tải lên" draggable="false" />
+              <span class="qr-upload-crop-selection" id="qr-crop-selection-box" hidden></span>
+            </button>
+
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <button type="button" class="capan-btn-coral-large" style="height:32px;padding:0 12px;font-size:12px;" id="btn-scan-cropped" onclick="scanUploadedImage(true)" disabled>
+                <i data-lucide="scan" style="width:13px;height:13px;"></i>
+                <span>Quét vùng khoanh</span>
+              </button>
+              <button type="button" class="capan-btn-outline" style="height:32px;padding:0 12px;font-size:12px;" onclick="scanUploadedImage(false)">
+                <span>Quét toàn ảnh</span>
+              </button>
+              <label class="capan-btn-outline" style="height:32px;padding:0 12px;font-size:12px;cursor:pointer;">
+                <i data-lucide="image" style="width:13px;height:13px;"></i>
+                <span>Đổi ảnh</span>
+                <input type="file" accept="image/*" hidden onchange="handleQrImageUpload(event)" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. ĐỌC DỮ LIỆU TRÊN CĂN CƯỚC BẰNG AI -->
+        <div id="ai-vision-panel" style="background:linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);border:1px solid #7dd3fc;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#0284c7;color:#fff;font-size:12px;font-weight:700;">2</span>
+              <div>
+                <strong style="font-size:13.5px;color:#0f172a;display:block;">Đọc dữ liệu trên căn cước bằng AI</strong>
+                <span style="font-size:11.5px;color:#475569;">Đọc trực tiếp chữ trên thẻ khi mã QR bị mờ hoặc không quét được</span>
+              </div>
+            </div>
+            <button type="button" id="btn-trigger-ai-vision" class="capan-btn-coral-large" onclick="triggerAiVisionScan()" style="height:32px;font-size:12px;padding:0 14px;background:linear-gradient(135deg,#0284c7,#0d9488);border:none;display:inline-flex;align-items:center;gap:6px;">
+              <i data-lucide="sparkles" style="width:14px;height:14px;"></i>
+              <span id="btn-trigger-ai-vision-text">Đọc bằng AI</span>
+            </button>
           </div>
 
           <!-- AI Status Indicator during scan -->
-          <div id="ai-vision-status-indicator" style="display:none;background:#ffffff;border:1px dashed #0284c7;border-radius:8px;padding:8px 12px;font-size:12px;color:#0369a1;display:none;align-items:center;gap:8px;">
-            <span class="animate-spin"><i data-lucide="loader-2" style="width:15px;height:15px;"></i></span>
-            <span id="ai-vision-status-text">Đang phân tích hình ảnh CCCD bằng mô hình AI Vision...</span>
+          <div id="ai-vision-status-indicator" style="display:none;background:#ffffff;border:1px dashed #0284c7;border-radius:8px;padding:8px 12px;font-size:12px;color:#0369a1;align-items:center;gap:8px;">
+            <span class="animate-spin"><i data-lucide="loader-2" style="width:14px;height:14px;"></i></span>
+            <span id="ai-vision-status-text">Đang phân tích hình ảnh CCCD bằng AI...</span>
           </div>
         </div>
 
-        <!-- Upload Option Box -->
-        <div class="qr-upload-option" id="qr-upload-option-box">
-          <div>
-            <h3 style="margin:0;font-size:14.5px;font-weight:700;color:#0f172a;">Quét từ ảnh chụp CCCD</h3>
+        <!-- 3. NHẬP CHUỖI DỮ LIỆU THEO ĐỊNH DẠNG -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#64748b;color:#fff;font-size:12px;font-weight:700;">3</span>
+            <strong style="font-size:13.5px;color:#0f172a;">Nhập chuỗi dữ liệu theo định dạng</strong>
           </div>
-          <label class="capan-btn-outline" style="cursor:pointer;flex-shrink:0;">
-            <i data-lucide="upload" style="width:15px;height:15px;color:#dc2626;"></i>
-            <span>Tải ảnh CCCD</span>
-            <input type="file" id="qr-file-input" accept="image/*" hidden onchange="handleQrImageUpload(event)" />
-          </label>
-        </div>
-
-        <!-- Quick Raw QR String & Preset Selector -->
-        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;">
-          <div style="font-size:12px;font-weight:700;color:#334155;margin-bottom:8px;">
-            <span>Nhập chuỗi mã QR hoặc chọn dữ liệu mẫu:</span>
-          </div>
-          <div style="display:flex;gap:8px;margin-bottom:8px;align-items:stretch;">
-            <textarea id="qr-raw-string-input" class="capan-input" rows="3" style="min-height:62px;height:auto;font-size:12px;font-family:monospace;resize:vertical;line-height:1.45;padding:8px 10px;" placeholder="Dán chuỗi QR (079...|...|...) hoặc văn bản:&#10;Số CCCD: 079095010595&#10;Số CMND: 025272720&#10;Họ và tên: Trần Minh Đoàn&#10;Giới tính: Nam&#10;Ngày sinh: 18/03/1995&#10;Nơi thường trú: ..."></textarea>
-            <button type="button" class="capan-btn-coral-large" style="height:auto;min-height:62px;font-size:13px;padding:0 16px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;gap:6px;" onclick="parseRawQrInput()">
-              <i data-lucide="scan" style="width:16px;height:16px;"></i>
+          <div style="display:flex;gap:8px;align-items:stretch;">
+            <textarea id="qr-raw-string-input" class="capan-input" rows="2" style="min-height:48px;height:auto;font-size:12px;font-family:monospace;resize:vertical;line-height:1.4;padding:6px 10px;" placeholder="Dán chuỗi mã QR (001...|...|...) hoặc văn bản thông tin CCCD..."></textarea>
+            <button type="button" class="capan-btn-coral-large" style="height:auto;min-height:48px;font-size:12.5px;padding:0 14px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;gap:5px;" onclick="parseRawQrInput()">
+              <i data-lucide="check" style="width:14px;height:14px;"></i>
               <span>Nhận diện</span>
             </button>
           </div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;">
-            <button type="button" class="sig-btn" style="background:#fef2f2;border-color:#fca5a5;color:#dc2626;font-weight:700;" onclick="applySampleQrPreset('text_sample_doan')">📋 Mẫu văn bản</button>
-            <button type="button" class="sig-btn" onclick="applySampleQrPreset('landlord_sample')">👤 Mẫu Chủ nhà</button>
-            <button type="button" class="sig-btn" onclick="applySampleQrPreset('tenant_sample_1')">👤 Mẫu Người thuê 1</button>
-            <button type="button" class="sig-btn" onclick="applySampleQrPreset('tenant_sample_2')">👤 Mẫu Người thuê 2</button>
-          </div>
         </div>
 
-        <!-- Scanned Result Card -->
+        <!-- KẾT QUẢ ĐÃ QUÉT -->
         <section class="scanned-card" id="qr-scanned-result-card" hidden aria-live="polite">
           <div style="display:flex;align-items:center;gap:8px;">
-            <i data-lucide="check-circle-2" style="width:22px;height:22px;color:#16a34a;"></i>
-            <div>
-              <h3 style="margin:0;font-size:15px;font-weight:800;color:#14532d;">Thông tin CCCD đã quét</h3>
-            </div>
+            <i data-lucide="check-circle-2" style="width:20px;height:20px;color:#16a34a;"></i>
+            <h3 style="margin:0;font-size:14px;font-weight:700;color:#14532d;">Thông tin CCCD nhận diện được</h3>
           </div>
           <dl class="scanned-grid">
             <div>
-              <dt>Số định danh cá nhân (CCCD)</dt>
+              <dt>Số CCCD</dt>
               <dd id="scanned-res-id" style="color:#dc2626;font-family:monospace;"></dd>
             </div>
             <div>
@@ -1415,7 +1409,7 @@
               <dd id="scanned-res-gender"></dd>
             </div>
             <div class="full-width">
-              <dt>Địa chỉ thường trú</dt>
+              <dt>Nơi thường trú</dt>
               <dd id="scanned-res-address"></dd>
             </div>
           </dl>
@@ -1733,20 +1727,22 @@
   </div>
 
   <!-- =======================================================================
-       MODAL 6: THÔNG BÁO CHUYỂN SANG AI VISION & THANH TOÁN PHÍ CÔNG NGHỆ
+       MODAL 6: THÔNG BÁO AI VISION & VẬN ĐỘNG ỦNG HỘ LY CÀ PHÊ (10.000đ)
        ======================================================================= -->
   <div class="capan-modal-backdrop no-print" id="ai-vision-payment-modal" style="z-index: 100005 !important;" hidden>
-    <div class="capan-modal-box" style="max-width:560px;">
+    <div class="capan-modal-box" style="max-width:520px;">
       
       <!-- Modal Header -->
-      <div class="capan-modal-header" style="background:linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);border-bottom:1.5px solid #fed7aa;">
+      <div class="capan-modal-header" style="background:linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);border-bottom:1.5px solid #fde68a;">
         <div class="qr-scanner-heading">
-          <span class="qr-scanner-title-icon" style="background:#ffedd5;color:#ea580c;border-color:#fdba74;">
-            <i data-lucide="sparkles" style="width:24px;height:24px;"></i>
+          <span class="qr-scanner-title-icon" style="background:#fef3c7;color:#b45309;border-color:#fcd34d;">
+            <i data-lucide="coffee" style="width:24px;height:24px;"></i>
           </span>
           <div>
-            <div class="qr-scanner-title" style="color:#9a3412;">Chuyển Sang Công Nghệ AI Vision</div>
-            <div style="font-size:12px;color:#c2410c;">Ảnh mã QR bị mờ – Cần dùng công nghệ AI đọc trực tiếp chữ trên thẻ CCCD</div>
+            <div class="qr-scanner-title" style="color:#92400e;display:flex;align-items:center;gap:6px;">
+              <span>Ủng Hộ Phòng LAB ☕</span>
+            </div>
+            <div style="font-size:12px;color:#b45309;">Hệ thống dùng AI Vision đọc trực tiếp chữ in trên thẻ CCCD</div>
           </div>
         </div>
         <button type="button" class="capan-modal-close" onclick="closeAiPaymentModal()" aria-label="Đóng">
@@ -1755,25 +1751,21 @@
       </div>
 
       <!-- Modal Body -->
-      <div class="capan-modal-body" style="display:flex;flex-direction:column;gap:14px;max-height:calc(85vh - 120px);overflow-y:auto;">
+      <div class="capan-modal-body" style="display:flex;flex-direction:column;gap:12px;max-height:calc(85vh - 120px);overflow-y:auto;">
         
-        <!-- Reason Alert Box -->
-        <div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:12px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;font-size:12.5px;line-height:1.5;color:#991b1b;">
-          <i data-lucide="alert-triangle" style="width:18px;height:18px;color:#dc2626;flex-shrink:0;margin-top:2px;"></i>
-          <div>
-            <strong style="font-size:13px;display:block;margin-bottom:2px;color:#b91c1c;">Ảnh mã QR trên CCCD của bạn bị mờ / lóa sáng:</strong>
-            Mã QR trên ảnh chụp không đủ độ nét để quét tự động miễn phí. Để trích xuất chính xác 99% thông tin hồ sơ (Số CCCD, Họ tên, Ngày sinh, Địa chỉ), hệ thống cần chuyển sang <strong>công nghệ AI Vision chuyên sâu</strong> đọc trực tiếp chữ in trên mặt thẻ.
+        <!-- Coffee Support Notice -->
+        <div style="background:linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);border:1.5px solid #fed7aa;border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:24px;line-height:1;">☕</span>
+            <div style="font-size:13px;color:#9a3412;line-height:1.45;">
+              <strong>Ủng hộ ly cà phê 10.000 đồng cho phòng LAB để duy trì nền tảng nhé.</strong>
+            </div>
           </div>
-        </div>
-
-        <!-- Fee Notice -->
-        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:10px 14px;font-size:12.5px;color:#166534;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-          <span>Phí sử dụng công nghệ AI Vision:</span>
-          <span style="font-size:16px;font-weight:800;color:#dc2626;background:#ffffff;padding:2px 12px;border-radius:8px;border:1px solid #fecaca;box-shadow:0 1px 3px rgba(220,38,38,0.1);">10.000 VNĐ</span>
+          <span style="font-size:13.5px;font-weight:800;color:#ea580c;background:#ffffff;padding:4px 10px;border-radius:8px;border:1px solid #fdba74;white-space:nowrap;">10.000 đ</span>
         </div>
 
         <!-- VietQR Box -->
-        <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px;">
           <div style="font-size:12px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.04em;">
             Quét mã VietQR bằng ứng dụng mọi ngân hàng:
           </div>
@@ -1781,7 +1773,7 @@
           <div style="background:#ffffff;padding:8px;border-radius:12px;border:1px solid #cbd5e1;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
             <img 
               id="ai-pay-vietqr-image" 
-              src="https://img.vietqr.io/image/TCB-5930073169-compact2.png?amount=10000&addInfo=phi%20su%20dung%20cong%20nghe%20quet%20hinh%20anh&accountName=TRAN%20MINH%20DOAN" 
+              src="https://img.vietqr.io/image/TCB-5930073169-compact2.png?amount=10000&accountName=TRAN%20MINH%20DOAN" 
               alt="Mã QR Chuyển khoản VietQR" 
               style="width:200px;height:200px;object-fit:contain;display:block;"
             />
@@ -1800,18 +1792,9 @@
                 <button type="button" class="sig-btn" style="height:24px;font-size:10.5px;padding:0 8px;" onclick="copyAiPaymentText('5930073169', 'Đã chép số tài khoản!')">Chép STK</button>
               </div>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed #f1f5f9;padding-bottom:5px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
               <span style="color:#64748b;">Chủ tài khoản:</span>
               <strong style="color:#0f172a;">Trần Minh Đoàn</strong>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:4px;padding-top:2px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;">
-                <span style="color:#64748b;">Nội dung chuyển khoản:</span>
-                <button type="button" class="sig-btn" style="height:24px;font-size:10.5px;padding:0 8px;background:#fef3c7;border-color:#fde68a;color:#92400e;font-weight:700;" onclick="copyAiPaymentText('phi su dung cong nghe quet hinh anh', 'Đã chép nội dung chuyển khoản!')">Chép nội dung</button>
-              </div>
-              <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:6px 10px;font-family:monospace;font-weight:700;color:#b45309;font-size:12px;text-align:center;">
-                phi su dung cong nghe quet hinh anh
-              </div>
             </div>
           </div>
         </div>
@@ -1821,11 +1804,11 @@
       <!-- Modal Footer -->
       <div class="capan-modal-footer" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
         <button type="button" class="capan-btn-outline" onclick="closeAiPaymentModal()">
-          <span>Đóng (Chụp lại ảnh khác)</span>
+          <span>Đóng</span>
         </button>
-        <button type="button" class="capan-btn-coral-large" style="height:40px;padding:0 18px;font-size:13px;background:linear-gradient(135deg, #0284c7 0%, #0d9488 100%);border:none;" onclick="confirmPaidAndRunAiVision()">
-          <i data-lucide="check-circle" style="width:16px;height:16px;"></i>
-          <span>Tôi đã chuyển khoản &rarr; Kích hoạt AI ngay</span>
+        <button type="button" class="capan-btn-coral-large" style="height:38px;padding:0 18px;font-size:13px;background:linear-gradient(135deg, #ea580c 0%, #d97706 100%);border:none;box-shadow:0 3px 10px rgba(234,88,12,0.3);" onclick="confirmPaidAndRunAiVision()">
+          <i data-lucide="coffee" style="width:16px;height:16px;"></i>
+          <span>☕ Đã chuyển &amp; Đọc bằng AI ngay</span>
         </button>
       </div>
 

@@ -90,18 +90,9 @@ let batchState = {
   tenants: []
 };
 
-// Sample QR & Text Presets for instant testing
+// Sample QR Preset for testing
 const SAMPLE_QR_PRESETS = {
-  text_sample_doan: `Số CCCD: 079095010595
-Số CMND: 025272720
-Họ và tên: Trần Minh Đoàn
-Giới tính: Nam
-Ngày sinh: 18/03/1995
-Nơi thường trú: Căn Hộ 11.18, Tầng 11, Tòa Nhà Gh3, Dự Án Khu Dân Cư Và Công Viên Phước Thiện , 88 Đường Phước Thiện, Khu Phố 29, Long Bình, TP. Thủ Đức, TP. Hồ Chí Minh
-Ngày cấp CCCD: 15/04/2025`,
-  landlord_sample: '079075009876|024567890|TRẦN VĂN HÙNG|12051975|Nam|Số 123/45 Đường Nguyễn Văn Nghi, Phường An Nhơn, TP. Hồ Chí Minh|15042022',
-  tenant_sample_1: '079095012345|025123456|NGUYỄN VĂN AN|15081995|Nam|456 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh|10052022',
-  tenant_sample_2: '048198006789|201789123|LÊ THỊ NGỌC MAI|22111998|Nữ|78 Nguyễn Văn Linh, Quận Hải Châu, TP. Đà Nẵng|20082022'
+  sample_default: '001090012345|012345678|NGUYỄN VĂN AN|15081990|Nam|Số 123 Đường Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh|10052021'
 };
 
 // 31 CSKV Officers Data from capan.vn
@@ -1315,6 +1306,7 @@ function openQrScannerModal(target) {
 
   if (modal) {
     modal.hidden = false;
+    if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
     startQrCameraStream();
   }
 }
@@ -1331,6 +1323,19 @@ function closeQrScannerModal() {
   }
 }
 
+async function requestQrCamera() {
+  const cropPanel = document.getElementById('qr-crop-panel');
+  const cameraWrapper = document.getElementById('qr-camera-wrapper');
+  const warningEl = document.getElementById('qr-camera-warning');
+
+  if (cropPanel) cropPanel.hidden = true;
+  if (cameraWrapper) cameraWrapper.hidden = false;
+  if (warningEl) warningEl.hidden = true;
+
+  stopQrCameraStream();
+  await startQrCameraStream();
+}
+
 async function startQrCameraStream() {
   const warningEl = document.getElementById('qr-camera-warning');
   const videoEl = document.getElementById('qr-camera-video');
@@ -1339,9 +1344,10 @@ async function startQrCameraStream() {
 
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     if (warningEl) {
-      warningEl.textContent = 'Trình duyệt không hỗ trợ mở camera trực tiếp. Hãy tải ảnh CCCD hoặc chọn dữ liệu mẫu bên dưới.';
+      warningEl.innerHTML = '⚠️ Trình duyệt không hỗ trợ mở camera trực tiếp. Vui lòng bấm <strong>Tải ảnh</strong> hoặc chọn dữ liệu mẫu.';
       warningEl.hidden = false;
     }
+    if (cameraWrapper) cameraWrapper.hidden = true;
     return;
   }
 
@@ -1359,9 +1365,17 @@ async function startQrCameraStream() {
       await videoEl.play();
       scanCameraFrameLoop();
     }
+    if (cameraWrapper) cameraWrapper.hidden = false;
+    if (warningEl) warningEl.hidden = true;
   } catch (err) {
     if (warningEl) {
-      warningEl.textContent = 'Không thể mở camera (thiết bị không có camera hoặc chưa cấp quyền). Bạn có thể tải ảnh CCCD hoặc chọn mẫu thử nhanh bên dưới.';
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        warningEl.innerHTML = '🔒 <strong>Quyền truy cập Camera đang bị chặn.</strong> Vui lòng bấm vào biểu tượng ổ khóa/camera trên thanh địa chỉ trình duyệt, chọn <em>"Cho phép"</em> Camera rồi bấm lại nút <strong>"Quét QR căn cước"</strong>.';
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        warningEl.innerHTML = '📷 <strong>Không tìm thấy thiết bị camera</strong> trên máy tính. Bạn hãy bấm nút <strong>Tải ảnh</strong> hoặc tính năng <strong>Đọc bằng AI</strong> bên dưới.';
+      } else {
+        warningEl.innerHTML = '⚠️ Không thể mở camera. Bạn có thể bấm lại <strong>"Quét QR căn cước"</strong> để thử lại hoặc bấm <strong>Tải ảnh</strong>.';
+      }
       warningEl.hidden = false;
     }
     if (cameraWrapper) cameraWrapper.hidden = true;
@@ -1612,7 +1626,7 @@ function closeAiPaymentModal() {
 
 async function confirmPaidAndRunAiVision() {
   closeAiPaymentModal();
-  showToast('Đang kích hoạt AI Vision phân tích chữ trên mặt thẻ CCCD...', 'info');
+  showToast('Cảm ơn bạn! Đang kích hoạt AI Vision đọc chữ trên mặt thẻ CCCD...', 'info');
   await executeAiVisionOcr();
 }
 
@@ -1665,12 +1679,14 @@ function saveGeminiApiKey() {
   if (!val) {
     localStorage.removeItem(GEMINI_API_STORAGE_KEY);
     initAiVisionUI();
+  updateCccdSideTabsUI();
     showToast('Đã xóa khóa Gemini API.', 'info');
     toggleAiVisionKeyConfig(false);
     return;
   }
   localStorage.setItem(GEMINI_API_STORAGE_KEY, val);
   initAiVisionUI();
+  updateCccdSideTabsUI();
   toggleAiVisionKeyConfig(false);
   showToast('✓ Đã lưu Google Gemini API Key an toàn trong trình duyệt của bạn!');
 }
@@ -1947,11 +1963,11 @@ function applySampleQrPreset(presetKey) {
 
 function setScannedQrResult(parsed) {
   scannedQrResult = parsed;
-  setText('scanned-res-id', parsed.citizenId);
-  setText('scanned-res-name', parsed.fullName);
-  setText('scanned-res-dob', parsed.birthDate);
-  setText('scanned-res-gender', parsed.gender);
-  setText('scanned-res-address', parsed.address);
+  setText('scanned-res-id', parsed.citizenId || '---');
+  setText('scanned-res-name', parsed.fullName || '---');
+  setText('scanned-res-dob', parsed.birthDate || '---');
+  setText('scanned-res-gender', parsed.gender || '---');
+  setText('scanned-res-address', parsed.address || '(Mặt trước không có địa chỉ - quét thêm mặt sau hoặc nhập tay)');
 
   const resultCard = document.getElementById('qr-scanned-result-card');
   const applyBtn = document.getElementById('btn-apply-qr-data');
