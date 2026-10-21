@@ -134,7 +134,7 @@
               <i data-lucide="book-open" style="width:17px;height:17px;"></i>
               <span class="tab-label-desktop">Hướng dẫn nộp hồ sơ</span>
               <span class="tab-label-mobile">Hướng dẫn nộp hồ sơ</span>
-              <i data-lucide="sparkles" style="width:14px;height:14px;opacity:0.9;"></i>
+              
             </a>
           </div>
         </div>
@@ -196,9 +196,8 @@
               <button type="button" class="capan-form-tab-card" data-form-key="ct07" onclick="selectFormCard('ct07')">
                 <div class="form-tab-badge-row">
                   <span class="form-code-badge">Điền hồ sơ tạm trú theo số lượng</span>
-                  <span class="form-status-star">
-                    <i data-lucide="star" style="width:13px;height:13px;fill:#f59e0b;color:#f59e0b;"></i>
-                    ★ Có phí
+                  <span class="form-status-star" title="Nổi bật">
+                    <i data-lucide="star" style="width:14px;height:14px;fill:#f59e0b;color:#f59e0b;"></i>
                   </span>
                 </div>
               </button>
@@ -1742,7 +1741,7 @@
             <div class="qr-scanner-title" style="color:#92400e;display:flex;align-items:center;gap:6px;">
               <span>Ủng Hộ Phòng LAB ☕</span>
             </div>
-            <div style="font-size:12px;color:#b45309;">Hệ thống dùng AI Vision đọc trực tiếp chữ in trên thẻ CCCD</div>
+            <div style="font-size:12px;color:#b45309;">Hồ sơ đã tạo thành công! Hãy ủng hộ một ly cà phê để đồng hành duy trì nền tảng cùng DOANTM nhé.</div>
           </div>
         </div>
         <button type="button" class="capan-modal-close" onclick="closeAiPaymentModal()" aria-label="Đóng">
@@ -1806,9 +1805,9 @@
         <button type="button" class="capan-btn-outline" onclick="closeAiPaymentModal()">
           <span>Đóng</span>
         </button>
-        <button type="button" class="capan-btn-coral-large" style="height:38px;padding:0 18px;font-size:13px;background:linear-gradient(135deg, #ea580c 0%, #d97706 100%);border:none;box-shadow:0 3px 10px rgba(234,88,12,0.3);" onclick="confirmPaidAndRunAiVision()">
-          <i data-lucide="coffee" style="width:16px;height:16px;"></i>
-          <span>☕ Đã chuyển &amp; Đọc bằng AI ngay</span>
+        <button type="button" class="capan-btn-coral-large" style="height:38px;padding:0 18px;font-size:13px;background:linear-gradient(135deg, #ea580c 0%, #d97706 100%);border:none;box-shadow:0 3px 10px rgba(234,88,12,0.3);" onclick="closeAiPaymentModal(); showToast('Cảm ơn bạn rất nhiều vì đã ủng hộ phòng LAB! ☕', 'success');">
+          <i data-lucide="heart" style="width:16px;height:16px;"></i>
+          <span>☕ Cảm ơn bạn &amp; Đã ủng hộ</span>
         </button>
       </div>
 

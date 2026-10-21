@@ -1540,7 +1540,7 @@ async function scanUploadedImage(useCrop, silentIfFail = false) {
 
   // 2. TẦNG 2: MÃ QR BỊ MỜ -> MỞ THÔNG BÁO LÝ DO ẢNH MỜ & HƯỚNG DẪN CHUYỂN KHOẢN PHÍ CÔNG NGHỆ AI VISION
   showToast('Ảnh mã QR bị mờ! Đang chuyển sang công nghệ AI Vision...', 'info');
-  openAiVisionPaymentModal();
+  executeAiVisionOcr();
   return;
 }
 
@@ -1698,7 +1698,7 @@ function triggerAiVisionScan() {
     if (fileInput) fileInput.click();
     return;
   }
-  openAiVisionPaymentModal();
+  executeAiVisionOcr();
 }
 
 async function executeAiVisionOcr() {
@@ -2466,6 +2466,7 @@ async function exportTwoPagePdf() {
     const cleanName = (formState.fullName || 'CongDan').trim().replace(/\s+/g, '_');
     triggerBlobDownload(pdfBlob, `HoSoCuTru_2Trang_A4_${cleanName}.pdf`);
     showToast('File PDF 2 trang A4 đã sẵn sàng để lưu!');
+    setTimeout(openAiVisionPaymentModal, 1200);
   } catch (err) {
     console.error(err);
     showToast('Có lỗi khi tạo file PDF A4.', 'error');
@@ -2557,13 +2558,19 @@ async function exportBothJpg() {
     const labelCt01 = document.getElementById('label-filename-ct01');
     const labelContract = document.getElementById('label-filename-contract');
 
+    const handleDownloadDonation = () => {
+      setTimeout(openAiVisionPaymentModal, 1200);
+    };
+
     if (linkCt01) {
       linkCt01.href = url1;
       linkCt01.download = ct01Filename;
+      linkCt01.onclick = handleDownloadDonation;
     }
     if (linkContract) {
       linkContract.href = url2;
       linkContract.download = contractFilename;
+      linkContract.onclick = handleDownloadDonation;
     }
     if (linkViewCt01) {
       linkViewCt01.href = url1;
@@ -2591,10 +2598,12 @@ async function exportBothJpg() {
     if (btnSaveCt01) {
       btnSaveCt01.href = url1;
       btnSaveCt01.download = ct01Filename;
+      btnSaveCt01.onclick = () => setTimeout(openAiVisionPaymentModal, 1200);
     }
     if (btnSaveContract) {
       btnSaveContract.href = url2;
       btnSaveContract.download = contractFilename;
+      btnSaveContract.onclick = () => setTimeout(openAiVisionPaymentModal, 1200);
     }
 
     // Xử lý nút tải trọn bộ ZIP khi người dùng bấm
@@ -2606,6 +2615,7 @@ async function exportBothJpg() {
           const zipBlob = await createTwoImagesZipBlob(blobs, cleanName);
           triggerBlobDownload(zipBlob, zipFilename);
           showToast('Đã tải tập tin ZIP chứa đủ 02 ảnh A4!');
+          setTimeout(openAiVisionPaymentModal, 1200);
         } catch (e) {
           triggerBlobDownload(blobs[0], ct01Filename);
         }
@@ -2824,6 +2834,7 @@ function downloadCitizenAppWord() {
   const cleanName = (citizenAppState.fullName || 'CongDan').trim().replace(/\s+/g, '_');
   triggerBlobDownload(blob, `${isLoss ? 'DonCoMat' : 'XacNhanHanhKiem'}_${cleanName}.doc`);
   showToast('Đã tải xuống file Word (.doc) thành công!');
+  setTimeout(openAiVisionPaymentModal, 1200);
 }
 
 // ============================================================================
