@@ -1299,6 +1299,10 @@ function openQrScannerModal(target) {
 
   if (resultCard) resultCard.hidden = true;
   if (applyBtn) applyBtn.disabled = true;
+  const cardApplyBtn = document.getElementById('btn-apply-qr-data-card');
+  if (cardApplyBtn) cardApplyBtn.disabled = true;
+  const cameraViewport = document.getElementById('qr-camera-viewport');
+  if (cameraViewport) cameraViewport.style.display = 'block';
   if (cropPanel) cropPanel.hidden = true;
   if (cameraWrapper) cameraWrapper.hidden = false;
   if (rawInput) rawInput.value = '';
@@ -1393,26 +1397,54 @@ function stopQrCameraStream() {
   }
 }
 
-function scanCameraFrameLoop() {
+let nativeBarcodeDetector = null;
+if (typeof window !== 'undefined' && 'BarcodeDetector' in window) {
+  try {
+    nativeBarcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+  } catch (e) {
+    nativeBarcodeDetector = null;
+  }
+}
+
+async function scanCameraFrameLoop() {
   const videoEl = document.getElementById('qr-camera-video');
   if (!cameraStream || !videoEl) return;
 
-  if (videoEl.readyState >= videoEl.HAVE_CURRENT_DATA && videoEl.videoWidth > 0 && window.jsQR) {
-    const canvas = document.createElement('canvas');
-    canvas.width = videoEl.videoWidth;
-    canvas.height = videoEl.videoHeight;
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    if (ctx) {
-      ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'attemptBoth' });
-      if (code && code.data) {
-        const parsed = parseCccdQrPayload(code.data);
-        if (parsed) {
-          setScannedQrResult(parsed);
-          showToast('Đã quét và nhận diện thành công mã QR CCCD!');
-          stopQrCameraStream();
-          return;
+  if (videoEl.readyState >= videoEl.HAVE_CURRENT_DATA && videoEl.videoWidth > 0) {
+    // 1. Thử BarcodeDetector phần cứng gốc của điện thoại (iOS 17+ & Android cực nhanh)
+    if (nativeBarcodeDetector) {
+      try {
+        const barcodes = await nativeBarcodeDetector.detect(videoEl);
+        if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+          const parsed = parseCccdQrPayload(barcodes[0].rawValue);
+          if (parsed) {
+            setScannedQrResult(parsed);
+            showToast('Đã quét thành công mã QR CCCD!');
+            stopQrCameraStream();
+            return;
+          }
+        }
+      } catch (err) {}
+    }
+
+    // 2. Fallback jsQR
+    if (window.jsQR) {
+      const canvas = document.createElement('canvas');
+      canvas.width = videoEl.videoWidth;
+      canvas.height = videoEl.videoHeight;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      if (ctx) {
+        ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'attemptBoth' });
+        if (code && code.data) {
+          const parsed = parseCccdQrPayload(code.data);
+          if (parsed) {
+            setScannedQrResult(parsed);
+            showToast('Đã quét và nhận diện thành công mã QR CCCD!');
+            stopQrCameraStream();
+            return;
+          }
         }
       }
     }
@@ -1962,6 +1994,7 @@ function applySampleQrPreset(presetKey) {
 }
 
 function setScannedQrResult(parsed) {
+  if (!parsed) return;
   scannedQrResult = parsed;
   setText('scanned-res-id', parsed.citizenId || '---');
   setText('scanned-res-name', parsed.fullName || '---');
@@ -1971,8 +2004,30 @@ function setScannedQrResult(parsed) {
 
   const resultCard = document.getElementById('qr-scanned-result-card');
   const applyBtn = document.getElementById('btn-apply-qr-data');
-  if (resultCard) resultCard.hidden = false;
-  if (applyBtn) applyBtn.disabled = false;
+  const cardApplyBtn = document.getElementById('btn-apply-qr-data-card');
+
+  if (resultCard) {
+    resultCard.hidden = false;
+    setTimeout(() => {
+      try {
+        resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } catch (e) {}
+    }, 80);
+  }
+
+  if (applyBtn) {
+    applyBtn.disabled = false;
+  }
+  if (cardApplyBtn) {
+    cardApplyBtn.disabled = false;
+  }
+
+  // Dừng camera và thu gọn khung camera để nhường không gian hiển thị kết quả & nút bấm
+  stopQrCameraStream();
+  const cameraViewport = document.getElementById('qr-camera-viewport');
+  if (cameraViewport) {
+    cameraViewport.style.display = 'none';
+  }
 }
 
 function confirmApplyScannedQr() {
@@ -2543,6 +2598,8 @@ async function exportBothJpg() {
     const ct01Filename = `01_CT01_ToKhaiCuTru_${cleanName}.jpg`;
     const contractFilename = `02_HopDong_ChoONho_${cleanName}.jpg`;
     const zipFilename = `HoSoCuTru_2Trang_A4_${cleanName}.zip`;
+    exportGeneratedBlobs = blobs;
+    exportFilenames = { ct01: ct01Filename, contract: contractFilename, zip: zipFilename };
 
     // Revoke previous URLs to avoid memory leaks
     currentExportUrls.forEach(u => URL.revokeObjectURL(u));
@@ -3853,3 +3910,66 @@ async function exportBatchZip() {
 }
 
 
+
+// ============================================================================
+// CAMERA ROLL DIRECT SAVE & NATIVE SHARE CONTROLLER
+// ============================================================================
+let exportGeneratedBlobs = [];
+let exportFilenames = { ct01: '', contract: '', zip: '' };
+
+async function handleDirectCameraRollSave() {
+  if (!exportGeneratedBlobs || exportGeneratedBlobs.length < 2) {
+    showToast('Chưa có file ảnh hồ sơ để lưu. Vui lòng bấm tạo ảnh trước.', 'warn');
+    return;
+  }
+  const cleanName = (formState.fullName || 'CongDan').trim().replace(/\s+/g, '_');
+  const file1 = new File([exportGeneratedBlobs[0]], exportFilenames.ct01 || `01_CT01_${cleanName}.jpg`, { type: 'image/jpeg' });
+  const file2 = new File([exportGeneratedBlobs[1]], exportFilenames.contract || `02_HopDong_${cleanName}.jpg`, { type: 'image/jpeg' });
+
+  if (navigator.canShare && navigator.canShare({ files: [file1, file2] })) {
+    try {
+      await navigator.share({
+        files: [file1, file2],
+        title: 'Lưu Hồ sơ Cư trú A4 vào Camera Roll',
+        text: `02 trang hồ sơ cư trú của ${formState.fullName || 'Công dân'}`
+      });
+      showToast('Đã mở bảng lưu ảnh của điện thoại.');
+      setTimeout(openAiVisionPaymentModal, 1200);
+    } catch (e) {
+      if (e.name !== 'AbortError') console.warn(e);
+    }
+  } else {
+    triggerBlobDownload(exportGeneratedBlobs[0], exportFilenames.ct01);
+    setTimeout(() => {
+      triggerBlobDownload(exportGeneratedBlobs[1], exportFilenames.contract);
+      setTimeout(openAiVisionPaymentModal, 1200);
+    }, 600);
+    showToast('Đang tải đồng thời 2 ảnh về máy!');
+  }
+}
+
+async function handleNativeSharePrompt() {
+  if (!exportGeneratedBlobs || exportGeneratedBlobs.length < 2) {
+    showToast('Chưa có dữ liệu hồ sơ để chia sẻ.', 'warn');
+    return;
+  }
+  const cleanName = (formState.fullName || 'CongDan').trim().replace(/\s+/g, '_');
+  const file1 = new File([exportGeneratedBlobs[0]], exportFilenames.ct01 || `01_CT01_${cleanName}.jpg`, { type: 'image/jpeg' });
+  const file2 = new File([exportGeneratedBlobs[1]], exportFilenames.contract || `02_HopDong_${cleanName}.jpg`, { type: 'image/jpeg' });
+
+  if (navigator.canShare && navigator.canShare({ files: [file1, file2] })) {
+    try {
+      await navigator.share({
+        files: [file1, file2],
+        title: 'Hồ sơ Cư trú A4 (CT01 & Hợp đồng)',
+        text: `Hồ sơ đăng ký cư trú của ${formState.fullName || 'Công dân'}`
+      });
+      setTimeout(openAiVisionPaymentModal, 1200);
+    } catch (e) {
+      if (e.name !== 'AbortError') console.warn(e);
+    }
+  } else {
+    const btnDlZip = document.getElementById('btn-download-both-zip');
+    if (btnDlZip) btnDlZip.click();
+  }
+}

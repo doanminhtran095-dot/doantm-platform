@@ -72,6 +72,10 @@
             <i data-lucide="wrench" class="capan-nav-icon"></i>
             <span>TIỆN ÍCH</span>
           </button>
+                  <a href="tours.html" class="capan-nav-item" title="Khám phá các tour du lịch quốc tế DOANTM Travel">
+            <i data-lucide="compass" class="capan-nav-icon"></i>
+            <span>TOURS</span>
+          </a>
         </nav>
 
         <!-- Right Actions -->
@@ -100,6 +104,10 @@
             <i data-lucide="qr-code" style="width:18px;height:18px;"></i>
             <span>Khai báo cư trú nhanh</span>
           </button>
+                    <a href="tours.html" class="capan-drawer-item">
+            <i data-lucide="compass" style="width:18px;height:18px;"></i>
+            <span>Khám phá Tour du lịch</span>
+          </a>
           <a href="huong-dan-nop-ho-so.html" class="capan-drawer-item">
             <i data-lucide="book-open" style="width:18px;height:18px;"></i>
             <span>Cẩm nang Hướng dẫn nộp hồ sơ</span>
@@ -196,9 +204,12 @@
               <button type="button" class="capan-form-tab-card" data-form-key="ct07" onclick="selectFormCard('ct07')">
                 <div class="form-tab-badge-row">
                   <span class="form-code-badge">Điền hồ sơ tạm trú theo số lượng</span>
-                  <span class="form-status-star" title="Nổi bật">
-                    <i data-lucide="star" style="width:14px;height:14px;fill:#f59e0b;color:#f59e0b;"></i>
-                  </span>
+                  <div class="form-tab-status-wrap">
+                    <span class="form-status-ready">Sẵn sàng</span>
+                    <span class="form-status-star" title="Nổi bật">
+                      <i data-lucide="star" style="width:14px;height:14px;fill:#f59e0b;color:#f59e0b;"></i>
+                    </span>
+                  </div>
                 </div>
               </button>
             </div>
@@ -435,8 +446,8 @@
                       <i data-lucide="plus" style="width:15px;height:15px;"></i>
                       <span id="btn-add-member-label">Thêm thành viên (0/9)</span>
                     </button>
-                    <button type="button" class="capan-btn-outline" onclick="openDirectMemberScan()" style="height:38px;padding:0 16px;font-size:13px;border-color:#2563eb;color:#1d4ed8;background:#eff6ff;">
-                      <i data-lucide="qr-code" style="width:15px;height:15px;color:#2563eb;"></i>
+                    <button type="button" class="capan-btn-outline" onclick="openDirectMemberScan()" style="height:38px;padding:0 16px;font-size:13px;border-color:#0284c7;color:#0369a1;background:#f0f9ff;">
+                      <i data-lucide="qr-code" style="width:15px;height:15px;color:#0284c7;"></i>
                       <span>Quét CCCD thêm nhanh</span>
                     </button>
                   </div>
@@ -1386,18 +1397,21 @@
 
         <!-- KẾT QUẢ ĐÃ QUÉT -->
         <section class="scanned-card" id="qr-scanned-result-card" hidden aria-live="polite">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <i data-lucide="check-circle-2" style="width:20px;height:20px;color:#16a34a;"></i>
-            <h3 style="margin:0;font-size:14px;font-weight:700;color:#14532d;">Thông tin CCCD nhận diện được</h3>
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <i data-lucide="check-circle-2" style="width:20px;height:20px;color:#16a34a;"></i>
+              <h3 style="margin:0;font-size:14px;font-weight:700;color:#14532d;">Thông tin CCCD nhận diện thành công</h3>
+            </div>
+            <span style="font-size:11.5px;background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:6px;font-weight:700;">✓ Sẵn sàng áp dụng</span>
           </div>
-          <dl class="scanned-grid">
+          <dl class="scanned-grid" style="margin-top:10px;">
             <div>
               <dt>Số CCCD</dt>
-              <dd id="scanned-res-id" style="color:#dc2626;font-family:monospace;"></dd>
+              <dd id="scanned-res-id" style="color:#dc2626;font-family:monospace;font-weight:700;"></dd>
             </div>
             <div>
               <dt>Họ và tên</dt>
-              <dd id="scanned-res-name" style="text-transform:uppercase;"></dd>
+              <dd id="scanned-res-name" style="text-transform:uppercase;font-weight:700;"></dd>
             </div>
             <div>
               <dt>Ngày sinh</dt>
@@ -1412,6 +1426,13 @@
               <dd id="scanned-res-address"></dd>
             </div>
           </dl>
+          <!-- Nút áp dụng dữ liệu trực tiếp trong thẻ kết quả để luôn thấy ngay -->
+          <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #bbf7d0;">
+            <button type="button" class="capan-btn-coral-large" id="btn-apply-qr-data-card" style="width:100%;height:44px;font-size:14px;background:linear-gradient(135deg, #16a34a 0%, #15803d 100%);box-shadow:0 4px 14px rgba(22, 163, 74, 0.3);" onclick="confirmApplyScannedQr()">
+              <i data-lucide="check-circle-2" style="width:18px;height:18px;"></i>
+              <span>ÁP DỤNG DỮ LIỆU VÀO HỒ SƠ</span>
+            </button>
+          </div>
         </section>
 
       </div>
@@ -1435,7 +1456,7 @@
     <div class="capan-modal-box" style="max-width:540px;">
       <div class="capan-modal-header">
         <div class="qr-scanner-heading">
-          <span class="qr-scanner-title-icon" style="background:#eff6ff;color:#2563eb;border-color:#bfdbfe;">
+          <span class="qr-scanner-title-icon" style="background:#f0fdf4;color:#0284c7;border-color:#bae6fd;">
             <i data-lucide="users" style="width:22px;height:22px;"></i>
           </span>
           <div>
@@ -1562,55 +1583,24 @@
           </div>
         </div>
 
-        <!-- KHỐI 02 ĐƯỜNG LINK TẢI FILE RIÊNG BIỆT (CHO IPHONE & MÁY TÍNH) -->
-        <div style="background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;align-items:center;gap:8px;color:#0f172a;font-weight:700;font-size:13.5px;">
-            <i data-lucide="link" style="width:16px;height:16px;color:#0284c7;"></i>
-            <span>02 ĐƯỜNG LINK TẢI FILE TRỰC TIẾP:</span>
-          </div>
-
-          <!-- Đường Link 1: CT01 -->
-          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;">
-            <div style="display:flex;align-items:center;gap:10px;min-width:200px;flex:1;">
-              <span style="width:30px;height:30px;border-radius:8px;background:#eff6ff;color:#0284c7;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">1</span>
-              <div>
-                <strong style="font-size:13.5px;color:#0f172a;display:block;">Tờ khai CT01 (.JPG)</strong>
-                <span id="label-filename-ct01" style="font-size:11px;color:#64748b;font-family:monospace;">01_CT01_ToKhaiCuTru.jpg</span>
-              </div>
-            </div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <a id="link-download-ct01" href="#" download="01_CT01_ToKhaiCuTru.jpg" target="_blank" class="capan-btn-coral-large" style="text-decoration:none;height:38px;padding:0 14px;font-size:13px;display:inline-flex;align-items:center;gap:6px;">
-                <i data-lucide="download" style="width:15px;height:15px;"></i>
-                <span>Tải file CT01</span>
-              </a>
-              <a id="link-view-ct01" href="#" target="_blank" class="capan-btn-outline" style="text-decoration:none;height:38px;padding:0 12px;font-size:12.5px;display:inline-flex;align-items:center;gap:5px;">
-                <i data-lucide="external-link" style="width:14px;height:14px;"></i>
-                <span>Mở ảnh</span>
-              </a>
+        <!-- KHỐI DÀNH RIÊNG CHO IPHONE / IPAD: LƯU VÀO CAMERA ROLL -->
+        <div class="capan-camera-roll-banner" id="box-save-camera-roll">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span class="camera-roll-icon-badge">
+              <i data-lucide="smartphone" style="width:22px;height:22px;"></i>
+            </span>
+            <div>
+              <strong style="font-size:13.5px;color:#0f172a;display:block;">Lưu vào Camera Roll (Thư viện ảnh)</strong>
+              <span style="font-size:12px;color:#64748b;">Dành cho iPhone/iPad: Chạm để lưu cùng lúc 02 ảnh vào Thư viện ảnh máy</span>
             </div>
           </div>
-
-          <!-- Đường Link 2: Hợp đồng -->
-          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;">
-            <div style="display:flex;align-items:center;gap:10px;min-width:200px;flex:1;">
-              <span style="width:30px;height:30px;border-radius:8px;background:#fef2f2;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">2</span>
-              <div>
-                <strong style="font-size:13.5px;color:#0f172a;display:block;">Hợp đồng cư trú (.JPG)</strong>
-                <span id="label-filename-contract" style="font-size:11px;color:#64748b;font-family:monospace;">02_HopDong_ChoONho.jpg</span>
-              </div>
-            </div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <a id="link-download-contract" href="#" download="02_HopDong_ChoONho.jpg" target="_blank" class="capan-btn-coral-large" style="text-decoration:none;height:38px;padding:0 14px;font-size:13px;display:inline-flex;align-items:center;gap:6px;">
-                <i data-lucide="download" style="width:15px;height:15px;"></i>
-                <span>Tải file Hợp đồng</span>
-              </a>
-              <a id="link-view-contract" href="#" target="_blank" class="capan-btn-outline" style="text-decoration:none;height:38px;padding:0 12px;font-size:12.5px;display:inline-flex;align-items:center;gap:5px;">
-                <i data-lucide="external-link" style="width:14px;height:14px;"></i>
-                <span>Mở ảnh</span>
-              </a>
-            </div>
-          </div>
+          <button type="button" class="capan-btn-coral-large" id="btn-save-camera-roll" style="height:38px;padding:0 16px;font-size:13px;background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%);box-shadow:0 3px 10px rgba(2, 132, 199, 0.25);" onclick="handleDirectCameraRollSave()">
+            <i data-lucide="image-down" style="width:16px;height:16px;"></i>
+            <span>Lưu vào Camera Roll</span>
+          </button>
         </div>
+
+
 
         <!-- 2 Khung xem trước A4 chuẩn cân đối -->
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;">
@@ -1642,14 +1632,14 @@
 
       <div class="capan-modal-footer" style="justify-content:space-between;flex-wrap:wrap;gap:10px;">
         <button type="button" class="capan-btn-outline" onclick="closeExportImagesModal()">Đóng</button>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button type="button" class="capan-btn-outline" id="btn-share-images-native" style="display:none;height:40px;font-size:13px;">
-            <i data-lucide="share-2" style="width:15px;height:15px;color:#0284c7;"></i>
-            <span>Lưu vào Camera Roll / Chia sẻ</span>
-          </button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;" class="capan-footer-export-actions">
           <button type="button" class="capan-btn-coral-large" id="btn-download-both-zip" style="height:40px;padding:0 18px;font-size:13.5px;">
             <i data-lucide="archive" style="width:16px;height:16px;"></i>
             <span>Tải trọn bộ 2 ảnh (.ZIP)</span>
+          </button>
+          <button type="button" class="capan-btn-outline" id="btn-share-images-native" style="height:40px;padding:0 16px;font-size:13px;border-color:#0284c7;color:#0369a1;background:#f0f9ff;font-weight:700;" onclick="handleNativeSharePrompt()">
+            <i data-lucide="share-2" style="width:16px;height:16px;color:#0284c7;"></i>
+            <span>Chia sẻ</span>
           </button>
         </div>
       </div>

@@ -53,18 +53,22 @@
        1. TOP NAVIGATION BAR (DOANTM x GOHOLIC TRAVEL CO-BRANDED HEADER)
        ========================================================================= -->
   <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-slate-200/90 shadow-sm transition-all duration-300">
+    <div class="capan-header-top-bar" style="height:3px;background:linear-gradient(90deg, #dc2626 0%, #ea580c 35%, #0284c7 70%, #10b981 100%);width:100%;"></div>
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20 gap-4">
         
         <!-- Logo & Brand with Goholic Co-branding -->
-        <a href="index.html" class="flex items-center space-x-3 group flex-shrink-0">
-          <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#31c0cc] to-emerald-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/25 group-hover:scale-105 transition-transform flex-shrink-0">
-            <i data-lucide="compass" class="w-6 h-6"></i>
+        <a href="index.html" class="flex items-center space-x-3 group flex-shrink-0" title="DOANTM Travel - Goholic">
+          <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-red-600 to-red-950 flex items-center justify-center p-0.5 shadow-md shadow-red-600/30 group-hover:scale-105 transition-transform flex-shrink-0">
+            <div class="w-full h-full bg-[#0D0D0D] rounded-[10px] flex items-center justify-center">
+              <i data-lucide="compass" class="w-6 h-6 text-red-500"></i>
+            </div>
           </div>
           <div class="flex items-center gap-3">
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-2xl font-extrabold tracking-wider text-slate-900 whitespace-nowrap">DOAN<span class="text-[#29aab4]">TM</span></span>
+                <span class="text-2xl font-extrabold tracking-wider text-slate-900 whitespace-nowrap">DOAN<span class="text-red-600 font-black">TM</span></span>
                 <span class="inline-flex items-center text-[10px] uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full font-bold whitespace-nowrap">TRAVEL</span>
               </div>
               <p class="text-[11px] text-slate-500 font-medium whitespace-nowrap">Liên kết cùng Goholic Travel</p>
@@ -78,7 +82,15 @@
         </a>
 
         <!-- Navigation Links (Single Row, No Wrapping) -->
-        <nav class="hidden lg:flex items-center space-x-6 text-sm font-semibold text-slate-600 whitespace-nowrap">
+        <nav class="hidden lg:flex items-center space-x-5 text-sm font-semibold text-slate-600 whitespace-nowrap">
+          <a href="index.html" class="hover:text-slate-900 transition flex items-center gap-1.5 whitespace-nowrap">
+            <i data-lucide="home" class="w-4 h-4 text-slate-400"></i>
+            <span>Trang chủ</span>
+          </a>
+          <a href="ct01.html" class="hover:text-red-600 transition flex items-center gap-1.5 whitespace-nowrap text-red-600 font-bold">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-red-500"></i>
+            <span>Kê khai CT01</span>
+          </a>
           <a href="#about-goholic" class="hover:text-[#29aab4] transition whitespace-nowrap">
             Về Goholic ✕ DOANTM
           </a>
@@ -91,6 +103,11 @@
             <span>Tra cứu đặt tour</span>
           </button>
         </nav>
+
+        <!-- Mobile Hamburger Toggle -->
+        <button type="button" id="tours-mobile-menu-btn" class="lg:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 transition" aria-label="Mở menu điều hướng">
+          <i data-lucide="menu" class="w-5 h-5 text-slate-800"></i>
+        </button>
 
         <!-- Hotline & Call Action -->
         <div class="flex items-center space-x-2.5 flex-shrink-0">
@@ -105,6 +122,28 @@
           </a>
         </div>
 
+            </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="tours-mobile-nav" class="hidden lg:hidden bg-white/95 backdrop-blur-xl border-t border-slate-200 px-4 py-4 space-y-2 shadow-lg">
+      <a href="#about-goholic" class="block py-2.5 px-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-[#29aab4] transition">
+        Về Goholic ✕ DOANTM
+      </a>
+      <a href="#tours-section" class="block py-2.5 px-3 rounded-xl text-sm font-bold text-[#29aab4] bg-cyan-50/80 transition">
+        Các Tour Nổi Bật (26)
+      </a>
+      <button onclick="if(window.toursAppInstance) window.toursAppInstance.openLookupModal(); document.getElementById('tours-mobile-nav').classList.add('hidden');" class="w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 flex items-center gap-2 transition">
+        <i data-lucide="receipt" class="w-4 h-4 text-[#31c0cc]"></i>
+        <span>Tra cứu đặt tour</span>
+      </button>
+      <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+        <a href="index.html" class="text-xs text-slate-500 font-semibold hover:text-slate-900 flex items-center gap-1">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Về Trang chủ
+        </a>
+        <a href="ct01.html" class="text-xs text-[#dc2626] font-semibold hover:underline flex items-center gap-1">
+          <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Kê khai CT01
+        </a>
       </div>
     </div>
   </header>
@@ -1106,7 +1145,7 @@
       </div>
 
       <div class="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-4">
-        <p>© 2026 DOANTM Platform ✕ Goholic Travel (Thỏa chí xê dịch). Hệ thống liên kết phân phối tour chính thức.</p>
+        <p>© 2026 <strong>DOAN<span style="color:#ef4444;">TM</span> Platform</strong> ✕ Goholic Travel (Thỏa chí xê dịch). Hệ thống liên kết phân phối tour chính thức.</p>
         <div class="flex items-center space-x-6">
           <a href="index.html" class="hover:text-white">Về Trang chủ DOANTM</a>
           <a href="https://goholictravel.com/" target="_blank" rel="noopener" class="hover:text-white">Website Goholic Travel</a>
@@ -1119,6 +1158,29 @@
 
   <!-- Scripts -->
   <script src="js/tours.js"></script>
+
+
+  <!-- Mobile Menu Drawer Toggle Script for Tours -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('tours-mobile-menu-btn');
+      const nav = document.getElementById('tours-mobile-nav');
+      if (btn && nav) {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          nav.classList.toggle('hidden');
+        });
+        nav.querySelectorAll('a, button').forEach(el => {
+          el.addEventListener('click', () => nav.classList.add('hidden'));
+        });
+        document.addEventListener('click', (e) => {
+          if (!nav.contains(e.target) && !btn.contains(e.target)) {
+            nav.classList.add('hidden');
+          }
+        });
+      }
+    });
+  </script>
 
 </body>
 </html>

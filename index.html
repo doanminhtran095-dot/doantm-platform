@@ -174,13 +174,17 @@
 
         <!-- Desktop Navigation Links (Chữ trên cùng 1 hàng, không ngắt dòng) -->
         <nav class="hidden md:flex items-center space-x-1 lg:space-x-2 pl-3 lg:pl-5 border-l border-zinc-800 whitespace-nowrap flex-shrink-0 flex-nowrap">
-          <a href="#about" class="px-3 py-2 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap flex-shrink-0">Về chúng tôi</a>
+          <a href="ct01.html" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition whitespace-nowrap flex-shrink-0">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-red-500"></i>
+            <span>Kê khai CT01</span>
+          </a>
+          <a href="huong-dan-nop-ho-so.html" class="px-3 py-2 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap flex-shrink-0">Hướng dẫn DVC</a>
           <a href="javascript:void(0)" onclick="openModal('modal-drone-rd')" class="px-3 py-2 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap flex-shrink-0">Drone LAB</a>
-          <a href="javascript:void(0)" onclick="openModal('modal-dvc-guides')" class="px-3 py-2 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap flex-shrink-0">Cẩm nang</a>
           <a href="tours.html" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap flex-shrink-0 group/goholic">
             <img src="assets/goholic-logo-badge.png" alt="Goholic" class="h-5 sm:h-5.5 w-auto rounded-md object-contain border border-sky-400/30 shadow-xs flex-shrink-0 group-hover/goholic:scale-105 transition-transform" />
-            <span class="whitespace-nowrap">Du lịch khám phá</span>
+            <span class="whitespace-nowrap">Du lịch</span>
           </a>
+          <a href="#about" class="px-3 py-2 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition whitespace-nowrap flex-shrink-0">Về DOANTM</a>
         </nav>
       </div>
 
@@ -208,9 +212,13 @@
 
     <!-- Mobile Nav Drawer -->
     <div id="mobile-nav-menu" class="hidden md:hidden bg-[#0A0A0A] border-b border-zinc-800 px-4 pt-2 pb-6 space-y-2">
-      <a href="#about" class="block px-3 py-2 rounded-lg text-sm font-medium text-zinc-300 hover:bg-zinc-800">Về chúng tôi</a>
+      <a href="ct01.html" class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-bold text-white bg-red-600/20 border border-red-500/30">
+        <i data-lucide="file-spreadsheet" class="w-4 h-4 text-red-500"></i>
+        <span>Kê khai CT01 & Hợp đồng cư trú</span>
+      </a>
+      <a href="huong-dan-nop-ho-so.html" class="block px-3 py-2 rounded-lg text-sm font-medium text-zinc-300 hover:bg-zinc-800">Cẩm nang Hướng dẫn DVC</a>
       <a href="javascript:void(0)" onclick="openModal('modal-drone-rd')" class="block px-3 py-2 rounded-lg text-sm font-medium text-zinc-300 hover:bg-zinc-800">Drone LAB</a>
-      <a href="javascript:void(0)" onclick="openModal('modal-dvc-guides')" class="block px-3 py-2 rounded-lg text-sm font-medium text-zinc-300 hover:bg-zinc-800">Cẩm nang</a>
+      <a href="#about" class="block px-3 py-2 rounded-lg text-sm font-medium text-zinc-300 hover:bg-zinc-800">Về DOANTM</a>
       <a href="tours.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-zinc-300 hover:bg-zinc-800">
         <img src="assets/goholic-logo-badge.png" alt="Goholic" class="h-5.5 w-auto rounded-md object-contain border border-sky-400/30 flex-shrink-0" />
         <span>Du lịch khám phá</span>
@@ -258,10 +266,10 @@
             </button>
 
             <!-- Quick Trigger to Form Tool -->
-            <button onclick="openModal('modal-dvc-tool')" class="px-5 py-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-emerald-500/50 text-emerald-300 font-medium text-sm transition duration-160 flex items-center space-x-2">
+            <a href="ct01.html" class="px-5 py-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-emerald-500/50 text-emerald-300 font-medium text-sm transition duration-160 flex items-center space-x-2">
               <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-400"></i>
               <span>Mẫu CT01 &amp; Hợp đồng</span>
-            </button>
+            </a>
           </div>
 
           <!-- Quick Trust Badges -->
@@ -547,11 +555,11 @@
           </div>
 
           <!-- Action Button -->
-          <button onclick="openModal('modal-dvc-tool')" class="w-full py-3 px-5 rounded-xl bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold text-sm transition duration-160 flex items-center justify-center space-x-2 shadow-sm">
+          <a href="ct01.html" class="w-full py-3 px-5 rounded-xl bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold text-sm transition duration-160 flex items-center justify-center space-x-2 shadow-sm">
             <i data-lucide="qr-code" class="w-4 h-4"></i>
             <span>Mở Biểu mẫu CT01 &amp; Ký số</span>
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
-          </button>
+          </a>
         </div>
 
         <!-- CARD 2: Nghiên cứu và phát triển về Drone -->
@@ -641,11 +649,11 @@
             </ul>
           </div>
 
-          <button onclick="openModal('modal-dvc-guides')" class="w-full py-3 px-5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-900 font-semibold text-sm border border-slate-300 transition duration-160 flex items-center justify-center space-x-2">
+          <a href="huong-dan-nop-ho-so.html" class="w-full py-3 px-5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-900 font-semibold text-sm border border-slate-300 transition duration-160 flex items-center justify-center space-x-2">
             <i data-lucide="list-checks" class="w-4 h-4 text-amber-600"></i>
             <span>Xem hướng dẫn DVC</span>
             <i data-lucide="arrow-right" class="w-4 h-4"></i>
-          </button>
+          </a>
         </div>
 
         <!-- CARD 4: Các tour du lịch trải nghiệm -->
@@ -861,11 +869,11 @@
         <div class="space-y-3">
           <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Dịch Vụ Công</h4>
           <ul class="space-y-2">
-            <li><a href="javascript:void(0)" onclick="openModal('modal-dvc-tool')" class="hover:text-red-400 transition">Tool Điền mẫu CT01</a></li>
-            <li><a href="javascript:void(0)" onclick="openModal('modal-dvc-tool')" class="hover:text-red-400 transition">Hợp đồng thuê nhà</a></li>
-            <li><a href="javascript:void(0)" onclick="openModal('modal-dvc-guides')" class="hover:text-red-400 transition">Đăng ký tạm trú online</a></li>
-            <li><a href="javascript:void(0)" onclick="openModal('modal-dvc-guides')" class="hover:text-red-400 transition">Cấp đổi Hộ chiếu online</a></li>
-            <li><a href="javascript:void(0)" onclick="openModal('modal-dvc-guides')" class="hover:text-red-400 transition">Đổi Giấy phép lái xe</a></li>
+            <li><a href="javascript:void(0)" href="ct01.html" class="hover:text-red-400 transition">Tool Điền mẫu CT01</a></li>
+            <li><a href="javascript:void(0)" href="ct01.html" class="hover:text-red-400 transition">Hợp đồng thuê nhà</a></li>
+            <li><a href="javascript:void(0)" href="huong-dan-nop-ho-so.html" class="hover:text-red-400 transition">Đăng ký tạm trú online</a></li>
+            <li><a href="javascript:void(0)" href="huong-dan-nop-ho-so.html" class="hover:text-red-400 transition">Cấp đổi Hộ chiếu online</a></li>
+            <li><a href="javascript:void(0)" href="huong-dan-nop-ho-so.html" class="hover:text-red-400 transition">Đổi Giấy phép lái xe</a></li>
           </ul>
         </div>
 
@@ -876,8 +884,8 @@
             <li><a href="javascript:void(0)" onclick="openModal('modal-drone-rd')" class="hover:text-cyan-400 transition">Drone Nông nghiệp</a></li>
             <li><a href="javascript:void(0)" onclick="openModal('modal-drone-rd')" class="hover:text-cyan-400 transition">Bản đồ cho phép bay Drone</a></li>
             <li><a href="javascript:void(0)" onclick="openModal('modal-drone-rd')" class="hover:text-cyan-400 transition">Cứu hộ cứu nạn SAR</a></li>
-            <li><a href="javascript:void(0)" onclick="openModal('modal-tours')" class="hover:text-emerald-400 transition">Khóa học bay Flycam FPV</a></li>
-            <li><a href="javascript:void(0)" onclick="openModal('modal-tours')" class="hover:text-emerald-400 transition">Tour quay phim di sản</a></li>
+            <li><a href="javascript:void(0)" href="tours.html" class="hover:text-emerald-400 transition">Khóa học bay Flycam FPV</a></li>
+            <li><a href="javascript:void(0)" href="tours.html" class="hover:text-emerald-400 transition">Tour quay phim di sản</a></li>
           </ul>
         </div>
 
@@ -1563,5 +1571,34 @@
   <script src="js/drone3d.js"></script>
   <script src="js/formTool.js"></script>
   <script src="js/app.js"></script>
+
+  <!-- Mobile Menu Drawer Toggle Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const mobileBtn = document.getElementById('mobile-menu-btn');
+      const mobileNav = document.getElementById('mobile-nav-menu');
+      if (mobileBtn && mobileNav) {
+        mobileBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          mobileNav.classList.toggle('hidden');
+        });
+
+        // Close on link click
+        mobileNav.querySelectorAll('a, button').forEach(el => {
+          el.addEventListener('click', () => {
+            mobileNav.classList.add('hidden');
+          });
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!mobileNav.contains(e.target) && !mobileBtn.contains(e.target)) {
+            mobileNav.classList.add('hidden');
+          }
+        });
+      }
+    });
+  </script>
+
 </body>
 </html>
