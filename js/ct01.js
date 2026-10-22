@@ -3450,14 +3450,9 @@ function renderBatchTenantsList() {
         <!-- Khối gộp: Điền thông tin người thuê (Bấm để mở rộng) -->
         <div style="margin-bottom:12px;">
           <button type="button" class="batch-tenant-collapse-btn" id="btn-toggle-tenant-${idx}" onclick="toggleBatchTenantFields(${idx})">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <span class="batch-tenant-collapse-icon">
-                <i data-lucide="user-edit" style="width:15px;height:15px;"></i>
-              </span>
-              <div style="text-align:left;">
-                <strong style="font-size:13.5px;color:#0f172a;display:block;">Điền thông tin người thuê</strong>
-                <span id="batch-tenant-summary-${idx}" style="font-size:11.5px;color:#64748b;">${t.fullName ? escapeHtml(t.fullName) + (t.citizenId ? ' • ' + escapeHtml(t.citizenId) : '') : 'Bấm để nhập họ tên, ngày sinh, CCCD, địa chỉ...'}</span>
-              </div>
+            <div style="text-align:left;">
+              <strong style="font-size:13.5px;color:#0f172a;display:block;">Điền thông tin người thuê</strong>
+              <span id="batch-tenant-summary-${idx}" style="font-size:11.5px;color:#64748b;">${t.fullName ? escapeHtml(t.fullName) + (t.citizenId ? ' • ' + escapeHtml(t.citizenId) : '') : 'Bấm để nhập họ tên, ngày sinh, CCCD, địa chỉ...'}</span>
             </div>
             <div style="display:flex;align-items:center;gap:6px;">
               <span class="batch-tenant-status-pill" id="batch-tenant-status-${idx}" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:${t.fullName ? '#dcfce7' : '#f1f5f9'};color:${t.fullName ? '#15803d' : '#64748b'};">

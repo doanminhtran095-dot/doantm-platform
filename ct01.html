@@ -1700,76 +1700,7 @@
       </div>
     </div>
   </div>
-        <button type="button" class="capan-modal-close" onclick="closeAiPaymentModal()" aria-label="Đóng">
-          <i data-lucide="x" style="width:18px;height:18px;"></i>
-        </button>
-      </div>
-
-      <!-- Modal Body -->
-      <div class="capan-modal-body" style="display:flex;flex-direction:column;gap:12px;max-height:calc(85vh - 120px);overflow-y:auto;">
         
-        <!-- Coffee Support Notice -->
-        <div style="background:linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);border:1.5px solid #fed7aa;border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:24px;line-height:1;">☕</span>
-            <div style="font-size:13px;color:#9a3412;line-height:1.45;">
-              <strong>Ủng hộ ly cà phê 10.000 đồng cho phòng LAB để duy trì nền tảng nhé.</strong>
-            </div>
-          </div>
-          <span style="font-size:13.5px;font-weight:800;color:#ea580c;background:#ffffff;padding:4px 10px;border-radius:8px;border:1px solid #fdba74;white-space:nowrap;">10.000 đ</span>
-        </div>
-
-        <!-- VietQR Box -->
-        <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px;">
-          <div style="font-size:12px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.04em;">
-            Quét mã VietQR bằng ứng dụng mọi ngân hàng:
-          </div>
-
-          <div style="background:#ffffff;padding:8px;border-radius:12px;border:1px solid #cbd5e1;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-            <img 
-              id="ai-pay-vietqr-image" 
-              src="https://img.vietqr.io/image/TCB-5930073169-compact2.png?amount=10000&accountName=TRAN%20MINH%20DOAN" 
-              alt="Mã QR Chuyển khoản VietQR" 
-              style="width:200px;height:200px;object-fit:contain;display:block;"
-            />
-          </div>
-
-          <!-- Bank Details Table -->
-          <div style="width:100%;background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:12px;display:flex;flex-direction:column;gap:6px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed #f1f5f9;padding-bottom:5px;">
-              <span style="color:#64748b;">Ngân hàng:</span>
-              <strong style="color:#0f172a;">Techcombank (TCB)</strong>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed #f1f5f9;padding-bottom:5px;">
-              <span style="color:#64748b;">Số tài khoản:</span>
-              <div style="display:flex;align-items:center;gap:6px;">
-                <strong style="color:#0284c7;font-family:monospace;font-size:13.5px;">5930073169</strong>
-                <button type="button" class="sig-btn" style="height:24px;font-size:10.5px;padding:0 8px;" onclick="copyAiPaymentText('5930073169', 'Đã chép số tài khoản!')">Chép STK</button>
-              </div>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="color:#64748b;">Chủ tài khoản:</span>
-              <strong style="color:#0f172a;">Trần Minh Đoàn</strong>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Modal Footer -->
-      <div class="capan-modal-footer" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">
-        <button type="button" class="capan-btn-outline" onclick="closeAiPaymentModal()">
-          <span>Đóng</span>
-        </button>
-        <button type="button" class="capan-btn-coral-large" style="height:38px;padding:0 18px;font-size:13px;background:linear-gradient(135deg, #ea580c 0%, #d97706 100%);border:none;box-shadow:0 3px 10px rgba(234,88,12,0.3);" onclick="closeAiPaymentModal(); showToast('Cảm ơn bạn rất nhiều vì đã ủng hộ phòng LAB! ☕', 'success');">
-          <i data-lucide="heart" style="width:16px;height:16px;"></i>
-          <span>☕ Cảm ơn bạn &amp; Đã ủng hộ</span>
-        </button>
-      </div>
-
-    </div>
-  </div>
-
   <!-- Main Controller Script -->
   <script src="js/ct01.js"></script>
 </body>
