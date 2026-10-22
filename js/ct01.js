@@ -1461,6 +1461,8 @@ async function scanCameraFrameLoop() {
 function handleQrImageUpload(event) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
+  // Reset input value so selecting the same or new photo always fires on iOS Safari
+  try { event.target.value = ''; } catch(e) {}
   stopQrCameraStream();
 
   const reader = new FileReader();
@@ -1881,6 +1883,7 @@ async function executeAiVisionOcr() {
         backendUrl = 'http://localhost:8000/api/scan-cccd';
       }
 
+      let backendErrorMsg = '';
       try {
         const proxyResp = await fetch(backendUrl, {
           method: 'POST',
@@ -1893,10 +1896,17 @@ async function executeAiVisionOcr() {
           if (json && json.ok && json.data) {
             parsedData = json.data;
             scanMethodName = 'Google AI Vision (Server)';
+          } else if (json && json.error) {
+            backendErrorMsg = json.error;
+            console.warn('Backend proxy returned error:', json.error);
           }
+        } else {
+          const errData = await proxyResp.json().catch(() => ({}));
+          backendErrorMsg = errData.error || ('Lỗi máy chủ (' + proxyResp.status + ')');
         }
       } catch (proxyErr) {
         console.warn('Backend proxy call failed:', proxyErr.message);
+        backendErrorMsg = 'Không thể kết nối đến máy chủ AI.';
       }
     }
 
@@ -1958,41 +1968,8 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
       }
     }
 
-    // BƯỚC 4: Fallback OCR tích hợp chạy trên trình duyệt (Tesseract.js)
-    // Hoàn toàn không cần API Key, không phụ thuộc server, chạy trực tiếp trên thiết bị!
-    if (!parsedData && typeof window.Tesseract !== 'undefined') {
-      try {
-        if (statusText) statusText.textContent = '🔍 Đang đọc chữ trên CCCD bằng bộ đọc tích hợp (Tesseract)...';
-        let ocrResult = null;
-        try {
-          ocrResult = await window.Tesseract.recognize(canvas, 'vie', {
-            logger: m => {
-              if (statusText && m.status === 'recognizing text') {
-                const pct = Math.round((m.progress || 0) * 100);
-                statusText.textContent = `🔍 Đang đọc chữ CCCD: ${pct}%...`;
-              }
-            }
-          });
-        } catch (tessVieErr) {
-          console.warn('Tesseract vie failed, trying eng:', tessVieErr);
-          ocrResult = await window.Tesseract.recognize(canvas, 'eng');
-        }
-
-        const ocrRawText = ocrResult?.data?.text || '';
-        if (ocrRawText) {
-          const ocrParsed = parseCccdOcrText(ocrRawText);
-          if (ocrParsed && (ocrParsed.citizenId || ocrParsed.fullName)) {
-            parsedData = ocrParsed;
-            scanMethodName = 'Bộ đọc AI tích hợp (Trình duyệt)';
-          }
-        }
-      } catch (tessErr) {
-        console.warn('Client OCR error:', tessErr);
-      }
-    }
-
     if (!parsedData) {
-      throw new Error('Chưa nhận diện được dữ liệu CCCD từ ảnh này. Vui lòng chụp rõ nét hơn hoặc nhập trực tiếp.');
+      throw new Error(backendErrorMsg || 'Google AI chưa đọc được ảnh thẻ CCCD này. Vui lòng đảm bảo chụp ảnh rõ nét, đủ ánh sáng và xoay thẳng thẻ.');
     }
 
     // Chuẩn hóa dữ liệu nhận diện

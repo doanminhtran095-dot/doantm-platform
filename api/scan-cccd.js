@@ -1,3 +1,12 @@
+// Tăng dung lượng tối đa cho ảnh CCCD gửi từ thiết bị di động
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '4.5mb',
+    },
+  },
+};
+
 // ============================================================================
 // API/SCAN-CCCD.JS - SERVERLESS BACKEND PROXY (VERCEL / NODE.JS)
 // GIẢI PHÁP 2: Giấu hoàn toàn API Key trên Server, người dùng F12 không thấy được
@@ -82,14 +91,20 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
       generationConfig: {
         response_mime_type: 'application/json',
         temperature: 0.1
-      }
+      },
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
+      ]
     };
 
     // Google Gemini API hỗ trợ query param ?key= cho cả token chuẩn và AQ/OAuth
     const headers = { 'Content-Type': 'application/json' };
 
     // Danh sách model Google Gemini đang hoạt động chính thức (gemini-3.8-flash là model chuẩn mới nhất)
-    const models = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3-flash-preview', 'gemini-3.5-flash-lite', 'gemini-flash-latest'];
+    const models = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-flash-latest', 'gemini-3.5-flash'];
     let response = null;
     let lastError = '';
 
