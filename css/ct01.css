@@ -35,47 +35,6 @@
   --capan-radius-sm: 8px;
   --capan-shadow-soft: var(--card-shadow);
   --capan-shadow-hover: 0 20px 30px -10px rgba(16, 185, 129, 0.16), 0 10px 15px -5px rgba(6, 182, 212, 0.1);
-
-  /* Emil Kowalski Motion & Tactile Tokens */
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-  --dur-press: 140ms;
-  --dur-fast: 160ms;
-}
-
-/* Universal Tactile Response for E-Form Tool (Emil Kowalski) */
-button,
-.btn,
-.capan-btn,
-.tab-item,
-.step-item,
-.preset-chip,
-.action-btn,
-.capan-tab-btn {
-  transition: transform var(--dur-press) var(--ease-out),
-              background-color var(--dur-fast) var(--ease-out),
-              border-color var(--dur-fast) var(--ease-out),
-              box-shadow var(--dur-fast) var(--ease-out);
-  -webkit-tap-highlight-color: transparent;
-}
-
-button:active,
-.btn:active,
-.capan-btn:active,
-.capan-btn-coral-large:active,
-.capan-btn-scan-amber:active,
-.capan-btn-scan-primary:active,
-.capan-btn-outline:active,
-.capan-form-tab-card:active,
-.capan-modal-close:active,
-.capan-auth-btn:active,
-.btn:active,
-.capan-btn:active,
-.tab-item:active,
-.preset-chip:active,
-.action-btn:active,
-.capan-tab-btn:active {
-  transform: scale(0.97) !important;
 }
 
 *, *::before, *::after {
@@ -97,8 +56,8 @@ html, body {
   color: var(--text-primary);
   background-color: #ffffff;
   background-image:
-    radial-gradient(ellipse 35% 420px at 0% 180px, rgba(220, 38, 38, 0.04) 0%, transparent 100%),
-    radial-gradient(ellipse 35% 420px at 100% 180px, rgba(2, 132, 199, 0.04) 0%, transparent 100%),
+    radial-gradient(ellipse 38% 520px at 0% 220px, rgba(251, 146, 60, 0.22) 0%, rgba(250, 204, 21, 0.14) 45%, rgba(255, 255, 255, 0) 100%),
+    radial-gradient(ellipse 40% 540px at 100% 220px, rgba(14, 165, 233, 0.22) 0%, rgba(16, 185, 129, 0.18) 48%, rgba(255, 255, 255, 0) 100%),
     linear-gradient(180deg, #ffffff 0%, #ffffff 100%);
   background-repeat: no-repeat;
 }
@@ -494,7 +453,7 @@ button, input, select, textarea {
   font-weight: 700 !important;
   text-decoration: none;
   box-shadow: 0 4px 14px rgba(13, 148, 136, 0.28);
-  transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   animation: guideGradShift 6s ease infinite;
 }
 
@@ -507,12 +466,8 @@ button, input, select, textarea {
 .capan-btn-guide-gradient:hover {
   background-position: right center;
   color: #ffffff !important;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
-}
-
-.capan-btn-guide-gradient:active {
-  transform: scale(0.97) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(16, 185, 129, 0.35), 0 2px 8px rgba(2, 132, 199, 0.25);
 }
 
 /* ==========================================================================
@@ -674,13 +629,104 @@ button, input, select, textarea {
 .form-status-star {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  background: #fef3c7;
+  gap: 3.5px;
+  color: #92400e;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   border: 1px solid #f59e0b;
   border-radius: 9999px;
-  padding: 3px 6px;
-  line-height: 1;
+  padding: 2.5px 8.5px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.28);
   flex-shrink: 0;
+  animation: starPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes starPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.5);
+  }
+}
+
+.form-tab-title {
+  color: #0f172a;
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.form-tab-desc {
+  color: #64748b;
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   4. CT01 WORKSPACE: STEPS BANNER & DUAL QR CARDS
+   ========================================================================== */
+.capan-ct01-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.capan-steps-card {
+  display: grid;
+  grid-template-columns: 1fr 430px;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 20px;
+  padding: 20px 24px;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(251, 146, 60, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 100% 50%, rgba(14, 165, 233, 0.08) 0%, rgba(16, 185, 129, 0.06) 30%, transparent 55%),
+    #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px -6px rgba(15, 23, 42, 0.05);
+}
+
+.capan-steps-intro h3 {
+  color: #0f172a;
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.capan-steps-intro p {
+  color: #64748b;
+  margin: 0;
+  font-size: 13.5px;
+}
+
+/* Ant-Design Style Steps Bar */
+.capan-steps-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.capan-step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
 }
 
 .capan-step-item.done .step-badge {
@@ -1171,20 +1217,20 @@ input[type="date"].capan-input {
   gap: 12px;
   padding: 12px 14px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
-  border: 1.5px solid #7dd3fc;
+  background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+  border: 1.5px solid #93c5fd;
   cursor: pointer;
   text-align: left;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.12);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
   box-sizing: border-box;
 }
 
 .btn-scan-member-hero:hover {
-  background: linear-gradient(135deg, #e0f2fe 0%, #ccfbf1 100%);
-  border-color: #0284c7;
+  background: linear-gradient(135deg, #dbeafe 0%, #dcfce7 100%);
+  border-color: #2563eb;
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.22);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.16);
 }
 
 .btn-scan-member-hero:active {
@@ -1195,13 +1241,13 @@ input[type="date"].capan-input {
   width: 42px;
   height: 42px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #0284c7 0%, #10b981 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 3px 10px rgba(14, 165, 233, 0.32);
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.3);
 }
 
 .btn-scan-member-content {
@@ -1215,7 +1261,7 @@ input[type="date"].capan-input {
 .btn-scan-member-title {
   font-size: 13.5px;
   font-weight: 700;
-  color: #0369a1;
+  color: #1e3a8a;
   line-height: 1.3;
 }
 
@@ -1226,15 +1272,14 @@ input[type="date"].capan-input {
 }
 
 .btn-scan-member-badge {
-  padding: 6px 14px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #0284c7 0%, #10b981 100%);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #2563eb;
   color: #ffffff;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.28);
 }
 
 .ct01-contract-datetime-field {
@@ -2423,13 +2468,12 @@ input[type="date"].capan-input {
   border-radius: 18px;
   width: 100%;
   max-width: 720px;
-  max-height: calc(100dvh - 24px);
-  max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 32px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
-  animation: capanModalIn var(--dur-modal, 0.22s) var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
+  animation: capanModalIn 0.2s ease-out;
 }
 
 @keyframes capanModalIn {
@@ -2470,9 +2514,6 @@ input[type="date"].capan-input {
 .capan-modal-body {
   padding: 20px 22px;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  flex: 1 1 auto;
-  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -2486,10 +2527,6 @@ input[type="date"].capan-input {
   padding: 14px 22px;
   border-top: 1px solid #f1f5f9;
   background: #f8fafc;
-  flex-shrink: 0;
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
 }
 
 /* Camera Viewport & Laser Overlay */
@@ -3851,86 +3888,3 @@ input[type="date"].capan-input {
   box-sizing: border-box !important;
 }
 
-
-/* Disabled state for capan-btn-coral-large */
-.capan-btn-coral-large:disabled,
-.capan-btn-coral-large[disabled] {
-  opacity: 0.55 !important;
-  cursor: not-allowed !important;
-  box-shadow: none !important;
-  transform: none !important;
-  filter: grayscale(0.4) !important;
-  pointer-events: none !important;
-}
-
-/* Card 5 status badge alignment */
-.form-tab-status-wrap {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-/* Dedicated Camera Roll banner */
-.capan-camera-roll-banner {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 1.5px solid #7dd3fc;
-  border-radius: 14px;
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.camera-roll-icon-badge {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  background: #ffffff;
-  border: 1px solid #bae6fd;
-  color: #0284c7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.15);
-}
-
-/* iOS Safari font zoom fix & mobile touch responsiveness */
-@media (max-width: 768px) {
-  input[type="text"],
-  input[type="number"],
-  input[type="date"],
-  input[type="tel"],
-  input[type="email"],
-  select,
-  textarea {
-    font-size: 16px !important;
-  }
-}
-
-@media (max-width: 640px) {
-  .capan-camera-roll-banner {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .capan-camera-roll-banner button {
-    width: 100%;
-    justify-content: center;
-    height: 42px;
-  }
-  .capan-footer-export-actions {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .capan-footer-export-actions button,
-  .capan-footer-export-actions a {
-    width: 100%;
-    justify-content: center;
-    height: 42px;
-  }
-}

@@ -101,7 +101,7 @@ function initHeroTextCarousel() {
 // 2. MODAL & DRAWER ORCHESTRATION
 // ==========================================
 function setupModalHandlers(formEngine, droneEngine) {
-  // Helper to open/close modal with smooth entrance transitions (<250ms)
+  // Helper to open/close modal
   window.openModal = function(modalId) {
     if (modalId === 'modal-dvc-tool') {
       window.location.href = 'ct01.html';
@@ -110,8 +110,6 @@ function setupModalHandlers(formEngine, droneEngine) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     modal.classList.remove('hidden');
-    void modal.offsetWidth; // trigger reflow for smooth CSS entrance
-    modal.classList.add('is-active');
     document.body.style.overflow = 'hidden';
     
     // Refresh icons inside modal
@@ -121,27 +119,26 @@ function setupModalHandlers(formEngine, droneEngine) {
   window.closeModal = function(modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
-    modal.classList.remove('is-active');
-    setTimeout(() => {
-      modal.classList.add('hidden');
-      document.body.style.overflow = '';
-    }, 200);
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
   };
 
   // Close modals on backdrop click or ESC key
   document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
     backdrop.addEventListener('click', (e) => {
       if (e.target === backdrop) {
-        closeModal(backdrop.id);
+        backdrop.classList.add('hidden');
+        document.body.style.overflow = '';
       }
     });
   });
 
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      document.querySelectorAll('.modal-backdrop.is-active, .modal-backdrop:not(.hidden)').forEach(modal => {
-        closeModal(modal.id);
+      document.querySelectorAll('.modal-backdrop:not(.hidden)').forEach(modal => {
+        modal.classList.add('hidden');
       });
+      document.body.style.overflow = '';
     }
   });
 
