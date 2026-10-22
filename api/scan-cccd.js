@@ -85,21 +85,17 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
       }
     };
 
-    const isBearer = apiKey.startsWith('AQ.') || apiKey.startsWith('ya29.');
+    // Google Gemini API hỗ trợ query param ?key= cho cả token chuẩn và AQ/OAuth
     const headers = { 'Content-Type': 'application/json' };
-    if (isBearer) {
-      headers['Authorization'] = `Bearer ${apiKey}`;
-    }
 
-    const models = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-2.0-flash'];
+    // Danh sách model Google Gemini đang hoạt động chính thức (gemini-3.8-flash là model chuẩn mới nhất)
+    const models = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3-flash-preview', 'gemini-3.5-flash-lite', 'gemini-flash-latest'];
     let response = null;
     let lastError = '';
 
     for (const model of models) {
       try {
-        const url = isBearer
-          ? `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
-          : `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
         response = await fetch(url, {
           method: 'POST',

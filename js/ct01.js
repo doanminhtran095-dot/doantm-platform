@@ -85,7 +85,8 @@ let batchState = {
     houseNo: '',
     street: '',
     ward: 'Phường An Nhơn',
-    city: 'TP. Hồ Chí Minh'
+    city: 'TP. Hồ Chí Minh',
+    contractDatetime: ''
   },
   tenants: []
 };
@@ -151,6 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Render initial A4 documents & cards
   renderAllA4AndCards();
+  updateHouseInfoBadge();
 
   // Initialize Dual Signature Pads
   initSignaturePads();
@@ -352,6 +354,9 @@ function selectFormCard(formKey) {
 // ============================================================================
 function updateFormField(field, value) {
   formState[field] = value;
+  if (['houseNo', 'street', 'ward', 'city', 'moveInDate'].includes(field)) {
+    updateHouseInfoBadge();
+  }
   renderAllA4AndCards();
 }
 
@@ -1641,38 +1646,45 @@ function getStoredGeminiKey() {
   }
 }
 
-function openAiVisionPaymentModal() {
-  const modal = document.getElementById('ai-vision-payment-modal');
-  if (modal) {
-    modal.hidden = false;
-    if (window.lucide && window.lucide.createIcons) {
-      window.lucide.createIcons();
-    }
+function toggleHouseInfoDrawer(forceOpen) {
+  const drawer = document.getElementById('house-info-drawer');
+  const chevron = document.getElementById('house-info-chevron');
+  if (!drawer) return;
+  const isHidden = drawer.style.display === 'none' || drawer.style.display === '';
+  const shouldOpen = forceOpen !== undefined ? forceOpen : isHidden;
+  drawer.style.display = shouldOpen ? 'block' : 'none';
+  if (chevron) {
+    chevron.style.transform = shouldOpen ? 'rotate(180deg)' : 'rotate(0deg)';
   }
 }
 
-function closeAiPaymentModal() {
-  const modal = document.getElementById('ai-vision-payment-modal');
-  if (modal) modal.hidden = true;
-}
+function updateHouseInfoBadge() {
+  const summaryEl = document.getElementById('house-info-summary-text');
+  const badgeEl = document.getElementById('house-info-badge-status');
+  if (!summaryEl || !badgeEl) return;
 
-async function confirmPaidAndRunAiVision() {
-  closeAiPaymentModal();
-  showToast('Cảm ơn bạn! Đang kích hoạt AI Vision đọc chữ trên mặt thẻ CCCD...', 'info');
-  await executeAiVisionOcr();
-}
+  const parts = [];
+  if (formState.houseNo) parts.push(formState.houseNo);
+  if (formState.street) parts.push(formState.street);
+  if (formState.ward) parts.push(formState.ward);
+  if (formState.city) parts.push(formState.city);
 
-function copyAiPaymentText(text, successMsg) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(() => {
-      showToast(successMsg || 'Đã sao chép!');
-    }).catch(() => {
-      prompt('Nhấn Ctrl+C để sao chép:', text);
-    });
+  if (parts.length > 0) {
+    summaryEl.textContent = parts.join(', ');
+    badgeEl.textContent = '✓ Đã điền';
+    badgeEl.className = 'house-badge-status filled';
   } else {
-    prompt('Nhấn Ctrl+C để sao chép:', text);
+    summaryEl.textContent = 'Bấm để nhập số nhà, tên đường, thời gian hợp đồng...';
+    badgeEl.textContent = 'Chưa điền';
+    badgeEl.className = 'house-badge-status';
   }
 }
+
+// Giữ placeholder cho các hàm thanh toán cũ để tránh lỗi gọi hàm
+function openAiVisionPaymentModal() {}
+function closeAiPaymentModal() {}
+function confirmPaidAndRunAiVision() {}
+function copyAiPaymentText() {}
 
 function initAiVisionUI() {
   const key = getStoredGeminiKey();
@@ -1919,17 +1931,17 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
             }
           };
 
-          let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody)
-          });
-          if (!response.ok) {
-            response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(requestBody)
-            });
+          const clientModels = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3-flash-preview', 'gemini-3.5-flash-lite', 'gemini-flash-latest'];
+          let response = null;
+          for (const cModel of clientModels) {
+            try {
+              response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cModel}:generateContent?key=${encodeURIComponent(apiKey)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+              });
+              if (response && response.ok) break;
+            } catch (netErr) {}
           }
           if (response.ok) {
             const data = await response.json();
@@ -2575,7 +2587,6 @@ async function exportTwoPagePdf() {
     const cleanName = (formState.fullName || 'CongDan').trim().replace(/\s+/g, '_');
     triggerBlobDownload(pdfBlob, `HoSoCuTru_2Trang_A4_${cleanName}.pdf`);
     showToast('File PDF 2 trang A4 đã sẵn sàng để lưu!');
-    setTimeout(openAiVisionPaymentModal, 1200);
   } catch (err) {
     console.error(err);
     showToast('Có lỗi khi tạo file PDF A4.', 'error');
@@ -2670,7 +2681,6 @@ async function exportBothJpg() {
     const labelContract = document.getElementById('label-filename-contract');
 
     const handleDownloadDonation = () => {
-      setTimeout(openAiVisionPaymentModal, 1200);
     };
 
     if (linkCt01) {
@@ -2709,12 +2719,10 @@ async function exportBothJpg() {
     if (btnSaveCt01) {
       btnSaveCt01.href = url1;
       btnSaveCt01.download = ct01Filename;
-      btnSaveCt01.onclick = () => setTimeout(openAiVisionPaymentModal, 1200);
     }
     if (btnSaveContract) {
       btnSaveContract.href = url2;
       btnSaveContract.download = contractFilename;
-      btnSaveContract.onclick = () => setTimeout(openAiVisionPaymentModal, 1200);
     }
 
     // Xử lý nút tải trọn bộ ZIP khi người dùng bấm
@@ -2726,7 +2734,6 @@ async function exportBothJpg() {
           const zipBlob = await createTwoImagesZipBlob(blobs, cleanName);
           triggerBlobDownload(zipBlob, zipFilename);
           showToast('Đã tải tập tin ZIP chứa đủ 02 ảnh A4!');
-          setTimeout(openAiVisionPaymentModal, 1200);
         } catch (e) {
           triggerBlobDownload(blobs[0], ct01Filename);
         }
@@ -2921,7 +2928,6 @@ function downloadCitizenAppWord() {
   const cleanName = (citizenAppState.fullName || 'CongDan').trim().replace(/\s+/g, '_');
   triggerBlobDownload(blob, `${isLoss ? 'DonCoMat' : 'XacNhanHanhKiem'}_${cleanName}.doc`);
   showToast('Đã tải xuống file Word (.doc) thành công!');
-  setTimeout(openAiVisionPaymentModal, 1200);
 }
 
 // ============================================================================
@@ -3221,6 +3227,21 @@ function syncBatchHouseInputs() {
   if (streetEl && document.activeElement !== streetEl) streetEl.value = batchState.house.street || '';
   if (wardEl && document.activeElement !== wardEl) wardEl.value = batchState.house.ward || '';
   if (cityEl && document.activeElement !== cityEl) cityEl.value = batchState.house.city || '';
+  const contractDatetimeEl = document.getElementById('batch-contract-datetime');
+  if (contractDatetimeEl && document.activeElement !== contractDatetimeEl) {
+    if (!batchState.house.contractDatetime) {
+      if (formState.moveInDate) {
+        batchState.house.contractDatetime = formState.moveInDate;
+      } else {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        batchState.house.contractDatetime = `${yyyy}-${mm}-${dd}T10:00`;
+      }
+    }
+    contractDatetimeEl.value = batchState.house.contractDatetime || '';
+  }
 }
 
 function setBatchTenantCount(n) {
@@ -3281,6 +3302,7 @@ function updateBatchHouseField(field, val) {
 function updateBatchTenantField(index, field, val) {
   if (batchState.tenants[index]) {
     batchState.tenants[index][field] = val;
+    updateTenantCardTitle(index);
   }
 }
 
@@ -3370,6 +3392,18 @@ function fillAllBatchTenantsSample() {
   showToast(`Đã nạp mẫu dữ liệu thử cho toàn bộ ${len} người thuê!`);
 }
 
+function toggleBatchTenantFields(idx, forceOpen) {
+  const drawer = document.getElementById(`batch-tenant-fields-${idx}`);
+  const chevron = document.getElementById(`batch-tenant-chevron-${idx}`);
+  if (!drawer) return;
+  const isHidden = drawer.style.display === 'none' || drawer.style.display === '';
+  const shouldOpen = forceOpen !== undefined ? forceOpen : isHidden;
+  drawer.style.display = shouldOpen ? 'block' : 'none';
+  if (chevron) {
+    chevron.style.transform = shouldOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+  }
+}
+
 function updateTenantCardTitle(idx) {
   const card = document.getElementById(`batch-tenant-card-${idx}`);
   if (!card) return;
@@ -3377,6 +3411,16 @@ function updateTenantCardTitle(idx) {
   if (!t) return;
   const nameEl = card.querySelector('.batch-tenant-name');
   if (nameEl) nameEl.textContent = t.fullName ? t.fullName : '(Chưa nhập họ tên)';
+  const summaryEl = document.getElementById(`batch-tenant-summary-${idx}`);
+  const statusEl = document.getElementById(`batch-tenant-status-${idx}`);
+  if (summaryEl) {
+    summaryEl.textContent = t.fullName ? (t.fullName + (t.citizenId ? ' • ' + t.citizenId : '')) : 'Bấm để nhập họ tên, ngày sinh, CCCD, địa chỉ...';
+  }
+  if (statusEl) {
+    statusEl.textContent = t.fullName ? '✓ Đã điền' : 'Chưa điền';
+    statusEl.style.background = t.fullName ? '#dcfce7' : '#f1f5f9';
+    statusEl.style.color = t.fullName ? '#15803d' : '#64748b';
+  }
 }
 
 function renderBatchTenantsList() {
@@ -3403,37 +3447,60 @@ function renderBatchTenantsList() {
       </div>
 
       <div class="batch-tenant-card-body">
-        <div class="batch-form-grid">
-          <div class="ct01-address-input-field">
-            <label>Họ và tên người thuê <span style="color:#dc2626;">*</span></label>
-            <input type="text" class="capan-input text-uppercase" placeholder="VD: NGUYỄN VĂN AN" value="${escapeHtml(t.fullName || '')}" oninput="updateBatchTenantField(${idx}, 'fullName', this.value); updateTenantCardTitle(${idx});" />
-          </div>
-          <div class="ct01-address-input-field">
-            <label>Ngày sinh (dd/mm/yyyy) <span style="color:#dc2626;">*</span></label>
-            <input type="text" class="capan-input" placeholder="VD: 15/08/1995" value="${escapeHtml(t.birthDate || '')}" oninput="updateBatchTenantField(${idx}, 'birthDate', this.value)" />
-          </div>
-          <div class="ct01-address-input-field">
-            <label>Giới tính <span style="color:#dc2626;">*</span></label>
-            <select class="capan-select" onchange="updateBatchTenantField(${idx}, 'gender', this.value)">
-              <option value="Nam" ${t.gender === 'Nam' ? 'selected' : ''}>Nam</option>
-              <option value="Nữ" ${t.gender === 'Nữ' ? 'selected' : ''}>Nữ</option>
-            </select>
-          </div>
-          <div class="ct01-address-input-field">
-            <label>Số CCCD / Định danh (12 số) <span style="color:#dc2626;">*</span></label>
-            <input type="text" class="capan-input" maxlength="12" placeholder="VD: 079095012345" value="${escapeHtml(t.citizenId || '')}" oninput="updateBatchTenantField(${idx}, 'citizenId', this.value); updateTenantCardTitle(${idx});" />
-          </div>
-          <div class="ct01-address-input-field">
-            <label>Số điện thoại liên hệ</label>
-            <input type="text" class="capan-input" placeholder="VD: 0909 888 686" value="${escapeHtml(t.phone || '')}" oninput="updateBatchTenantField(${idx}, 'phone', this.value)" />
-          </div>
-          <div class="ct01-address-input-field">
-            <label>Email liên hệ</label>
-            <input type="text" class="capan-input" placeholder="VD: email@gmail.com" value="${escapeHtml(t.email || '')}" oninput="updateBatchTenantField(${idx}, 'email', this.value)" />
-          </div>
-          <div class="ct01-address-input-field batch-grid-col-full">
-            <label>Nơi thường trú (theo CCCD) <span style="color:#dc2626;">*</span></label>
-            <input type="text" class="capan-input" placeholder="VD: 456 Lê Lợi, Phường Bến Thành, Quận 1, TP. HCM" value="${escapeHtml(t.permanentAddress || '')}" oninput="updateBatchTenantField(${idx}, 'permanentAddress', this.value)" />
+        <!-- Khối gộp: Điền thông tin người thuê (Bấm để mở rộng) -->
+        <div style="margin-bottom:12px;">
+          <button type="button" class="batch-tenant-collapse-btn" id="btn-toggle-tenant-${idx}" onclick="toggleBatchTenantFields(${idx})">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="batch-tenant-collapse-icon">
+                <i data-lucide="user-edit" style="width:15px;height:15px;"></i>
+              </span>
+              <div style="text-align:left;">
+                <strong style="font-size:13.5px;color:#0f172a;display:block;">Điền thông tin người thuê</strong>
+                <span id="batch-tenant-summary-${idx}" style="font-size:11.5px;color:#64748b;">${t.fullName ? escapeHtml(t.fullName) + (t.citizenId ? ' • ' + escapeHtml(t.citizenId) : '') : 'Bấm để nhập họ tên, ngày sinh, CCCD, địa chỉ...'}</span>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="batch-tenant-status-pill" id="batch-tenant-status-${idx}" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:${t.fullName ? '#dcfce7' : '#f1f5f9'};color:${t.fullName ? '#15803d' : '#64748b'};">
+                ${t.fullName ? '✓ Đã điền' : 'Chưa điền'}
+              </span>
+              <i data-lucide="chevron-down" id="batch-tenant-chevron-${idx}" style="width:16px;height:16px;color:#64748b;transition:transform 0.2s ease;"></i>
+            </div>
+          </button>
+
+          <div id="batch-tenant-fields-${idx}" class="batch-tenant-fields-drawer" style="display:none;margin-top:10px;padding:12px;background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;">
+            <div class="batch-form-grid">
+              <div class="ct01-address-input-field">
+                <label>Họ và tên người thuê <span style="color:#dc2626;">*</span></label>
+                <input type="text" class="capan-input text-uppercase" placeholder="VD: NGUYỄN VĂN AN" value="${escapeHtml(t.fullName || '')}" oninput="updateBatchTenantField(${idx}, 'fullName', this.value); updateTenantCardTitle(${idx});" />
+              </div>
+              <div class="ct01-address-input-field">
+                <label>Ngày sinh (dd/mm/yyyy) <span style="color:#dc2626;">*</span></label>
+                <input type="text" class="capan-input" placeholder="VD: 15/08/1995" value="${escapeHtml(t.birthDate || '')}" oninput="updateBatchTenantField(${idx}, 'birthDate', this.value)" />
+              </div>
+              <div class="ct01-address-input-field">
+                <label>Giới tính <span style="color:#dc2626;">*</span></label>
+                <select class="capan-select" onchange="updateBatchTenantField(${idx}, 'gender', this.value)">
+                  <option value="Nam" ${t.gender === 'Nam' ? 'selected' : ''}>Nam</option>
+                  <option value="Nữ" ${t.gender === 'Nữ' ? 'selected' : ''}>Nữ</option>
+                </select>
+              </div>
+              <div class="ct01-address-input-field">
+                <label>Số CCCD / Định danh (12 số) <span style="color:#dc2626;">*</span></label>
+                <input type="text" class="capan-input" maxlength="12" placeholder="VD: 079095012345" value="${escapeHtml(t.citizenId || '')}" oninput="updateBatchTenantField(${idx}, 'citizenId', this.value); updateTenantCardTitle(${idx});" />
+              </div>
+              <div class="ct01-address-input-field">
+                <label>Số điện thoại liên hệ</label>
+                <input type="text" class="capan-input" placeholder="VD: 0909 888 686" value="${escapeHtml(t.phone || '')}" oninput="updateBatchTenantField(${idx}, 'phone', this.value)" />
+              </div>
+              <div class="ct01-address-input-field">
+                <label>Email liên hệ</label>
+                <input type="text" class="capan-input" placeholder="VD: email@gmail.com" value="${escapeHtml(t.email || '')}" oninput="updateBatchTenantField(${idx}, 'email', this.value)" />
+              </div>
+              <div class="ct01-address-input-field batch-grid-col-full">
+                <label>Nơi thường trú (theo CCCD) <span style="color:#dc2626;">*</span></label>
+                <input type="text" class="capan-input" placeholder="VD: 456 Lê Lợi, Phường Bến Thành, Quận 1, TP. HCM" value="${escapeHtml(t.permanentAddress || '')}" oninput="updateBatchTenantField(${idx}, 'permanentAddress', this.value)" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -3968,7 +4035,6 @@ async function handleSaveToAlbum() {
         text: `02 trang hồ sơ cư trú của ${formState.fullName || 'Công dân'}`
       });
       showToast('Đã mở bảng lưu ảnh vào Album ảnh thiết bị.');
-      setTimeout(openAiVisionPaymentModal, 1200);
       return;
     } catch (e) {
       if (e.name !== 'AbortError') {
@@ -3984,7 +4050,6 @@ async function handleSaveToAlbum() {
   triggerBlobDownload(exportGeneratedBlobs[0], ct01Name);
   setTimeout(() => {
     triggerBlobDownload(exportGeneratedBlobs[1], contractName);
-    setTimeout(openAiVisionPaymentModal, 1200);
   }, 500);
 }
 

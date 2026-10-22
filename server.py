@@ -149,24 +149,17 @@ class SecureServerHandler(SimpleHTTPRequestHandler):
             }
 
             # Danh sách model Google Gemini chuẩn hỗ trợ xử lý hình ảnh
-            models_to_try = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-2.0-flash', 'gemini-1.5-pro']
+            models_to_try = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3-flash-preview', 'gemini-3.5-flash-lite', 'gemini-flash-latest']
             resp_data = None
             last_err = None
-            is_bearer = api_key.startswith(('AQ.', 'ya29.'))
 
             for model_name in models_to_try:
                 try:
-                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent" if is_bearer else f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
-                    req_headers = {'Content-Type': 'application/json'}
-                    if is_bearer:
-                        req_headers['Authorization'] = f"Bearer {api_key}"
-                    else:
-                        req_headers['x-goog-api-key'] = api_key
-
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
                     req = urllib.request.Request(
                         url,
                         data=json.dumps(req_payload).encode('utf-8'),
-                        headers=req_headers
+                        headers={'Content-Type': 'application/json'}
                     )
                     with urllib.request.urlopen(req, timeout=35) as resp:
                         resp_data = json.loads(resp.read().decode('utf-8'))

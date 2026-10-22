@@ -228,23 +228,6 @@
                   <span class="text-mobile" id="workspace-steps-title-mobile">Đăng kí Tạm trú</span>
                 </h3>
               </div>
-
-              <div class="capan-steps-bar">
-                <div class="capan-step-item done">
-                  <span class="step-badge">✓</span>
-                  <span>Quét QR thẻ CCCD</span>
-                </div>
-                <div class="step-divider"></div>
-                <div class="capan-step-item active">
-                  <span class="step-badge">2</span>
-                  <span>Ký điện tử 2 bên</span>
-                </div>
-                <div class="step-divider"></div>
-                <div class="capan-step-item">
-                  <span class="step-badge">3</span>
-                  <span>Xuất file A4</span>
-                </div>
-              </div>
             </div>
 
             <!-- Dual QR Action Panel (Chủ nhà Bên A & Người kê khai Bên B) -->
@@ -402,39 +385,60 @@
                     </label>
                   </div>
 
-                  <div class="ct01-address-inputs-grid">
-                    <div class="ct01-address-input-field">
-                      <label for="ct01-house-no">Số nhà</label>
-                      <input type="text" id="ct01-house-no" class="capan-input" placeholder="Ví dụ: 123/45" oninput="updateFormField('houseNo', this.value)" />
-                    </div>
-                    <div class="ct01-address-input-field">
-                      <label for="ct01-street">Tên đường</label>
-                      <input type="text" id="ct01-street" class="capan-input" placeholder="Ví dụ: Nguyễn Văn Nghi" oninput="updateFormField('street', this.value)" />
-                    </div>
-                  </div>
+                  <!-- Khối gộp: Điền thông tin căn nhà (Bấm để mở rộng) -->
+                  <div class="capan-collapsible-house-wrap" style="margin-top:14px;">
+                    <button type="button" class="capan-house-toggle-btn" id="btn-toggle-house-info" onclick="toggleHouseInfoDrawer()">
+                      <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="house-toggle-icon">
+                          <i data-lucide="home" style="width:16px;height:16px;"></i>
+                        </span>
+                        <div>
+                          <strong style="font-size:14px;color:#0f172a;display:block;">Điền thông tin căn nhà</strong>
+                          <span id="house-info-summary-text" style="font-size:12px;color:#64748b;display:block;">Bấm để nhập số nhà, tên đường, thời gian hợp đồng...</span>
+                        </div>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:8px;">
+                        <span id="house-info-badge-status" class="house-badge-status">Chưa điền</span>
+                        <i data-lucide="chevron-down" id="house-info-chevron" class="house-chevron-icon" style="width:18px;height:18px;color:#64748b;transition:transform 0.25s ease;"></i>
+                      </div>
+                    </button>
 
-                  <div class="ct01-extra-inputs-grid">
-                    <div class="ct01-address-input-field">
-                      <label for="ct01-ward">Phường / Xã</label>
-                      <input type="text" id="ct01-ward" class="capan-input" value="Phường An Nhơn" placeholder="VD: Phường An Nhơn" oninput="updateFormField('ward', this.value)" />
-                    </div>
-                    <div class="ct01-address-input-field">
-                      <label for="ct01-city">Tỉnh / Thành phố</label>
-                      <input type="text" id="ct01-city" class="capan-input" value="TP. Hồ Chí Minh" placeholder="VD: TP. Hồ Chí Minh" oninput="updateFormField('city', this.value)" />
-                    </div>
-                    <div class="ct01-address-input-field">
-                      <label for="ct01-phone">Số điện thoại</label>
-                      <input type="tel" id="ct01-phone" class="capan-input" placeholder="VD: 0909 123 456" oninput="updateFormField('phone', this.value)" />
-                    </div>
-                    <div class="ct01-address-input-field">
-                      <label for="ct01-email">Email</label>
-                      <input type="email" id="ct01-email" class="capan-input" placeholder="VD: congdan@gmail.com" oninput="updateFormField('email', this.value)" />
-                    </div>
-                  </div>
+                    <div id="house-info-drawer" class="capan-house-drawer" style="display:none;margin-top:10px;padding:14px;background:#ffffff;border:1.5px solid #e2e8f0;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
+                      <div class="ct01-address-inputs-grid">
+                        <div class="ct01-address-input-field">
+                          <label for="ct01-house-no">Số nhà</label>
+                          <input type="text" id="ct01-house-no" class="capan-input" placeholder="Ví dụ: 123/45" oninput="updateFormField('houseNo', this.value); updateHouseInfoBadge();" />
+                        </div>
+                        <div class="ct01-address-input-field">
+                          <label for="ct01-street">Tên đường</label>
+                          <input type="text" id="ct01-street" class="capan-input" placeholder="Ví dụ: Nguyễn Văn Nghi" oninput="updateFormField('street', this.value); updateHouseInfoBadge();" />
+                        </div>
+                      </div>
 
-                  <div class="ct01-address-input-field ct01-contract-datetime-field">
-                    <label for="ct01-contract-datetime">Thời gian bắt đầu hợp đồng</label>
-                    <input type="datetime-local" id="ct01-contract-datetime" class="capan-input" onchange="updateFormField('moveInDate', this.value)" />
+                      <div class="ct01-extra-inputs-grid">
+                        <div class="ct01-address-input-field">
+                          <label for="ct01-ward">Phường / Xã</label>
+                          <input type="text" id="ct01-ward" class="capan-input" value="Phường An Nhơn" placeholder="VD: Phường An Nhơn" oninput="updateFormField('ward', this.value); updateHouseInfoBadge();" />
+                        </div>
+                        <div class="ct01-address-input-field">
+                          <label for="ct01-city">Tỉnh / Thành phố</label>
+                          <input type="text" id="ct01-city" class="capan-input" value="TP. Hồ Chí Minh" placeholder="VD: TP. Hồ Chí Minh" oninput="updateFormField('city', this.value); updateHouseInfoBadge();" />
+                        </div>
+                        <div class="ct01-address-input-field">
+                          <label for="ct01-phone">Số điện thoại</label>
+                          <input type="tel" id="ct01-phone" class="capan-input" placeholder="VD: 0909 123 456" oninput="updateFormField('phone', this.value)" />
+                        </div>
+                        <div class="ct01-address-input-field">
+                          <label for="ct01-email">Email</label>
+                          <input type="email" id="ct01-email" class="capan-input" placeholder="VD: congdan@gmail.com" oninput="updateFormField('email', this.value)" />
+                        </div>
+                      </div>
+
+                      <div class="ct01-address-input-field ct01-contract-datetime-field">
+                        <label for="ct01-contract-datetime">Thời gian bắt đầu hợp đồng</label>
+                        <input type="datetime-local" id="ct01-contract-datetime" class="capan-input" onchange="updateFormField('moveInDate', this.value); updateHouseInfoBadge();" />
+                      </div>
+                    </div>
                   </div>
                 </fieldset>
 
@@ -840,9 +844,8 @@
             <div class="capan-batch-hero-card no-print">
               <div class="batch-hero-header">
                 <div class="batch-hero-badge-wrap">
-                  <span class="batch-hero-badge">
-                    <i data-lucide="star" style="width:13px;height:13px;fill:#f59e0b;color:#f59e0b;"></i>
-                    CÓ PHÍ • XUẤT HỒ SƠ ZIP
+                  <span class="batch-hero-badge" style="padding:4px 8px;" title="Nổi bật">
+                    <i data-lucide="star" style="width:14px;height:14px;fill:#f59e0b;color:#f59e0b;"></i>
                   </span>
                   <span class="batch-hero-counter" id="batch-progress-stat">Đã điền: 0 / 3 người</span>
                 </div>
@@ -950,6 +953,10 @@
                     <label>Tỉnh / Thành phố <span style="color:#dc2626;">*</span></label>
                     <input type="text" id="batch-house-city" class="capan-input" placeholder="VD: TP. Hồ Chí Minh" oninput="updateBatchHouseField('city', this.value)" />
                   </div>
+                </div>
+                <div class="ct01-address-input-field" style="margin-top:10px;">
+                  <label for="batch-contract-datetime">Thời gian, ngày tháng ký hợp đồng <span style="color:#dc2626;">*</span></label>
+                  <input type="datetime-local" id="batch-contract-datetime" class="capan-input" onchange="updateBatchHouseField('contractDatetime', this.value)" />
                 </div>
 
                 <div class="batch-divider" style="margin:16px 0;"></div>
@@ -1693,26 +1700,6 @@
       </div>
     </div>
   </div>
-
-  <!-- =======================================================================
-       MODAL 6: THÔNG BÁO AI VISION & VẬN ĐỘNG ỦNG HỘ LY CÀ PHÊ (10.000đ)
-       ======================================================================= -->
-  <div class="capan-modal-backdrop no-print" id="ai-vision-payment-modal" style="z-index: 100005 !important;" hidden>
-    <div class="capan-modal-box" style="max-width:520px;">
-      
-      <!-- Modal Header -->
-      <div class="capan-modal-header" style="background:linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);border-bottom:1.5px solid #fde68a;">
-        <div class="qr-scanner-heading">
-          <span class="qr-scanner-title-icon" style="background:#fef3c7;color:#b45309;border-color:#fcd34d;">
-            <i data-lucide="coffee" style="width:24px;height:24px;"></i>
-          </span>
-          <div>
-            <div class="qr-scanner-title" style="color:#92400e;display:flex;align-items:center;gap:6px;">
-              <span>Ủng Hộ Phòng LAB ☕</span>
-            </div>
-            <div style="font-size:12px;color:#b45309;">Hồ sơ đã tạo thành công! Hãy ủng hộ một ly cà phê để đồng hành duy trì nền tảng cùng DOANTM nhé.</div>
-          </div>
-        </div>
         <button type="button" class="capan-modal-close" onclick="closeAiPaymentModal()" aria-label="Đóng">
           <i data-lucide="x" style="width:18px;height:18px;"></i>
         </button>

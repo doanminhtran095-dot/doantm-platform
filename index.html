@@ -196,12 +196,6 @@
           <span class="whitespace-nowrap font-medium">Tìm kiếm</span>
         </button>
 
-        <!-- Primary CTA: Đăng ký tài khoản (Crisp & Tactile) -->
-        <button onclick="openModal('modal-auth')" class="inline-flex items-center justify-center space-x-2 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-xl transition duration-160 whitespace-nowrap flex-shrink-0 shadow-sm">
-          <i data-lucide="user-plus" class="w-4 h-4 flex-shrink-0"></i>
-          <span class="whitespace-nowrap tracking-wide">Đăng ký tài khoản</span>
-        </button>
-
         <!-- Mobile Menu Toggle Button -->
         <button id="mobile-menu-btn" class="md:hidden p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg flex-shrink-0">
           <i data-lucide="menu" class="w-6 h-6"></i>
@@ -223,7 +217,6 @@
         <img src="assets/goholic-logo-badge.png" alt="Goholic" class="h-5.5 w-auto rounded-md object-contain border border-sky-400/30 flex-shrink-0" />
         <span>Du lịch khám phá</span>
       </a>
-      <button onclick="openModal('modal-auth')" class="w-full text-center mt-3 py-2.5 rounded-lg bg-red-600 text-white font-semibold text-sm">Đăng ký tài khoản ngay</button>
     </div>
   </header>
 
@@ -254,10 +247,10 @@
           <!-- Action CTA Buttons (Tactile, Crisp Hierarchy) -->
           <div class="pt-2 flex flex-wrap gap-3.5 items-center">
             <!-- Primary CTA -->
-            <button onclick="openModal('modal-auth')" class="px-6 py-3.5 rounded-xl bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold text-sm transition duration-160 flex items-center space-x-2 shadow-sm">
-              <i data-lucide="user-check" class="w-4 h-4"></i>
-              <span>Đăng ký tài khoản</span>
-            </button>
+            <a href="ct01.html" class="px-6 py-3.5 rounded-xl bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold text-sm transition duration-160 flex items-center space-x-2 shadow-sm">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+              <span>Kê khai CT01 ngay</span>
+            </a>
 
             <!-- Secondary CTA: Drone Products -->
             <button onclick="openModal('modal-drone-rd')" class="px-5 py-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-200 hover:text-white font-medium text-sm transition duration-160 flex items-center space-x-2">
@@ -748,9 +741,9 @@
           </p>
 
           <div class="pt-2 flex items-center space-x-4">
-            <button onclick="openModal('modal-auth')" class="px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-semibold shadow-lg shadow-red-600/30 transition">
-              Gia nhập cộng đồng DOANTM
-            </button>
+            <a href="ct01.html" class="px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-semibold shadow-lg shadow-red-600/30 transition">
+              Kê khai biểu mẫu ngay
+            </a>
             <a href="#all-you-need" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition">
               Tìm hiểu thêm
             </a>
@@ -1496,71 +1489,6 @@
   <!-- =========================================================================
        13. MODAL 6: ACCOUNT SIGN UP / AUTH MODAL
        ========================================================================= -->
-  <div id="modal-auth" class="modal-backdrop fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-zinc-900 text-white rounded-2xl shadow-2xl border border-zinc-800 w-full max-w-md overflow-hidden my-auto">
-      
-      <div class="p-6 bg-gradient-to-br from-red-950/70 via-zinc-900 to-zinc-900 border-b border-zinc-800 text-center relative">
-        <button onclick="closeModal('modal-auth')" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-        <div class="w-12 h-12 rounded-xl bg-red-600 mx-auto flex items-center justify-center mb-3 shadow-lg shadow-red-600/40">
-          <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
-        </div>
-        <h3 class="text-xl font-bold text-white">Đăng ký tài khoản DOANTM</h3>
-        <p class="text-xs text-zinc-400 mt-1">Truy cập toàn bộ các tính năng, tiện ích của Web </p>
-      </div>
-
-      <div class="p-6 space-y-4 text-xs">
-        
-        <!-- Gmail Quick Login Simulation -->
-        <button onclick="showToast('Đang kết nối...', 'info'); setTimeout(() => { closeModal('modal-auth'); showToast('Đăng nhập thành công!', 'success'); }, 1500);" class="w-full py-2.5 px-4 rounded-xl bg-red-900/60 hover:bg-red-900 border border-red-600/40 text-red-200 font-semibold flex items-center justify-center gap-2 transition">
-          <i data-lucide="qr-code" class="w-4 h-4 text-red-400"></i>
-          <span>Đăng nhập nhanh bằng Gmail</span>
-        </button>
-
-        <div class="flex items-center space-x-2 text-zinc-500 my-2">
-          <div class="flex-1 h-[1px] bg-zinc-800"></div>
-          <span class="text-[10px] uppercase tracking-wider">tài khoản cá nhân riêng</span>
-          <div class="flex-1 h-[1px] bg-zinc-800"></div>
-        </div>
-
-        <div>
-          <label class="block text-zinc-400 mb-1">Họ và tên của bạn:</label>
-          <input type="text" placeholder="Trần Minh Đoàn" class="w-full p-2.5 rounded-lg bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-1 focus:ring-red-500 text-white" />
-        </div>
-
-        <div>
-          <label class="block text-zinc-400 mb-1">Email liên hệ:</label>
-          <input type="email" placeholder="doanminhtran095@gmail.com" class="w-full p-2.5 rounded-lg bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-1 focus:ring-red-500 text-white" />
-        </div>
-
-        <div>
-          <label class="block text-zinc-400 mb-1">Mật khẩu:</label>
-          <input type="password" placeholder="••••••••" class="w-full p-2.5 rounded-lg bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-1 focus:ring-red-500 text-white" />
-        </div>
-
-        <div>
-          <label class="block text-zinc-400 mb-1">Mục đích sử dụng chính:</label>
-          <select class="w-full p-2.5 rounded-lg bg-zinc-800 border border-zinc-700 focus:outline-none focus:ring-1 focus:ring-red-500 text-white">
-            <option>Công dân</option>
-            <option>Chủ nhà / Chủ nhà trọ cho thuê</option>
-            <option>Nghiên cứu công nghệ Drone / Phi công FPV</option>
-            <option>Cán bộ</option>
-          </select>
-        </div>
-
-        <button onclick="closeModal('modal-auth'); showToast('Đăng ký tài khoản DOANTM thành công!', 'success');" class="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold shadow-lg shadow-red-600/30 transition text-sm">
-          Tạo tài khoản ngay
-        </button>
-
-        <p class="text-[10px] text-zinc-500 text-center leading-normal">
-          Bằng việc đăng ký, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo vệ dữ liệu cá nhân.
-        </p>
-
-      </div>
-
-    </div>
-  </div>
 
   <!-- =========================================================================
        14. TOAST NOTIFICATIONS FLOATING CONTAINER
