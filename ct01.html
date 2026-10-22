@@ -1439,11 +1439,7 @@
 
       <!-- Modal Footer -->
       <div class="capan-modal-footer">
-        <button type="button" class="capan-btn-outline" onclick="closeQrScannerModal()">Hủy bỏ</button>
-        <button type="button" class="capan-btn-coral-large" style="height:38px;padding:0 18px;font-size:13.5px;" id="btn-apply-qr-data" onclick="confirmApplyScannedQr()" disabled>
-          <i data-lucide="check-circle" style="width:16px;height:16px;"></i>
-          <span>Áp dụng dữ liệu</span>
-        </button>
+        <button type="button" class="capan-btn-outline" onclick="closeQrScannerModal()" style="min-width:110px;">Đóng</button>
       </div>
 
     </div>
@@ -1583,23 +1579,6 @@
           </div>
         </div>
 
-        <!-- KHỐI DÀNH RIÊNG CHO IPHONE / IPAD: LƯU VÀO CAMERA ROLL -->
-        <div class="capan-camera-roll-banner" id="box-save-camera-roll">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <span class="camera-roll-icon-badge">
-              <i data-lucide="smartphone" style="width:22px;height:22px;"></i>
-            </span>
-            <div>
-              <strong style="font-size:13.5px;color:#0f172a;display:block;">Lưu vào Camera Roll (Thư viện ảnh)</strong>
-              <span style="font-size:12px;color:#64748b;">Dành cho iPhone/iPad: Chạm để lưu cùng lúc 02 ảnh vào Thư viện ảnh máy</span>
-            </div>
-          </div>
-          <button type="button" class="capan-btn-coral-large" id="btn-save-camera-roll" style="height:38px;padding:0 16px;font-size:13px;background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%);box-shadow:0 3px 10px rgba(2, 132, 199, 0.25);" onclick="handleDirectCameraRollSave()">
-            <i data-lucide="image-down" style="width:16px;height:16px;"></i>
-            <span>Lưu vào Camera Roll</span>
-          </button>
-        </div>
-
 
 
         <!-- 2 Khung xem trước A4 chuẩn cân đối -->
@@ -1637,9 +1616,9 @@
             <i data-lucide="archive" style="width:16px;height:16px;"></i>
             <span>Tải trọn bộ 2 ảnh (.ZIP)</span>
           </button>
-          <button type="button" class="capan-btn-outline" id="btn-share-images-native" style="height:40px;padding:0 16px;font-size:13px;border-color:#0284c7;color:#0369a1;background:#f0f9ff;font-weight:700;" onclick="handleNativeSharePrompt()">
-            <i data-lucide="share-2" style="width:16px;height:16px;color:#0284c7;"></i>
-            <span>Chia sẻ</span>
+          <button type="button" class="capan-btn-coral-large" id="btn-save-to-album" style="height:40px;padding:0 18px;font-size:13.5px;background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%);box-shadow:0 3px 10px rgba(2, 132, 199, 0.25);" onclick="handleSaveToAlbum()">
+            <i data-lucide="image-down" style="width:16px;height:16px;"></i>
+            <span>Lưu vào album ảnh</span>
           </button>
         </div>
       </div>
@@ -1691,7 +1670,7 @@
             </a>
             <button type="button" id="btn-batch-share-native" class="capan-btn-outline" style="height:40px;padding:0 14px;font-size:13px;border-color:#0284c7;color:#0369a1;background:#f0f9ff;" onclick="shareBatchFilesNative()">
               <i data-lucide="share-2" style="width:16px;height:16px;color:#0284c7;"></i>
-              <span>Chia sẻ / Lưu tất cả</span>
+              <span>Lưu vào album ảnh</span>
             </button>
           </div>
         </div>

@@ -1724,8 +1724,38 @@ function saveGeminiApiKey() {
 }
 
 function triggerAiVisionScan() {
+  const videoEl = document.getElementById('qr-camera-video');
+  // Nếu đang mở camera và chưa có ảnh chọn từ trước, tự động chụp khung hình camera hiện tại
+  if (!uploadedQrImageObj && videoEl && cameraStream && videoEl.videoWidth > 0) {
+    try {
+      const snapCanvas = document.createElement('canvas');
+      snapCanvas.width = videoEl.videoWidth;
+      snapCanvas.height = videoEl.videoHeight;
+      const sCtx = snapCanvas.getContext('2d');
+      sCtx.drawImage(videoEl, 0, 0, snapCanvas.width, snapCanvas.height);
+      uploadedQrImageObj = {
+        element: snapCanvas,
+        width: snapCanvas.width,
+        height: snapCanvas.height
+      };
+      // Tạm dừng video để người dùng thấy ảnh đã được chụp
+      stopQrCameraStream();
+      const cameraViewport = document.getElementById('qr-camera-viewport');
+      if (cameraViewport) cameraViewport.style.display = 'none';
+      const cropPanel = document.getElementById('qr-crop-panel');
+      if (cropPanel) cropPanel.hidden = false;
+      const imgPreview = document.getElementById('qr-image-preview');
+      if (imgPreview) {
+        imgPreview.src = snapCanvas.toDataURL('image/jpeg', 0.9);
+      }
+      showToast('Đã chụp ảnh thẻ từ camera, đang phân tích thông tin...', 'info');
+    } catch (camErr) {
+      console.warn('Lỗi chụp từ camera stream:', camErr);
+    }
+  }
+
   if (!uploadedQrImageObj) {
-    showToast('Vui lòng chọn ảnh CCCD trước khi kích hoạt AI Vision.', 'info');
+    showToast('Vui lòng chọn ảnh CCCD hoặc bật camera trước khi kích hoạt AI.', 'info');
     const fileInput = document.getElementById('qr-file-input');
     if (fileInput) fileInput.click();
     return;
@@ -1736,19 +1766,19 @@ function triggerAiVisionScan() {
 async function executeAiVisionOcr() {
   if (!uploadedQrImageObj) return;
 
-  // GIẢI PHÁP 3: Chặn click liên hồi
+  // Chặn click liên hồi
   if (isAiVisionScanBusy) {
     showToast('Hệ thống đang phân tích ảnh, vui lòng không bấm liên tục.', 'warn');
     return;
   }
 
-  // GIẢI PHÁP 3: Chặn khi đang trong thời gian Cooldown đếm ngược
+  // Chặn khi đang trong thời gian Cooldown đếm ngược
   if (aiVisionCooldownTimer) {
     showToast('Vui lòng chờ hết thời gian đếm ngược trước khi quét tiếp.', 'warn');
     return;
   }
 
-  // GIẢI PHÁP 3: Kiểm tra hạn mức quét tối đa trong ngày (Chống spam cạn token)
+  // Kiểm tra hạn mức quét tối đa trong ngày
   const dailyUsed = getDailyAiScanCount();
   if (dailyUsed >= MAX_DAILY_AI_SCANS) {
     showToast(`Bạn đã đạt hạn mức tối đa ${MAX_DAILY_AI_SCANS} lượt quét AI trong ngày để chống spam. Vui lòng quay lại vào ngày mai!`, 'error');
@@ -1765,7 +1795,7 @@ async function executeAiVisionOcr() {
 
     if (indicator) {
       indicator.style.display = 'flex';
-      if (statusText) statusText.textContent = '🤖 Đang chuẩn bị hình ảnh và gửi yêu cầu đến AI Vision...';
+      if (statusText) statusText.textContent = '🤖 Đang chuẩn bị hình ảnh và phân tích dữ liệu CCCD...';
     }
     if (btnTrigger) {
       btnTrigger.disabled = true;
@@ -1799,75 +1829,73 @@ async function executeAiVisionOcr() {
     ctx.drawImage(uploadedQrImageObj.element, sx, sy, sw, sh, 0, 0, targetW, targetH);
 
     const base64Jpeg = canvas.toDataURL('image/jpeg', 0.85);
-    const base64Data = base64Jpeg.replace(/^data:image\/[a-z]+;base64,/, '');
-
-    // GIẢI PHÁP 3: Kiểm tra dung lượng ảnh hợp lệ (> 10KB)
-    if (base64Data.length < 1000) {
-      throw new Error('Ảnh chụp quá nhỏ hoặc không hợp lệ để phân tích.');
-    }
-
-    if (statusText) statusText.textContent = '🤖 AI đang phân tích Số CCCD, Họ tên, Ngày sinh, Địa chỉ...';
 
     let parsedData = null;
-    let usedBackend = false;
+    let scanMethodName = '';
 
-    // 2. GIẢI PHÁP 2: Thử gọi qua Backend Proxy (/api/scan-cccd) để giấu 100% API Key
-    let backendErrorMsg = '';
+    // BƯỚC 1: Quét mã QR trên khung ảnh tĩnh trước (nhanh nhất & 100% chuẩn xác)
     try {
-      // Tự động nhận diện: Nếu mở trực tiếp dạng file:// trên ổ đĩa, trỏ thẳng tới http://localhost:8000/api/scan-cccd
+      let qrRaw = null;
+      if (typeof window.BarcodeDetector !== 'undefined') {
+        const detector = new window.BarcodeDetector({ formats: ['qr_code'] });
+        const barcodes = await detector.detect(canvas);
+        if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+          qrRaw = barcodes[0].rawValue;
+        }
+      }
+      if (!qrRaw && typeof window.jsQR !== 'undefined') {
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'attemptBoth' });
+        if (code && code.data) {
+          qrRaw = code.data;
+        }
+      }
+      if (qrRaw) {
+        const qrParsed = parseCccdQrPayload(qrRaw);
+        if (qrParsed && (qrParsed.citizenId || qrParsed.fullName)) {
+          parsedData = qrParsed;
+          scanMethodName = 'Mã QR trên thẻ (Chuẩn 100%)';
+        }
+      }
+    } catch (qrErr) {
+      console.warn('QR check failed on still canvas:', qrErr);
+    }
+
+    // BƯỚC 2: Thử gọi Cloud AI Backend Proxy (/api/scan-cccd)
+    if (!parsedData) {
+      if (statusText) statusText.textContent = '🤖 Đang kết nối AI Vision để đọc chữ trên thẻ...';
       let backendUrl = '/api/scan-cccd';
       if (window.location.protocol === 'file:' || !window.location.host) {
         backendUrl = 'http://localhost:8000/api/scan-cccd';
       }
 
-      const proxyResp = await fetch(backendUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64Jpeg })
-      });
+      try {
+        const proxyResp = await fetch(backendUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64Jpeg })
+        });
 
-      if (proxyResp.ok) {
-        const json = await proxyResp.json();
-        if (json && json.ok && json.data) {
-          parsedData = json.data;
-          usedBackend = true;
+        if (proxyResp.ok) {
+          const json = await proxyResp.json();
+          if (json && json.ok && json.data) {
+            parsedData = json.data;
+            scanMethodName = 'Google AI Vision (Server)';
+          }
         }
-      } else if (proxyResp.status === 429) {
-        const errJson = await proxyResp.json().catch(() => ({}));
-        throw new Error(errJson.error || 'Bạn thao tác quá nhanh, vui lòng chờ 1 phút.');
-      } else if (proxyResp.status === 500 || proxyResp.status === 502) {
-        const errJson = await proxyResp.json().catch(() => ({}));
-        let serverErr = errJson.error || 'Lỗi xử lý từ máy chủ AI.';
-        if (serverErr.includes('GEMINI_API_KEY') && serverErr.includes('chua duoc cau hinh')) {
-          serverErr = 'Máy chủ chưa được cấu hình GEMINI_API_KEY trong file .env trên máy.';
-        } else if (serverErr.includes('ACCESS_TOKEN_TYPE_UNSUPPORTED') || serverErr.includes('401')) {
-          serverErr = 'Khóa GEMINI_API_KEY trong file .env chưa hợp lệ hoặc chưa được kích hoạt dịch vụ Generative Language.';
-        }
-        throw new Error(serverErr);
+      } catch (proxyErr) {
+        console.warn('Backend proxy call failed:', proxyErr.message);
       }
-    } catch (proxyErr) {
-      if (proxyErr.message && (
-        proxyErr.message.includes('thao tác quá nhanh') || 
-        proxyErr.message.includes('GEMINI_API_KEY') || 
-        proxyErr.message.includes('Khóa GEMINI_API_KEY')
-      )) {
-        throw proxyErr;
-      }
-      console.warn('Backend proxy không phản hồi:', proxyErr.message);
-      backendErrorMsg = proxyErr.message;
     }
 
-    // 3. Nếu Backend Proxy chưa có kết quả:
-    if (!usedBackend) {
+    // BƯỚC 3: Thử gọi Google Gemini API trực tiếp (nếu có key lưu ở Client)
+    if (!parsedData) {
       const apiKey = getStoredGeminiKey();
-      if (!apiKey) {
-        if (window.location.protocol === 'file:') {
-          throw new Error('Bạn đang mở file trực tiếp (file://). Máy chủ Python chưa nhận được kết nối. Hãy đảm bảo bạn chạy server.py và mở web tại địa chỉ: http://localhost:8000/ct01.html');
-        }
-        throw new Error(backendErrorMsg ? `Lỗi kết nối máy chủ AI: ${backendErrorMsg}` : 'Máy chủ AI đang bận hoặc chưa khởi động server.py. Vui lòng kiểm tra lại!');
-      }
-
-      const systemPrompt = `Bạn là hệ thống AI trích xuất thông tin Căn cước công dân (CCCD) Việt Nam.
+      if (apiKey) {
+        try {
+          if (statusText) statusText.textContent = '🤖 Đang kết nối Google Gemini API trực tiếp...';
+          const base64Data = base64Jpeg.replace(/^data:image\/[a-z]+;base64,/, '');
+          const systemPrompt = `Bạn là hệ thống AI trích xuất thông tin Căn cước công dân (CCCD) Việt Nam.
 Hãy đọc các chữ in trên mặt trước (hoặc mặt sau) của thẻ CCCD trong ảnh và trả về một đối tượng JSON duy nhất có các trường:
 - citizenId: Số CCCD 12 chữ số (hoặc số CMND 9 số)
 - fullName: Họ và tên in hoa có dấu tiếng Việt (ví dụ: NGUYỄN VĂN AN)
@@ -1878,55 +1906,84 @@ Hãy đọc các chữ in trên mặt trước (hoặc mặt sau) của thẻ CC
 
 Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào khác.`;
 
-      const requestBody = {
-        contents: [{
-          parts: [
-            { text: systemPrompt },
-            { inline_data: { mime_type: "image/jpeg", data: base64Data } }
-          ]
-        }],
-        generationConfig: {
-          response_mime_type: "application/json",
-          temperature: 0.1
+          const requestBody = {
+            contents: [{
+              parts: [
+                { text: systemPrompt },
+                { inline_data: { mime_type: "image/jpeg", data: base64Data } }
+              ]
+            }],
+            generationConfig: {
+              response_mime_type: "application/json",
+              temperature: 0.1
+            }
+          };
+
+          let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+          });
+          if (!response.ok) {
+            response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(requestBody)
+            });
+          }
+          if (response.ok) {
+            const data = await response.json();
+            const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            let cleanJson = rawText.trim();
+            if (cleanJson.startsWith('```json')) cleanJson = cleanJson.replace(/^```json\s*/i, '').replace(/\s*```$/, '');
+            else if (cleanJson.startsWith('```')) cleanJson = cleanJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
+            parsedData = JSON.parse(cleanJson);
+            scanMethodName = 'Google AI Vision (Trực tiếp)';
+          }
+        } catch (clientErr) {
+          console.warn('Direct client Gemini failed:', clientErr);
         }
-      };
-
-      let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)
-      });
-
-      if (!response.ok) {
-        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody)
-        });
       }
+    }
 
-      if (!response.ok) {
-        const errJson = await response.json().catch(() => ({}));
-        const msg = errJson.error && errJson.error.message ? errJson.error.message : response.statusText;
-        throw new Error(`Lỗi kết nối Gemini API (${response.status}): ${msg}`);
+    // BƯỚC 4: Fallback OCR tích hợp chạy trên trình duyệt (Tesseract.js)
+    // Hoàn toàn không cần API Key, không phụ thuộc server, chạy trực tiếp trên thiết bị!
+    if (!parsedData && typeof window.Tesseract !== 'undefined') {
+      try {
+        if (statusText) statusText.textContent = '🔍 Đang đọc chữ trên CCCD bằng bộ đọc tích hợp (Tesseract)...';
+        let ocrResult = null;
+        try {
+          ocrResult = await window.Tesseract.recognize(canvas, 'vie', {
+            logger: m => {
+              if (statusText && m.status === 'recognizing text') {
+                const pct = Math.round((m.progress || 0) * 100);
+                statusText.textContent = `🔍 Đang đọc chữ CCCD: ${pct}%...`;
+              }
+            }
+          });
+        } catch (tessVieErr) {
+          console.warn('Tesseract vie failed, trying eng:', tessVieErr);
+          ocrResult = await window.Tesseract.recognize(canvas, 'eng');
+        }
+
+        const ocrRawText = ocrResult?.data?.text || '';
+        if (ocrRawText) {
+          const ocrParsed = parseCccdOcrText(ocrRawText);
+          if (ocrParsed && (ocrParsed.citizenId || ocrParsed.fullName)) {
+            parsedData = ocrParsed;
+            scanMethodName = 'Bộ đọc AI tích hợp (Trình duyệt)';
+          }
+        }
+      } catch (tessErr) {
+        console.warn('Client OCR error:', tessErr);
       }
-
-      const data = await response.json();
-      const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      if (!rawText) throw new Error('AI không nhận diện được văn bản từ ảnh CCCD.');
-
-      let cleanJson = rawText.trim();
-      if (cleanJson.startsWith('```json')) cleanJson = cleanJson.replace(/^```json\s*/i, '').replace(/\s*```$/, '');
-      else if (cleanJson.startsWith('```')) cleanJson = cleanJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
-
-      parsedData = JSON.parse(cleanJson);
     }
 
     if (!parsedData) {
-      throw new Error('Không thể phân tích dữ liệu CCCD từ hình ảnh.');
+      throw new Error('Chưa nhận diện được dữ liệu CCCD từ ảnh này. Vui lòng chụp rõ nét hơn hoặc nhập trực tiếp.');
     }
 
-    // 4. Chuẩn hóa dữ liệu nhận diện
+    // Chuẩn hóa dữ liệu nhận diện
     const cleanId = (parsedData.citizenId || '').replace(/\D/g, '');
     const cleanName = (parsedData.fullName || '').trim().toUpperCase();
     const cleanDob = (parsedData.birthDate || '').trim();
@@ -1947,15 +2004,12 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
       issueDate: cleanIssue
     };
 
-    // GIẢI PHÁP 3: Cập nhật hạn mức ngày & Bắt đầu Cooldown 15 giây
-    incrementDailyAiScanCount();
     startAiVisionCooldown(AI_COOLDOWN_SECONDS);
-
     setScannedQrResult(finalParsed);
-    showToast(`✨ AI Vision (${usedBackend ? 'Bảo mật Backend' : 'Client'}) nhận diện thành công: ${finalParsed.fullName}`);
+    showToast(`✨ ${scanMethodName || 'AI'}: Đã nhận diện được ${finalParsed.fullName || finalParsed.citizenId}!`);
   } catch (err) {
     console.error('AI Vision OCR Error:', err);
-    showToast(err.message || 'Không thể đọc được CCCD bằng AI Vision. Vui lòng kiểm tra lại ảnh hoặc khóa API.', 'error');
+    showToast(err.message || 'Không thể đọc được CCCD bằng AI. Vui lòng chụp lại ảnh rõ nét.', 'error');
   } finally {
     isAiVisionScanBusy = false;
     if (indicator) indicator.style.display = 'none';
@@ -2679,37 +2733,13 @@ async function exportBothJpg() {
       };
     }
 
-    // Native Web Share API (Safari iOS cho phép lưu trực tiếp 2 ảnh vào Camera Roll)
-    const btnShareNative = document.getElementById('btn-share-images-native');
-    try {
-      const file1 = new File([blobs[0]], ct01Filename, { type: 'image/jpeg' });
-      const file2 = new File([blobs[1]], contractFilename, { type: 'image/jpeg' });
-      if (navigator.canShare && navigator.canShare({ files: [file1, file2] })) {
-        if (btnShareNative) {
-          btnShareNative.style.display = 'inline-flex';
-          btnShareNative.onclick = async () => {
-            try {
-              await navigator.share({
-                files: [file1, file2],
-                title: 'Hồ sơ Cư trú A4 (CT01 & Hợp đồng)',
-                text: `02 trang hồ sơ cư trú A4 của ${formState.fullName || 'Công dân'}`
-              });
-              showToast('Đã mở bảng lưu ảnh của điện thoại.');
-            } catch (shareErr) {
-              if (shareErr.name !== 'AbortError') {
-                console.warn('Share error:', shareErr);
-              }
-            }
-          };
-        }
-      } else {
-        if (btnShareNative) btnShareNative.style.display = 'none';
-      }
-    } catch (e) {
-      if (btnShareNative) btnShareNative.style.display = 'none';
+    // Gán hành động cho nút "Lưu vào album ảnh" trong hộp thoại tải ảnh
+    const btnSaveAlbum = document.getElementById('btn-save-to-album');
+    if (btnSaveAlbum) {
+      btnSaveAlbum.onclick = handleSaveToAlbum;
     }
 
-    // Mở cửa sổ hiển thị 02 đường link tải file trực tiếp cho người dùng
+    // Mở cửa sổ hiển thị ảnh xem trước & tải file cho người dùng
     openExportImagesModal();
     showToast('Đã tạo xong 02 đường link tải file CT01 & Hợp đồng!');
   } catch (err) {
@@ -3917,59 +3947,48 @@ async function exportBatchZip() {
 let exportGeneratedBlobs = [];
 let exportFilenames = { ct01: '', contract: '', zip: '' };
 
-async function handleDirectCameraRollSave() {
+async function handleSaveToAlbum() {
   if (!exportGeneratedBlobs || exportGeneratedBlobs.length < 2) {
     showToast('Chưa có file ảnh hồ sơ để lưu. Vui lòng bấm tạo ảnh trước.', 'warn');
     return;
   }
   const cleanName = (formState.fullName || 'CongDan').trim().replace(/\s+/g, '_');
-  const file1 = new File([exportGeneratedBlobs[0]], exportFilenames.ct01 || `01_CT01_${cleanName}.jpg`, { type: 'image/jpeg' });
-  const file2 = new File([exportGeneratedBlobs[1]], exportFilenames.contract || `02_HopDong_${cleanName}.jpg`, { type: 'image/jpeg' });
+  const ct01Name = exportFilenames.ct01 || `01_CT01_${cleanName}.jpg`;
+  const contractName = exportFilenames.contract || `02_HopDong_${cleanName}.jpg`;
 
+  const file1 = new File([exportGeneratedBlobs[0]], ct01Name, { type: 'image/jpeg' });
+  const file2 = new File([exportGeneratedBlobs[1]], contractName, { type: 'image/jpeg' });
+
+  // 1. Thử dùng Web Share API (Safari iOS / Android hỗ trợ "Lưu 2 hình ảnh" trực tiếp vào Album ảnh)
   if (navigator.canShare && navigator.canShare({ files: [file1, file2] })) {
     try {
       await navigator.share({
         files: [file1, file2],
-        title: 'Lưu Hồ sơ Cư trú A4 vào Camera Roll',
+        title: 'Lưu Hồ sơ Cư trú A4 vào Album ảnh',
         text: `02 trang hồ sơ cư trú của ${formState.fullName || 'Công dân'}`
       });
-      showToast('Đã mở bảng lưu ảnh của điện thoại.');
+      showToast('Đã mở bảng lưu ảnh vào Album ảnh thiết bị.');
       setTimeout(openAiVisionPaymentModal, 1200);
+      return;
     } catch (e) {
-      if (e.name !== 'AbortError') console.warn(e);
+      if (e.name !== 'AbortError') {
+        console.warn('Lỗi Share API, chuyển sang tải ảnh:', e);
+      } else {
+        return; // Người dùng chủ động bấm Hủy trên bảng Share của hệ điều hành
+      }
     }
-  } else {
-    triggerBlobDownload(exportGeneratedBlobs[0], exportFilenames.ct01);
-    setTimeout(() => {
-      triggerBlobDownload(exportGeneratedBlobs[1], exportFilenames.contract);
-      setTimeout(openAiVisionPaymentModal, 1200);
-    }, 600);
-    showToast('Đang tải đồng thời 2 ảnh về máy!');
   }
+
+  // 2. Fallback cho máy tính / trình duyệt không hỗ trợ multi-file share: Tự động tải tuần tự 2 ảnh về máy
+  showToast('Đang tải đồng thời 02 ảnh hồ sơ về album/thiết bị...');
+  triggerBlobDownload(exportGeneratedBlobs[0], ct01Name);
+  setTimeout(() => {
+    triggerBlobDownload(exportGeneratedBlobs[1], contractName);
+    setTimeout(openAiVisionPaymentModal, 1200);
+  }, 500);
 }
 
-async function handleNativeSharePrompt() {
-  if (!exportGeneratedBlobs || exportGeneratedBlobs.length < 2) {
-    showToast('Chưa có dữ liệu hồ sơ để chia sẻ.', 'warn');
-    return;
-  }
-  const cleanName = (formState.fullName || 'CongDan').trim().replace(/\s+/g, '_');
-  const file1 = new File([exportGeneratedBlobs[0]], exportFilenames.ct01 || `01_CT01_${cleanName}.jpg`, { type: 'image/jpeg' });
-  const file2 = new File([exportGeneratedBlobs[1]], exportFilenames.contract || `02_HopDong_${cleanName}.jpg`, { type: 'image/jpeg' });
-
-  if (navigator.canShare && navigator.canShare({ files: [file1, file2] })) {
-    try {
-      await navigator.share({
-        files: [file1, file2],
-        title: 'Hồ sơ Cư trú A4 (CT01 & Hợp đồng)',
-        text: `Hồ sơ đăng ký cư trú của ${formState.fullName || 'Công dân'}`
-      });
-      setTimeout(openAiVisionPaymentModal, 1200);
-    } catch (e) {
-      if (e.name !== 'AbortError') console.warn(e);
-    }
-  } else {
-    const btnDlZip = document.getElementById('btn-download-both-zip');
-    if (btnDlZip) btnDlZip.click();
-  }
-}
+// Giữ tương thích ngược với các lệnh gọi cũ
+window.handleSaveToAlbum = handleSaveToAlbum;
+window.handleDirectCameraRollSave = handleSaveToAlbum;
+window.handleNativeSharePrompt = handleSaveToAlbum;

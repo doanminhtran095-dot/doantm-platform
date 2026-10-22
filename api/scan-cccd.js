@@ -6,7 +6,7 @@
 
 const ipRateLimits = new Map();
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // Khung thời gian: 1 phút
-const MAX_REQUESTS_PER_WINDOW = 5;      // Tối đa 5 lượt quét / phút mỗi IP
+const MAX_REQUESTS_PER_WINDOW = 10;     // Tối đa 10 lượt quét / phút mỗi IP
 
 export default async function handler(req, res) {
   // 1. Cấu hình CORS
@@ -22,8 +22,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ ok: false, error: 'Chỉ chấp nhận phương thức POST' });
   }
 
-  // 2. GIẢI PHÁP 3: Rate Limiting & Chống Spam theo IP
-  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown-client';
+  // 2. Rate Limiting & Chống Spam theo IP
+  const clientIp = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown-client';
   const now = Date.now();
   const userRate = ipRateLimits.get(clientIp) || { count: 0, resetAt: now + RATE_LIMIT_WINDOW_MS };
 
@@ -43,11 +43,12 @@ export default async function handler(req, res) {
     });
   }
 
-  // 3. GIẢI PHÁP 2: Lấy API Key từ Biến Môi Trường Bí Mật (Environment Variable)
-  const apiKey = process.env.GEMINI_API_KEY;
+  // 3. Lấy API Key từ Biến Môi Trường Bí Mật
+  const apiKey = (process.env.GEMINI_API_KEY || '').trim();
   if (!apiKey) {
-    return res.status(500).json({
+    return res.status(200).json({
       ok: false,
+      useClientOcr: true,
       error: 'Máy chủ chưa cấu hình GEMINI_API_KEY trong biến môi trường.'
     });
   }
@@ -84,30 +85,48 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
       }
     };
 
-    let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody)
-    });
-
-    if (!response.ok) {
-      response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)
-      });
+    const isBearer = apiKey.startsWith('AQ.') || apiKey.startsWith('ya29.');
+    const headers = { 'Content-Type': 'application/json' };
+    if (isBearer) {
+      headers['Authorization'] = `Bearer ${apiKey}`;
     }
 
-    if (!response.ok) {
-      const errJson = await response.json().catch(() => ({}));
-      const msg = errJson.error?.message || response.statusText;
-      return res.status(502).json({ ok: false, error: `Google AI trả về lỗi (${response.status}): ${msg}` });
+    const models = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-2.0-flash'];
+    let response = null;
+    let lastError = '';
+
+    for (const model of models) {
+      try {
+        const url = isBearer
+          ? `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
+          : `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+        response = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(requestBody)
+        });
+
+        if (response.ok) break;
+        const errJson = await response.json().catch(() => ({}));
+        lastError = errJson.error?.message || response.statusText;
+      } catch (e) {
+        lastError = e.message;
+      }
+    }
+
+    if (!response || !response.ok) {
+      return res.status(200).json({
+        ok: false,
+        useClientOcr: true,
+        error: `Cloud AI không phản hồi (${lastError || 'Unknown'}).`
+      });
     }
 
     const data = await response.json();
     const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     if (!rawText) {
-      return res.status(422).json({ ok: false, error: 'AI không nhận diện được chữ trên ảnh thẻ CCCD.' });
+      return res.status(200).json({ ok: false, useClientOcr: true, error: 'AI không nhận diện được chữ trên ảnh thẻ CCCD.' });
     }
 
     let cleanJson = rawText.trim();
@@ -120,6 +139,6 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
     const parsed = JSON.parse(cleanJson);
     return res.status(200).json({ ok: true, data: parsed });
   } catch (err) {
-    return res.status(500).json({ ok: false, error: err.message || 'Lỗi xử lý AI trên máy chủ.' });
+    return res.status(200).json({ ok: false, useClientOcr: true, error: err.message || 'Lỗi xử lý AI trên máy chủ.' });
   }
 }
