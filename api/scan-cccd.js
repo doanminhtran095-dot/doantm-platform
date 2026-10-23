@@ -103,8 +103,13 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
     // Google Gemini API hỗ trợ query param ?key= cho cả token chuẩn và AQ/OAuth
     const headers = { 'Content-Type': 'application/json' };
 
-    // Danh sách model Google Gemini chuẩn, ưu tiên gemini-3.5-flash phản hồi siêu tốc (~1-2s)
-    const models = ['gemini-3.5-flash', 'gemini-3.7-flash', 'gemini-3.8-flash', 'gemini-3-flash-preview'];
+    // Danh sách model Google Gemini chuẩn, ưu tiên các model phản hồi siêu tốc (~2-3s)
+    const models = [
+      'gemini-3-flash-preview',
+      'gemini-3.5-flash-lite',
+      'gemini-flash-lite-latest',
+      'gemini-3.5-flash'
+    ];
     let response = null;
     let lastError = '';
 
@@ -113,7 +118,7 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
 
         response = await fetch(url, {
           method: 'POST',
