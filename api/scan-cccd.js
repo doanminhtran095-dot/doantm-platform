@@ -103,8 +103,8 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
     // Google Gemini API hỗ trợ query param ?key= cho cả token chuẩn và AQ/OAuth
     const headers = { 'Content-Type': 'application/json' };
 
-    // Danh sách model Google Gemini chuẩn, ưu tiên gemini-2.0-flash phản hồi siêu tốc (~1-2s)
-    const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.5-flash', 'gemini-flash-latest'];
+    // Danh sách model Google Gemini chuẩn, ưu tiên gemini-3.5-flash phản hồi siêu tốc (~1-2s)
+    const models = ['gemini-3.5-flash', 'gemini-3.7-flash', 'gemini-3.8-flash', 'gemini-3-flash-preview'];
     let response = null;
     let lastError = '';
 

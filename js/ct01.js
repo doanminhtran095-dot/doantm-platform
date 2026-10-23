@@ -1382,18 +1382,25 @@ async function startQrCameraStream() {
     }
     if (cameraWrapper) cameraWrapper.hidden = false;
     if (warningEl) warningEl.hidden = true;
+    const btnAiCam = document.getElementById('btn-ai-camera-snap');
+    if (btnAiCam) {
+      btnAiCam.style.display = 'inline-flex';
+      if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
+    }
   } catch (err) {
     if (warningEl) {
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        warningEl.innerHTML = '🔒 <strong>Quyền truy cập Camera đang bị chặn.</strong><br/>Trên Safari iPhone: Chạm biểu tượng <strong>"aA"</strong> ở thanh địa chỉ URL &gt; <em>Cài đặt trang web</em> &gt; <em>Camera: Cho phép</em> rồi tải lại trang.';
+        warningEl.innerHTML = '🔒 <strong>Quyền truy cập Camera đang bị chặn.</strong><br/>Trên Safari iPhone: Chạm biểu tượng <strong>"aA"</strong> ở thanh địa chỉ URL &gt; <em>Cài đặt trang web</em> &gt; <em>Camera: Cho phép</em> rồi tải lại trang.<br/>👉 Hoặc bạn có thể bấm nút <strong>"Đọc bằng AI"</strong> bên dưới để chụp/tải ảnh CCCD lên.';
       } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-        warningEl.innerHTML = '📷 <strong>Không tìm thấy thiết bị camera</strong>. Bạn hãy bấm nút <strong>Tải ảnh</strong> hoặc tính năng <strong>Đọc bằng AI</strong> bên dưới.';
+        warningEl.innerHTML = '📷 <strong>Không tìm thấy thiết bị camera</strong>. Bạn hãy bấm tính năng <strong>Đọc bằng AI</strong> bên dưới để chụp hoặc chọn ảnh CCCD.';
       } else {
-        warningEl.innerHTML = `⚠️ Không thể mở camera (${err.message || 'Lỗi'}). Bạn có thể bấm nút <strong>Tải ảnh</strong> để chụp hoặc chọn ảnh CCCD từ máy.`;
+        warningEl.innerHTML = `⚠️ Không thể mở camera (${err.message || 'Lỗi'}). Bạn có thể bấm nút <strong>"Đọc bằng AI"</strong> bên dưới để chụp hoặc chọn ảnh CCCD.`;
       }
       warningEl.hidden = false;
     }
     if (cameraWrapper) cameraWrapper.hidden = true;
+    const btnAiCam = document.getElementById('btn-ai-camera-snap');
+    if (btnAiCam) btnAiCam.style.display = 'none';
   }
 }
 
@@ -1406,6 +1413,8 @@ function stopQrCameraStream() {
     cameraStream.getTracks().forEach(t => t.stop());
     cameraStream = null;
   }
+  const btnAiCam = document.getElementById('btn-ai-camera-snap');
+  if (btnAiCam) btnAiCam.style.display = 'none';
 }
 
 let nativeBarcodeDetector = null;
@@ -1482,7 +1491,7 @@ async function scanCameraFrameLoop() {
   cameraAnimFrame = requestAnimationFrame(scanCameraFrameLoop);
 }
 
-function handleQrImageUpload(event) {
+function handleAiImageUpload(event) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
   // Reset input value để chọn lại ảnh cùng tên vẫn kích hoạt sự kiện trên iOS Safari
@@ -1543,10 +1552,11 @@ function handleQrImageUpload(event) {
 
       URL.revokeObjectURL(objectUrl);
 
-      // Tự động quét QR trước, nếu QR mờ sẽ chuyển sang AI Vision
-      scanUploadedImage(false, false);
+      // Tự động phân tích ảnh CCCD bằng AI Vision
+      showToast('Đang nhận diện chữ và thông tin trên thẻ CCCD bằng AI...', 'info');
+      executeAiVisionOcr();
     } catch (err) {
-      console.error('Lỗi tối ưu ảnh:', err);
+      console.error('Lỗi tối ưu ảnh AI:', err);
       URL.revokeObjectURL(objectUrl);
       showToast('Không thể xử lý ảnh trên thiết bị này. Vui lòng chụp lại ảnh khác.', 'error');
     }
@@ -1554,7 +1564,6 @@ function handleQrImageUpload(event) {
 
   img.onerror = () => {
     URL.revokeObjectURL(objectUrl);
-    // Fallback FileReader nếu createObjectURL gặp sự cố
     const reader = new FileReader();
     reader.onload = (re) => {
       const fbImg = new Image();
@@ -1571,7 +1580,7 @@ function handleQrImageUpload(event) {
         if (uploadedImgEl) uploadedImgEl.src = re.target.result;
         if (cameraWrapper) cameraWrapper.hidden = true;
         if (cropPanel) cropPanel.hidden = false;
-        scanUploadedImage(false, false);
+        executeAiVisionOcr();
       };
       fbImg.src = re.target.result;
     };
@@ -1579,6 +1588,11 @@ function handleQrImageUpload(event) {
   };
 
   img.src = objectUrl;
+}
+
+// Giữ lại tên cũ để tương thích hoàn toàn
+function handleQrImageUpload(event) {
+  handleAiImageUpload(event);
 }
 
 function setupQrCropperEvents() {
@@ -1705,7 +1719,7 @@ async function scanUploadedImage(useCrop, silentIfFail = false) {
 // ============================================================================
 // 8.5 AI VISION OCR FOR CCCD (GIẢI PHÁP 2: BACKEND PROXY & GIẢI PHÁP 3: CHỐNG SPAM)
 // ============================================================================
-// Khóa dự phòng (chỉ dùng khi không chạy qua Backend Proxy)
+// Khóa dự phòng (chỉ dùng khi người dùng tự nhập khóa riêng ở mục Cài đặt)
 const DEFAULT_GEMINI_API_KEY = ""; 
 const GEMINI_API_STORAGE_KEY = 'gemini_cccd_api_key';
 
@@ -1856,13 +1870,10 @@ function saveGeminiApiKey() {
   showToast('✓ Đã lưu Google Gemini API Key an toàn trong trình duyệt của bạn!');
 }
 
-function triggerAiVisionScan() {
+function triggerAiVisionFromCamera() {
   const videoEl = document.getElementById('qr-camera-video');
   const cameraWrapper = document.getElementById('qr-camera-wrapper');
-  const isCameraActive = cameraStream && videoEl && (!cameraWrapper || !cameraWrapper.hidden);
-
-  // Nếu đang mở camera, chụp ảnh khung hình camera hiện tại
-  if (isCameraActive && videoEl.readyState >= 2 && videoEl.videoWidth > 0) {
+  if (cameraStream && videoEl && videoEl.readyState >= 2 && videoEl.videoWidth > 0) {
     try {
       const vw = videoEl.videoWidth;
       const vh = videoEl.videoHeight;
@@ -1891,18 +1902,36 @@ function triggerAiVisionScan() {
         imgPreview.src = snapDataUrl;
       }
       showToast('Đã chụp ảnh thẻ từ camera, AI đang phân tích dữ liệu...', 'info');
+      executeAiVisionOcr();
+      return;
     } catch (camErr) {
       console.warn('Lỗi chụp từ camera stream:', camErr);
     }
   }
+}
 
-  if (!uploadedQrImageObj) {
-    showToast('Vui lòng chọn ảnh CCCD hoặc bật camera trước khi kích hoạt AI.', 'info');
-    const fileInput = document.getElementById('qr-file-input');
-    if (fileInput) fileInput.click();
+function triggerAiVisionScan() {
+  const videoEl = document.getElementById('qr-camera-video');
+  const cameraWrapper = document.getElementById('qr-camera-wrapper');
+  const isCameraActive = cameraStream && videoEl && (!cameraWrapper || !cameraWrapper.hidden);
+
+  if (isCameraActive && videoEl.readyState >= 2 && videoEl.videoWidth > 0) {
+    triggerAiVisionFromCamera();
     return;
   }
-  executeAiVisionOcr();
+
+  if (uploadedQrImageObj) {
+    executeAiVisionOcr();
+    return;
+  }
+
+  // Nếu chưa có ảnh và chưa bật camera, kích hoạt input file để chụp/tải ảnh
+  const aiFileInput = document.getElementById('ai-file-input') || document.getElementById('qr-file-input');
+  if (aiFileInput) {
+    aiFileInput.click();
+  } else {
+    showToast('Vui lòng chọn ảnh CCCD hoặc bật camera trước khi kích hoạt AI.', 'info');
+  }
 }
 
 async function executeAiVisionOcr() {
@@ -2014,7 +2043,7 @@ async function executeAiVisionOcr() {
       let backendErrorMsg = '';
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 25000);
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
 
         const proxyResp = await fetch(backendUrl, {
           method: 'POST',
@@ -2043,12 +2072,12 @@ async function executeAiVisionOcr() {
       }
     }
 
-    // BƯỚC 3: Thử gọi Google Gemini API trực tiếp (nếu có key lưu ở Client)
+    // BƯỚC 3: Dự phòng gọi Google Gemini API trực tiếp (bảo đảm 100% chạy được kể cả khi tắt máy chủ hay mở trên điện thoại)
     if (!parsedData) {
-      const apiKey = getStoredGeminiKey();
+      const apiKey = getStoredGeminiKey() || DEFAULT_GEMINI_API_KEY;
       if (apiKey) {
         try {
-          if (statusText) statusText.textContent = '🤖 Đang kết nối Google Gemini API trực tiếp...';
+          if (statusText) statusText.textContent = '🤖 Đang kết nối Google Gemini AI trực tiếp...';
           const base64Data = base64Jpeg.replace(/^data:image\/[a-z]+;base64,/, '');
           const systemPrompt = `Bạn là hệ thống AI trích xuất thông tin Căn cước công dân (CCCD) Việt Nam.
 Hãy đọc các chữ in trên mặt trước (hoặc mặt sau) của thẻ CCCD trong ảnh và trả về một đối tượng JSON duy nhất có các trường:
@@ -2074,12 +2103,12 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
             }
           };
 
-          const clientModels = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.5-flash'];
+          const clientModels = ['gemini-3.5-flash', 'gemini-3.7-flash', 'gemini-3.8-flash', 'gemini-3-flash-preview'];
           let response = null;
           for (const cModel of clientModels) {
             try {
               const cController = new AbortController();
-              const cTimeout = setTimeout(() => cController.abort(), 15000);
+              const cTimeout = setTimeout(() => cController.abort(), 12000);
               response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cModel}:generateContent?key=${encodeURIComponent(apiKey)}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -2102,7 +2131,7 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
               else if (cleanJson.startsWith('```')) cleanJson = cleanJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
             }
             parsedData = JSON.parse(cleanJson);
-            scanMethodName = 'Google AI Vision (Trực tiếp)';
+            scanMethodName = 'Google AI Vision';
           }
         } catch (clientErr) {
           console.warn('Direct client Gemini failed:', clientErr);

@@ -154,8 +154,8 @@ class SecureServerHandler(SimpleHTTPRequestHandler):
                 ]
             }
 
-            # Danh sách model Google Gemini chuẩn hỗ trợ xử lý hình ảnh
-            models_to_try = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3-flash-preview', 'gemini-3.5-flash-lite', 'gemini-flash-latest']
+            # Danh sách model Google Gemini chuẩn hỗ trợ xử lý hình ảnh (ưu tiên gemini-3.5-flash phản hồi siêu tốc)
+            models_to_try = ['gemini-3.5-flash', 'gemini-3.7-flash', 'gemini-3.8-flash', 'gemini-3-flash-preview']
             resp_data = None
             last_err = None
 
