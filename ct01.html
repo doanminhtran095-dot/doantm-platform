@@ -1411,12 +1411,14 @@
                 <i data-lucide="camera" style="width:14px;height:14px;"></i>
                 <span>Chụp & Đọc AI</span>
               </button>
+              <!-- Input file AI độc lập, ẩn an toàn trong DOM để không bao giờ bị ghi đè -->
+              <input type="file" id="ai-file-input" accept="image/*,.heic,.heif" style="display:none;" onchange="handleAiImageUpload(event)" />
+
               <!-- Nút chính: Bấm vào cho phép Chụp ảnh / Tải hình / Chọn tệp ngay trên mọi thiết bị -->
-              <label id="btn-trigger-ai-vision" class="capan-btn-coral-large" style="height:32px;font-size:12px;padding:0 14px;background:linear-gradient(135deg,#0284c7,#0d9488);border:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer;" title="Chụp ảnh hoặc chọn tệp ảnh CCCD để AI đọc chữ">
+              <button type="button" id="btn-trigger-ai-vision" class="capan-btn-coral-large" onclick="triggerAiFileInput()" style="height:32px;font-size:12px;padding:0 14px;background:linear-gradient(135deg,#0284c7,#0d9488);border:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer;" title="Chụp ảnh hoặc chọn tệp ảnh CCCD để AI đọc chữ">
                 <i data-lucide="sparkles" style="width:14px;height:14px;"></i>
                 <span id="btn-trigger-ai-vision-text">Đọc bằng AI</span>
-                <input type="file" id="ai-file-input" accept="image/*,.heic,.heif" hidden onchange="handleAiImageUpload(event)" />
-              </label>
+              </button>
             </div>
           </div>
 
@@ -1742,6 +1744,6 @@
   </div>
         
   <!-- Main Controller Script (Deferred with cache busting) -->
-  <script defer src="js/ct01.js?v=20261023b"></script>
+  <script defer src="js/ct01.js?v=20261023c"></script>
 </body>
 </html>

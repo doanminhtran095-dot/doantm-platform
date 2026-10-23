@@ -1311,6 +1311,21 @@ function openQrScannerModal(target) {
   if (cropPanel) cropPanel.hidden = true;
   if (cameraWrapper) cameraWrapper.hidden = false;
   if (rawInput) rawInput.value = '';
+
+  // Dọn sạch trạng thái ảnh quét cũ để sẵn sàng quét người mới
+  uploadedQrImageObj = null;
+  cropRect = null;
+  scannedQrResult = null;
+  isAiVisionScanBusy = false;
+  const aiFileInput = document.getElementById('ai-file-input');
+  if (aiFileInput) aiFileInput.value = '';
+  const indicator = document.getElementById('ai-vision-status-indicator');
+  if (indicator) indicator.style.display = 'none';
+  const btnTrigger = document.getElementById('btn-trigger-ai-vision');
+  const btnText = document.getElementById('btn-trigger-ai-vision-text');
+  if (btnTrigger) btnTrigger.disabled = false;
+  if (btnText) btnText.textContent = 'Đọc bằng AI';
+
   initAiVisionUI();
 
   if (modal) {
@@ -1324,6 +1339,13 @@ function closeQrScannerModal() {
   stopQrCameraStream();
   const modal = document.getElementById('qr-scanner-modal');
   if (modal) modal.hidden = true;
+
+  // Dọn sạch trạng thái để không lưu ảnh người cũ
+  uploadedQrImageObj = null;
+  cropRect = null;
+  isAiVisionScanBusy = false;
+  const aiFileInput = document.getElementById('ai-file-input');
+  if (aiFileInput) aiFileInput.value = '';
 
   if (memberModalWasOpen) {
     const memberModal = document.getElementById('member-modal');
@@ -1723,55 +1745,22 @@ async function scanUploadedImage(useCrop, silentIfFail = false) {
 const DEFAULT_GEMINI_API_KEY = typeof atob !== 'undefined' ? atob("QVEuQWI4Uk42SlN1TW5TRHh6a056eW9Ec2ZzSmtTMm04dnY1TUZIa0tKQ05Xamh3ZVZmVnc=") : ""; 
 const GEMINI_API_STORAGE_KEY = 'gemini_cccd_api_key';
 
-// GIẢI PHÁP 3: Quản lý Cooldown & Hạn mức phiên chống Click tặc
+// Quản lý trạng thái xử lý AI
 let isAiVisionScanBusy = false;
-let aiVisionCooldownTimer = null;
-const AI_COOLDOWN_SECONDS = 15;        // Thời gian chờ 15s giữa 2 lần quét
-const MAX_DAILY_AI_SCANS = 10;          // Tối đa 10 lượt quét/ngày mỗi thiết bị
-const AI_SCAN_TRACKER_KEY = 'doantm_ai_scan_daily_quota';
 
-function getDailyAiScanCount() {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    const raw = localStorage.getItem(AI_SCAN_TRACKER_KEY);
-    if (!raw) return 0;
-    const data = JSON.parse(raw);
-    return data.date === today ? (data.count || 0) : 0;
-  } catch (e) {
-    return 0;
+function triggerAiFileInput() {
+  if (isAiVisionScanBusy) {
+    showToast('AI đang phân tích ảnh, vui lòng chờ trong giây lát...', 'info');
+    return;
+  }
+  const input = document.getElementById('ai-file-input');
+  if (input) {
+    input.value = ''; // Luôn reset value để chọn lại ảnh cùng tên hoặc ảnh mới đều kích hoạt sự kiện
+    input.click();
   }
 }
 
-function incrementDailyAiScanCount() {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    const current = getDailyAiScanCount();
-    localStorage.setItem(AI_SCAN_TRACKER_KEY, JSON.stringify({ date: today, count: current + 1 }));
-  } catch (e) {}
-}
-
-function startAiVisionCooldown(seconds = AI_COOLDOWN_SECONDS) {
-  const btnTrigger = document.getElementById('btn-trigger-ai-vision');
-  if (!btnTrigger) return;
-  let remain = seconds;
-  btnTrigger.disabled = true;
-
-  if (aiVisionCooldownTimer) clearInterval(aiVisionCooldownTimer);
-  btnTrigger.innerHTML = `<span>⏳ Chờ (${remain}s)...</span>`;
-
-  aiVisionCooldownTimer = setInterval(() => {
-    remain--;
-    if (remain <= 0) {
-      clearInterval(aiVisionCooldownTimer);
-      aiVisionCooldownTimer = null;
-      btnTrigger.disabled = false;
-      btnTrigger.innerHTML = '<i data-lucide="bot" style="width:14px;height:14px;"></i><span>Đọc bằng AI</span>';
-      if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
-    } else {
-      btnTrigger.innerHTML = `<span>⏳ Chờ (${remain}s)...</span>`;
-    }
-  }, 1000);
-}
+function startAiVisionCooldown() {}
 
 function getStoredGeminiKey() {
   try {
@@ -1937,29 +1926,16 @@ function triggerAiVisionScan() {
 async function executeAiVisionOcr() {
   if (!uploadedQrImageObj) return;
 
-  // Chặn click liên hồi
+  // Chặn click liên hồi khi đang xử lý
   if (isAiVisionScanBusy) {
-    showToast('Hệ thống đang phân tích ảnh, vui lòng không bấm liên tục.', 'warn');
-    return;
-  }
-
-  // Chặn khi đang trong thời gian Cooldown đếm ngược
-  if (aiVisionCooldownTimer) {
-    showToast('Vui lòng chờ hết thời gian đếm ngược trước khi quét tiếp.', 'warn');
-    return;
-  }
-
-  // Kiểm tra hạn mức quét tối đa trong ngày
-  const dailyUsed = getDailyAiScanCount();
-  if (dailyUsed >= MAX_DAILY_AI_SCANS) {
-    showToast(`Bạn đã đạt hạn mức tối đa ${MAX_DAILY_AI_SCANS} lượt quét AI trong ngày để chống spam. Vui lòng quay lại vào ngày mai!`, 'error');
+    showToast('Hệ thống đang phân tích ảnh, vui lòng chờ trong giây lát.', 'warn');
     return;
   }
 
   const indicator = document.getElementById('ai-vision-status-indicator');
   const statusText = document.getElementById('ai-vision-status-text');
   const btnTrigger = document.getElementById('btn-trigger-ai-vision');
-  const originalBtnHtml = btnTrigger ? btnTrigger.innerHTML : '';
+  const btnText = document.getElementById('btn-trigger-ai-vision-text');
 
   try {
     isAiVisionScanBusy = true;
@@ -1968,10 +1944,8 @@ async function executeAiVisionOcr() {
       indicator.style.display = 'flex';
       if (statusText) statusText.textContent = '🤖 Đang chuẩn bị hình ảnh và phân tích dữ liệu CCCD...';
     }
-    if (btnTrigger) {
-      btnTrigger.disabled = true;
-      btnTrigger.innerHTML = '<span>⏳ Đang đọc CCCD...</span>';
-    }
+    if (btnTrigger) btnTrigger.disabled = true;
+    if (btnText) btnText.textContent = 'Đang đọc...';
 
     // 1. Chuẩn bị ảnh Base64
     const region = cropRect ? cropRect : { left: 0, top: 0, width: 1, height: 1 };
@@ -2164,7 +2138,6 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
       issueDate: cleanIssue
     };
 
-    startAiVisionCooldown(AI_COOLDOWN_SECONDS);
     setScannedQrResult(finalParsed);
     showToast(`✨ ${scanMethodName || 'AI'}: Đã nhận diện được ${finalParsed.fullName || finalParsed.citizenId}!`);
   } catch (err) {
@@ -2173,10 +2146,8 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
   } finally {
     isAiVisionScanBusy = false;
     if (indicator) indicator.style.display = 'none';
-    if (btnTrigger && originalBtnHtml && !aiVisionCooldownTimer) {
-      btnTrigger.disabled = false;
-      btnTrigger.innerHTML = originalBtnHtml;
-    }
+    if (btnTrigger) btnTrigger.disabled = false;
+    if (btnText) btnText.textContent = 'Đọc bằng AI';
   }
 }
 
