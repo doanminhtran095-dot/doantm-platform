@@ -1877,7 +1877,7 @@ async function executeAiVisionOcr() {
 
     // BƯỚC 2: Thử gọi Cloud AI Backend Proxy (/api/scan-cccd)
     if (!parsedData) {
-      if (statusText) statusText.textContent = '🤖 Đang kết nối AI Vision để đọc chữ trên thẻ...';
+      if (statusText) statusText.textContent = '🤖 Đang kết nối AI Elonbu để đọc chữ trên thẻ...';
       let backendUrl = '/api/scan-cccd';
       if (window.location.protocol === 'file:' || !window.location.host) {
         backendUrl = 'http://localhost:8000/api/scan-cccd';
@@ -2123,6 +2123,7 @@ function confirmApplyScannedQr() {
     batchState.landlord.citizenId = t.citizenId || batchState.landlord.citizenId;
     batchState.landlord.permanentAddress = t.address || batchState.landlord.permanentAddress;
     syncBatchLandlordInputs();
+    renderBatchLandlordCardSummary();
     showToast(`Đã tự động điền thông tin Chủ nhà (Bên A): ${t.fullName}`);
   } else if (qrScannerTarget.startsWith('batch-tenant-')) {
     const idx = parseInt(qrScannerTarget.replace('batch-tenant-', ''), 10);
@@ -3159,8 +3160,17 @@ function initBatchWorkspace() {
   if (formState.ward) batchState.house.ward = formState.ward;
   if (formState.city) batchState.house.city = formState.city;
 
+  // Auto-sync landlord from single form if batch landlord is empty
+  if (!batchState.landlord.fullName && formState.landlordName) {
+    batchState.landlord.fullName = formState.landlordName;
+    batchState.landlord.birthYear = formState.landlordBirthYear;
+    batchState.landlord.citizenId = formState.landlordId;
+    batchState.landlord.permanentAddress = formState.landlordAddress;
+  }
+
   syncBatchLandlordInputs();
   syncBatchHouseInputs();
+  renderBatchLandlordCardSummary();
   initBatchLandlordPad();
   renderBatchTenantsList();
   updateBatchSignaturesSummary();
@@ -3193,6 +3203,39 @@ function syncBatchLandlordInputs() {
   if (birthEl && document.activeElement !== birthEl) birthEl.value = batchState.landlord.birthYear || '';
   if (idEl && document.activeElement !== idEl) idEl.value = batchState.landlord.citizenId || '';
   if (addrEl && document.activeElement !== addrEl) addrEl.value = batchState.landlord.permanentAddress || '';
+  renderBatchLandlordCardSummary();
+}
+
+function renderBatchLandlordCardSummary() {
+  const summaryEl = document.getElementById('batch-landlord-card-summary');
+  if (!summaryEl) return;
+  const l = batchState.landlord;
+  if (l && l.fullName) {
+    summaryEl.innerHTML = `
+      <div class="qr-scanned-info">
+        <div class="info-row">
+          <span class="info-label">Họ tên Chủ nhà:</span>
+          <span class="info-value text-bold">${escapeHtml(l.fullName)}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Số CCCD:</span>
+          <span class="info-value text-code">${escapeHtml(l.citizenId || '---')}</span>
+          <span class="info-label" style="margin-left:12px;">Năm sinh:</span>
+          <span class="info-value">${escapeHtml(l.birthYear || '---')}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Nơi thường trú:</span>
+          <span class="info-value">${escapeHtml(l.permanentAddress || '---')}</span>
+        </div>
+      </div>
+    `;
+  } else {
+    summaryEl.innerHTML = `
+      <div class="qr-empty-hint">
+        Chưa có thông tin Chủ nhà (Bên A)
+      </div>
+    `;
+  }
 }
 
 function syncBatchHouseInputs() {
@@ -3270,6 +3313,7 @@ function removeBatchTenant(index) {
 
 function updateBatchLandlordField(field, val) {
   batchState.landlord[field] = val;
+  renderBatchLandlordCardSummary();
 }
 
 function updateBatchHouseField(field, val) {
@@ -3279,7 +3323,7 @@ function updateBatchHouseField(field, val) {
 function updateBatchTenantField(index, field, val) {
   if (batchState.tenants[index]) {
     batchState.tenants[index][field] = val;
-    updateTenantCardTitle(index);
+    updateBatchTenantSummary(index);
   }
 }
 
@@ -3299,6 +3343,7 @@ function fillBatchLandlordSample() {
   };
   syncBatchLandlordInputs();
   syncBatchHouseInputs();
+  renderBatchLandlordCardSummary();
   showToast('Đã nạp mẫu dữ liệu Chủ nhà & Căn nhà cho thuê!');
 }
 
@@ -3371,32 +3416,68 @@ function fillAllBatchTenantsSample() {
 
 function toggleBatchTenantFields(idx, forceOpen) {
   const drawer = document.getElementById(`batch-tenant-fields-${idx}`);
-  const chevron = document.getElementById(`batch-tenant-chevron-${idx}`);
   if (!drawer) return;
-  const isHidden = drawer.style.display === 'none' || drawer.style.display === '';
+  const isHidden = drawer.hidden || drawer.style.display === 'none';
   const shouldOpen = forceOpen !== undefined ? forceOpen : isHidden;
-  drawer.style.display = shouldOpen ? 'block' : 'none';
-  if (chevron) {
-    chevron.style.transform = shouldOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-  }
+  drawer.hidden = !shouldOpen;
+  drawer.style.display = shouldOpen ? 'grid' : 'none';
 }
 
 function updateTenantCardTitle(idx) {
+  updateBatchTenantSummary(idx);
+}
+
+function updateBatchTenantSummary(idx) {
   const card = document.getElementById(`batch-tenant-card-${idx}`);
   if (!card) return;
   const t = batchState.tenants[idx];
   if (!t) return;
-  const nameEl = card.querySelector('.batch-tenant-name');
-  if (nameEl) nameEl.textContent = t.fullName ? t.fullName : '(Chưa nhập họ tên)';
-  const summaryEl = document.getElementById(`batch-tenant-summary-${idx}`);
-  const statusEl = document.getElementById(`batch-tenant-status-${idx}`);
-  if (summaryEl) {
-    summaryEl.textContent = t.fullName ? (t.fullName + (t.citizenId ? ' • ' + t.citizenId : '')) : 'Bấm để nhập họ tên, ngày sinh, CCCD, địa chỉ...';
+
+  const titleEl = card.querySelector('.qr-header-title h4');
+  if (titleEl) {
+    titleEl.textContent = `Người thuê #${idx + 1}${t.fullName ? ': ' + t.fullName : ''}`;
   }
-  if (statusEl) {
-    statusEl.textContent = t.fullName ? '✓ Đã điền' : 'Chưa điền';
-    statusEl.style.background = t.fullName ? '#dcfce7' : '#f1f5f9';
-    statusEl.style.color = t.fullName ? '#15803d' : '#64748b';
+  const subTextEl = card.querySelector('.qr-sub-text');
+  if (subTextEl) {
+    subTextEl.textContent = t.citizenId ? `CCCD: ${t.citizenId}` : 'Người kê khai (Bên B)';
+  }
+
+  const summaryBox = document.getElementById(`batch-tenant-summary-box-${idx}`);
+  if (summaryBox) {
+    if (t.fullName) {
+      summaryBox.innerHTML = `
+        <div class="qr-scanned-info">
+          <div class="info-row">
+            <span class="info-label">Họ và tên:</span>
+            <span class="info-value text-bold">${escapeHtml(t.fullName)}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Số CCCD:</span>
+            <span class="info-value text-code">${escapeHtml(t.citizenId || '---')}</span>
+            <span class="info-label" style="margin-left:12px;">Ngày sinh:</span>
+            <span class="info-value">${escapeHtml(t.birthDate || '---')}</span>
+            <span class="info-label" style="margin-left:12px;">Giới tính:</span>
+            <span class="info-value">${escapeHtml(t.gender || 'Nam')}</span>
+          </div>
+          ${(t.phone || t.email) ? `
+            <div class="info-row">
+              <span class="info-label">Liên hệ:</span>
+              <span class="info-value">${[t.phone, t.email].filter(Boolean).map(escapeHtml).join(' • ')}</span>
+            </div>
+          ` : ''}
+          <div class="info-row">
+            <span class="info-label">Nơi thường trú:</span>
+            <span class="info-value">${escapeHtml(t.permanentAddress || '---')}</span>
+          </div>
+        </div>
+      `;
+    } else {
+      summaryBox.innerHTML = `
+        <div class="qr-empty-hint">
+          Chưa có thông tin Người thuê #${idx + 1}
+        </div>
+      `;
+    }
   }
 }
 
@@ -3405,79 +3486,105 @@ function renderBatchTenantsList() {
   if (!container) return;
 
   const html = batchState.tenants.map((t, idx) => `
-    <div class="batch-tenant-card" id="batch-tenant-card-${idx}">
-      <div class="batch-tenant-card-header">
-        <div class="batch-tenant-title">
-          <span class="batch-tenant-index">#${idx + 1}</span>
-          <span class="batch-tenant-name">${t.fullName ? escapeHtml(t.fullName) : '(Chưa nhập họ tên)'}</span>
-          ${t.citizenId ? `<span class="batch-tenant-id-badge">${escapeHtml(t.citizenId)}</span>` : ''}
-        </div>
-        <div class="batch-tenant-actions">
-          <button type="button" class="capan-btn-outline batch-tenant-scan-btn" onclick="openQrScannerModal('batch-tenant-${idx}')" title="Quét QR hoặc tải ảnh chụp CCCD của người này">
-            <i data-lucide="qr-code" style="width:14px;height:14px;color:#dc2626;"></i>
-            <span>Quét / Tải CCCD</span>
-          </button>
-          <button type="button" class="batch-tenant-delete-btn" onclick="removeBatchTenant(${idx})" title="Xoá người này khỏi danh sách">
-            <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
-          </button>
-        </div>
-      </div>
-
-      <div class="batch-tenant-card-body">
-        <!-- Khối gộp: Điền thông tin người thuê (Bấm để mở rộng) -->
-        <div style="margin-bottom:12px;">
-          <button type="button" class="batch-tenant-collapse-btn" id="btn-toggle-tenant-${idx}" onclick="toggleBatchTenantFields(${idx})">
-            <div style="text-align:left;">
-              <strong style="font-size:13.5px;color:#0f172a;display:block;">Điền thông tin người thuê</strong>
-              <span id="batch-tenant-summary-${idx}" style="font-size:11.5px;color:#64748b;">${t.fullName ? escapeHtml(t.fullName) + (t.citizenId ? ' • ' + escapeHtml(t.citizenId) : '') : 'Bấm để nhập họ tên, ngày sinh, CCCD, địa chỉ...'}</span>
+    <div class="capan-qr-card tenant-card" id="batch-tenant-card-${idx}">
+      <div>
+        <div class="qr-card-header">
+          <div class="qr-header-title">
+            <div class="qr-icon text-teal">
+              <i data-lucide="qr-code" style="width:22px;height:22px;"></i>
             </div>
-            <div style="display:flex;align-items:center;gap:6px;">
-              <span class="batch-tenant-status-pill" id="batch-tenant-status-${idx}" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:${t.fullName ? '#dcfce7' : '#f1f5f9'};color:${t.fullName ? '#15803d' : '#64748b'};">
-                ${t.fullName ? '✓ Đã điền' : 'Chưa điền'}
-              </span>
-              <i data-lucide="chevron-down" id="batch-tenant-chevron-${idx}" style="width:16px;height:16px;color:#64748b;transition:transform 0.2s ease;"></i>
+            <div style="min-width:0;">
+              <h4 style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Người thuê #${idx + 1}${t.fullName ? ': ' + escapeHtml(t.fullName) : ''}</h4>
+              <span class="qr-sub-text">${t.citizenId ? 'CCCD: ' + escapeHtml(t.citizenId) : 'Người kê khai (Bên B)'}</span>
             </div>
-          </button>
-
-          <div id="batch-tenant-fields-${idx}" class="batch-tenant-fields-drawer" style="display:none;margin-top:10px;padding:12px;background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;">
-            <div class="batch-form-grid">
-              <div class="ct01-address-input-field">
-                <label>Họ và tên người thuê <span style="color:#dc2626;">*</span></label>
-                <input type="text" class="capan-input text-uppercase" placeholder="VD: NGUYỄN VĂN AN" value="${escapeHtml(t.fullName || '')}" oninput="updateBatchTenantField(${idx}, 'fullName', this.value); updateTenantCardTitle(${idx});" />
-              </div>
-              <div class="ct01-address-input-field">
-                <label>Ngày sinh (dd/mm/yyyy) <span style="color:#dc2626;">*</span></label>
-                <input type="text" class="capan-input" placeholder="VD: 15/08/1995" value="${escapeHtml(t.birthDate || '')}" oninput="updateBatchTenantField(${idx}, 'birthDate', this.value)" />
-              </div>
-              <div class="ct01-address-input-field">
-                <label>Giới tính <span style="color:#dc2626;">*</span></label>
-                <select class="capan-select" onchange="updateBatchTenantField(${idx}, 'gender', this.value)">
-                  <option value="Nam" ${t.gender === 'Nam' ? 'selected' : ''}>Nam</option>
-                  <option value="Nữ" ${t.gender === 'Nữ' ? 'selected' : ''}>Nữ</option>
-                </select>
-              </div>
-              <div class="ct01-address-input-field">
-                <label>Số CCCD / Định danh (12 số) <span style="color:#dc2626;">*</span></label>
-                <input type="text" class="capan-input" maxlength="12" placeholder="VD: 079095012345" value="${escapeHtml(t.citizenId || '')}" oninput="updateBatchTenantField(${idx}, 'citizenId', this.value); updateTenantCardTitle(${idx});" />
-              </div>
-              <div class="ct01-address-input-field">
-                <label>Số điện thoại liên hệ</label>
-                <input type="text" class="capan-input" placeholder="VD: 0909 888 686" value="${escapeHtml(t.phone || '')}" oninput="updateBatchTenantField(${idx}, 'phone', this.value)" />
-              </div>
-              <div class="ct01-address-input-field">
-                <label>Email liên hệ</label>
-                <input type="text" class="capan-input" placeholder="VD: email@gmail.com" value="${escapeHtml(t.email || '')}" oninput="updateBatchTenantField(${idx}, 'email', this.value)" />
-              </div>
-              <div class="ct01-address-input-field batch-grid-col-full">
-                <label>Nơi thường trú (theo CCCD) <span style="color:#dc2626;">*</span></label>
-                <input type="text" class="capan-input" placeholder="VD: 456 Lê Lợi, Phường Bến Thành, Quận 1, TP. HCM" value="${escapeHtml(t.permanentAddress || '')}" oninput="updateBatchTenantField(${idx}, 'permanentAddress', this.value)" />
-              </div>
-            </div>
+          </div>
+          <div class="qr-card-actions">
+            <button type="button" class="capan-btn-manual-edit" onclick="toggleBatchTenantFields(${idx})" title="Nhập tay hoặc sửa thông tin Người thuê #${idx + 1}">
+              <i data-lucide="pencil" style="width:13px;height:13px;"></i>
+              <span>Nhập tay</span>
+            </button>
+            <button type="button" class="capan-btn-scan-primary" onclick="openQrScannerModal('batch-tenant-${idx}')" title="Quét QR hoặc tải ảnh CCCD">
+              <i data-lucide="qr-code" style="width:15px;height:15px;"></i>
+              <span>Quét thẻ CCCD</span>
+            </button>
+            ${batchState.tenants.length > 1 ? `
+              <button type="button" class="batch-tenant-delete-btn" onclick="removeBatchTenant(${idx})" title="Xoá người này khỏi danh sách">
+                <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+              </button>
+            ` : ''}
           </div>
         </div>
 
-        <!-- Chữ ký điện tử người thuê -->
-        <div class="batch-tenant-sig-box">
+        <div class="qr-card-body" id="batch-tenant-summary-box-${idx}" onclick="toggleBatchTenantFields(${idx})" style="cursor:pointer;" title="Bấm để chỉnh sửa nhanh">
+          ${t.fullName ? `
+            <div class="qr-scanned-info">
+              <div class="info-row">
+                <span class="info-label">Họ và tên:</span>
+                <span class="info-value text-bold">${escapeHtml(t.fullName)}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Số CCCD:</span>
+                <span class="info-value text-code">${escapeHtml(t.citizenId || '---')}</span>
+                <span class="info-label" style="margin-left:12px;">Ngày sinh:</span>
+                <span class="info-value">${escapeHtml(t.birthDate || '---')}</span>
+                <span class="info-label" style="margin-left:12px;">Giới tính:</span>
+                <span class="info-value">${escapeHtml(t.gender || 'Nam')}</span>
+              </div>
+              ${(t.phone || t.email) ? `
+                <div class="info-row">
+                  <span class="info-label">Liên hệ:</span>
+                  <span class="info-value">${[t.phone, t.email].filter(Boolean).map(escapeHtml).join(' • ')}</span>
+                </div>
+              ` : ''}
+              <div class="info-row">
+                <span class="info-label">Nơi thường trú:</span>
+                <span class="info-value">${escapeHtml(t.permanentAddress || '---')}</span>
+              </div>
+            </div>
+          ` : `
+            <div class="qr-empty-hint">
+              Chưa có thông tin Người thuê #${idx + 1}
+            </div>
+          `}
+        </div>
+
+        <!-- Inline Manual Input Drawer for Tenant #${idx + 1} -->
+        <div id="batch-tenant-fields-${idx}" class="qr-manual-drawer" hidden>
+          <div>
+            <label>Họ và tên người thuê <span style="color:#dc2626;">*</span></label>
+            <input type="text" class="text-uppercase" placeholder="VD: NGUYỄN VĂN AN" value="${escapeHtml(t.fullName || '')}" oninput="updateBatchTenantField(${idx}, 'fullName', this.value);" />
+          </div>
+          <div>
+            <label>Số CCCD / Định danh (12 số) <span style="color:#dc2626;">*</span></label>
+            <input type="text" maxlength="12" placeholder="VD: 079095012345" value="${escapeHtml(t.citizenId || '')}" oninput="updateBatchTenantField(${idx}, 'citizenId', this.value);" />
+          </div>
+          <div>
+            <label>Ngày sinh (dd/mm/yyyy) <span style="color:#dc2626;">*</span></label>
+            <input type="text" placeholder="VD: 15/08/1995" value="${escapeHtml(t.birthDate || '')}" oninput="updateBatchTenantField(${idx}, 'birthDate', this.value);" />
+          </div>
+          <div>
+            <label>Giới tính <span style="color:#dc2626;">*</span></label>
+            <select onchange="updateBatchTenantField(${idx}, 'gender', this.value);">
+              <option value="Nam" ${t.gender === 'Nam' ? 'selected' : ''}>Nam</option>
+              <option value="Nữ" ${t.gender === 'Nữ' ? 'selected' : ''}>Nữ</option>
+            </select>
+          </div>
+          <div>
+            <label>Số điện thoại liên hệ</label>
+            <input type="text" placeholder="VD: 0909 888 686" value="${escapeHtml(t.phone || '')}" oninput="updateBatchTenantField(${idx}, 'phone', this.value);" />
+          </div>
+          <div>
+            <label>Email liên hệ</label>
+            <input type="text" placeholder="VD: email@gmail.com" value="${escapeHtml(t.email || '')}" oninput="updateBatchTenantField(${idx}, 'email', this.value);" />
+          </div>
+          <div class="full-col">
+            <label>Nơi thường trú (theo CCCD) <span style="color:#dc2626;">*</span></label>
+            <input type="text" placeholder="VD: 456 Lê Lợi, Phường Bến Thành, Quận 1, TP. HCM" value="${escapeHtml(t.permanentAddress || '')}" oninput="updateBatchTenantField(${idx}, 'permanentAddress', this.value);" />
+          </div>
+        </div>
+
+        <!-- Chữ ký điện tử người thuê #${idx + 1} -->
+        <div class="batch-tenant-sig-box" style="margin-top:14px;padding-top:12px;border-top:1px dashed #e2e8f0;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
             <div style="display:flex;align-items:center;gap:6px;">
               <i data-lucide="pen-tool" style="width:15px;height:15px;color:#0284c7;"></i>

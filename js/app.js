@@ -58,7 +58,7 @@ function initHeroTextCarousel() {
 
   const phrases = [
     "Chào mình là Đoàn !",
-    "Tool Điền mẫu điện tử nhanh chóng",
+    "Điền mẫu điện tử tiện lợi",
     "Nghiên cứu Drone",
     "Làm việc nhanh hơn nhờ AI"
   ];

@@ -44,7 +44,7 @@
             </div>
           </div>
           <div class="capan-brand-text">
-            <span class="capan-brand-sub">CỔNG DỊCH VỤ CÔNG TRỰC TUYẾN • AI LAB</span>
+            <span class="capan-brand-sub">NGHIÊN CỨU MẪU ĐIỆN TỬ • AI LAB</span>
             <h1 class="capan-brand-title">
               <span>DOAN<span class="brand-tm">TM</span> PLATFORM</span>
               <span class="capan-brand-badge">CT01 &amp; Hợp đồng</span>
@@ -353,7 +353,7 @@
               <div class="capan-preview-card-head no-print">
                 <div class="capan-panel-header">
                   <i data-lucide="file-check-2" class="panel-icon"></i>
-                  <span class="preview-title-desktop" id="preview-title-desktop">Xem trước văn bản A4 (Mẫu CT01 &amp; Hợp đồng)</span>
+                  <span class="preview-title-desktop" id="preview-title-desktop">Xem trước văn bản A4 </span>
                   <span class="preview-title-mobile" id="preview-title-mobile">Xem trước văn bản A4</span>
                 </div>
 
@@ -894,70 +894,102 @@
                 <div>
                   <h4 class="batch-card-title">Thông tin Chủ nhà &amp; Căn nhà cho thuê</h4>
                 </div>
-                <div class="batch-head-actions">
-                  <button type="button" class="capan-btn-outline" onclick="openQrScannerModal('batch-landlord')">
-                    <i data-lucide="qr-code" style="width:15px;height:15px;color:#dc2626;"></i>
-                    <span>Quét / Tải CCCD</span>
-                  </button>
-                  <button type="button" class="capan-btn-outline" onclick="fillBatchLandlordSample()" title="Nạp nhanh mẫu thử chủ nhà">
-                    <i data-lucide="wand-2" style="width:14px;height:14px;color:#0284c7;"></i>
-                    <span>Mẫu thử</span>
-                  </button>
-                </div>
               </div>
 
-              <div class="batch-card-body">
-                <!-- Landlord Fields Grid -->
-                <div class="batch-form-grid">
-                  <div class="ct01-address-input-field">
-                    <label>Họ và tên <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="batch-landlord-name" class="capan-input text-uppercase" placeholder="VD: NGUYỄN VĂN HÙNG" oninput="updateBatchLandlordField('fullName', this.value)" />
-                  </div>
-                  <div class="ct01-address-input-field">
-                    <label>Năm sinh / Ngày sinh <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="batch-landlord-birth" class="capan-input" placeholder="VD: 1975 hoặc 15/05/1975" oninput="updateBatchLandlordField('birthYear', this.value)" />
-                  </div>
-                  <div class="ct01-address-input-field">
-                    <label>Số CCCD <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="batch-landlord-id" class="capan-input" maxlength="12" placeholder="VD: 079075001234" oninput="updateBatchLandlordField('citizenId', this.value)" />
-                  </div>
-                  <div class="ct01-address-input-field">
-                    <label>Nơi thường trú <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="batch-landlord-address" class="capan-input" placeholder="VD: 45 Lê Duẩn, P. Bến Nghé, Quận 1, TP. HCM" oninput="updateBatchLandlordField('permanentAddress', this.value)" />
+              <div class="batch-card-body" style="display:flex;flex-direction:column;gap:18px;">
+                <!-- Card Chủ nhà (Bên A) - Phong cách chuẩn card QR màu Hổ phách (Amber) -->
+                <div class="capan-qr-card landlord-card">
+                  <div>
+                    <div class="qr-card-header">
+                      <div class="qr-header-title">
+                        <div class="qr-icon text-amber">
+                          <i data-lucide="qr-code" style="width:22px;height:22px;"></i>
+                        </div>
+                        <div>
+                          <h4>Chủ nhà (Bên A)</h4>
+                        </div>
+                      </div>
+                      <div class="qr-card-actions">
+                        <button type="button" class="capan-btn-manual-edit" onclick="toggleManualDrawer('batch-landlord')" title="Nhập tay hoặc sửa thông tin Chủ nhà">
+                          <i data-lucide="pencil" style="width:13px;height:13px;"></i>
+                          <span>Nhập tay</span>
+                        </button>
+                        <button type="button" class="capan-btn-scan-amber" onclick="openQrScannerModal('batch-landlord')">
+                          <i data-lucide="qr-code" style="width:15px;height:15px;"></i>
+                          <span>Quét thẻ CCCD</span>
+                        </button>
+                        <button type="button" class="capan-btn-manual-edit" onclick="fillBatchLandlordSample()" title="Nạp nhanh mẫu thử chủ nhà">
+                          <i data-lucide="wand-2" style="width:13px;height:13px;color:#0284c7;"></i>
+                          <span>Mẫu thử</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="qr-card-body" id="batch-landlord-card-summary" onclick="toggleManualDrawer('batch-landlord')" style="cursor:pointer;" title="Bấm để chỉnh sửa nhanh">
+                      <div class="qr-empty-hint">
+                        Chưa có thông tin Chủ nhà (Bên A)
+                      </div>
+                    </div>
+
+                    <!-- Inline Manual Input Drawer for Batch Landlord -->
+                    <div id="manual-drawer-batch-landlord" class="qr-manual-drawer" hidden>
+                      <div>
+                        <label for="batch-landlord-name">Họ và tên <span style="color:#dc2626;">*</span></label>
+                        <input type="text" id="batch-landlord-name" class="text-uppercase" placeholder="VD: NGUYỄN VĂN HÙNG" oninput="updateBatchLandlordField('fullName', this.value)" />
+                      </div>
+                      <div>
+                        <label for="batch-landlord-id">Số CCCD <span style="color:#dc2626;">*</span></label>
+                        <input type="text" id="batch-landlord-id" maxlength="12" placeholder="VD: 079075001234" oninput="updateBatchLandlordField('citizenId', this.value)" />
+                      </div>
+                      <div>
+                        <label for="batch-landlord-birth">Năm sinh / Ngày sinh <span style="color:#dc2626;">*</span></label>
+                        <input type="text" id="batch-landlord-birth" placeholder="VD: 1975 hoặc 15/05/1975" oninput="updateBatchLandlordField('birthYear', this.value)" />
+                      </div>
+                      <div class="full-col">
+                        <label for="batch-landlord-address">Nơi thường trú <span style="color:#dc2626;">*</span></label>
+                        <input type="text" id="batch-landlord-address" placeholder="VD: 45 Lê Duẩn, P. Bến Nghé, Quận 1, TP. HCM" oninput="updateBatchLandlordField('permanentAddress', this.value)" />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div class="batch-divider"></div>
+                <!-- Địa chỉ căn nhà / phòng trọ cho thuê -->
+                <div class="batch-property-card" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;padding:16px;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <span style="width:34px;height:34px;border-radius:9px;background:#ecfdf5;border:1px solid #a7f3d0;color:#059669;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i data-lucide="home" style="width:18px;height:18px;"></i>
+                      </span>
+                      <div>
+                        <h4 style="margin:0;font-size:14px;font-weight:800;color:#0f172a;">Địa chỉ căn nhà / phòng trọ cho thuê</h4>
+                        <span style="font-size:11.5px;color:#64748b;">Nơi đăng ký tạm trú cho người thuê</span>
+                      </div>
+                    </div>
+                  </div>
 
-                <!-- House Address Fields Grid -->
-                <h5 class="batch-subhead">
-                  <i data-lucide="home" style="width:15px;height:15px;color:#059669;"></i>
-                  <span>Địa chỉ căn nhà / phòng trọ cho thuê:</span>
-                </h5>
-                <div class="batch-form-grid" style="margin-top:8px;">
-                  <div class="ct01-address-input-field">
-                    <label>Số nhà <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="batch-house-no" class="capan-input" placeholder="VD: 123/45" oninput="updateBatchHouseField('houseNo', this.value)" />
+                  <div class="batch-form-grid">
+                    <div class="ct01-address-input-field">
+                      <label>Số nhà <span style="color:#dc2626;">*</span></label>
+                      <input type="text" id="batch-house-no" class="capan-input" placeholder="VD: 123/45" oninput="updateBatchHouseField('houseNo', this.value)" />
+                    </div>
+                    <div class="ct01-address-input-field">
+                      <label>Tên đường <span style="color:#dc2626;">*</span></label>
+                      <input type="text" id="batch-house-street" class="capan-input" placeholder="VD: Nguyễn Văn Nghi" oninput="updateBatchHouseField('street', this.value)" />
+                    </div>
+                    <div class="ct01-address-input-field">
+                      <label>Phường / Xã <span style="color:#dc2626;">*</span></label>
+                      <input type="text" id="batch-house-ward" class="capan-input" placeholder="VD: Phường An Nhơn" oninput="updateBatchHouseField('ward', this.value)" />
+                    </div>
+                    <div class="ct01-address-input-field">
+                      <label>Tỉnh / Thành phố <span style="color:#dc2626;">*</span></label>
+                      <input type="text" id="batch-house-city" class="capan-input" placeholder="VD: TP. Hồ Chí Minh" oninput="updateBatchHouseField('city', this.value)" />
+                    </div>
                   </div>
-                  <div class="ct01-address-input-field">
-                    <label>Tên đường <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="batch-house-street" class="capan-input" placeholder="VD: Nguyễn Văn Nghi" oninput="updateBatchHouseField('street', this.value)" />
-                  </div>
-                  <div class="ct01-address-input-field">
-                    <label>Phường / Xã <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="batch-house-ward" class="capan-input" placeholder="VD: Phường An Nhơn" oninput="updateBatchHouseField('ward', this.value)" />
-                  </div>
-                  <div class="ct01-address-input-field">
-                    <label>Tỉnh / Thành phố <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="batch-house-city" class="capan-input" placeholder="VD: TP. Hồ Chí Minh" oninput="updateBatchHouseField('city', this.value)" />
+                  <div class="ct01-address-input-field" style="margin-top:10px;">
+                    <label for="batch-contract-datetime">Thời gian, ngày tháng ký hợp đồng <span style="color:#dc2626;">*</span></label>
+                    <input type="datetime-local" id="batch-contract-datetime" class="capan-input" onchange="updateBatchHouseField('contractDatetime', this.value)" />
                   </div>
                 </div>
-                <div class="ct01-address-input-field" style="margin-top:10px;">
-                  <label for="batch-contract-datetime">Thời gian, ngày tháng ký hợp đồng <span style="color:#dc2626;">*</span></label>
-                  <input type="datetime-local" id="batch-contract-datetime" class="capan-input" onchange="updateBatchHouseField('contractDatetime', this.value)" />
-                </div>
-
-                <div class="batch-divider" style="margin:16px 0;"></div>
 
                 <!-- CHỮ KÝ ĐIỆN TỬ CHỦ NHÀ (BÊN A) -->
                 <div class="batch-landlord-sig-panel">
