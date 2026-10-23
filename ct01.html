@@ -9,18 +9,22 @@
   <title>DOANTM | Điền Hồ Sơ Đăng Ký Tạm Trú (Mẫu CT01) & Hợp Đồng Cư Trú A4</title>
   <meta name="description" content="Công cụ điền hồ sơ đăng ký tạm trú Mẫu CT01, Hợp đồng cho thuê mượn ở nhờ, Đơn cớ mất, Xác nhận hạnh kiểm bằng mã QR CCCD và ký điện tử song phương trên nền tảng DOANTM." />
 
-  <!-- Preconnect to CDN & Fonts for Maximum Early Connection Speed -->
+  <!-- Website Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg?v=20261023b" />
+  <link rel="icon" type="image/png" href="assets/logo.png?v=20261023b" />
+  <link rel="shortcut icon" href="favicon.ico?v=20261023b" />
+  <link rel="apple-touch-icon" href="assets/logo.png?v=20261023b" />
+
+  <!-- Fonts & CDNs -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 
-  <!-- Google Fonts Direct Link (Eliminates CSS @import waterfall delay, with display=swap) -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" />
 
-  <!-- CT01 Portal Stylesheet (DOANTM Bright Light Mode) -->
+  <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="css/ct01.css" />
 
-  <!-- High-Performance Consolidated CDN Scripts (All loaded via single multiplexed HTTP/2/3 connection from cdn.jsdelivr.net with defer) -->
   <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -28,24 +32,19 @@
 </head>
 <body>
 
-  <!-- Toast Notification Container -->
+  <!-- Toast Container -->
   <div id="capan-toast-container" class="no-print"></div>
 
   <main class="capan-app-root">
 
-    <!-- =====================================================================
-         1. TOP HEADER (DOANTM BRIGHT LIGHT MODE + CAPAN NAVIGATION)
-         ===================================================================== -->
+    <!-- 1. Top Header -->
     <header class="capan-header no-print">
       <div class="capan-header-top-bar"></div>
       <div class="capan-header-container">
 
-        <!-- Brand Left -->
         <a href="index.html" class="capan-brand" title="Quay về Trang chủ DOANTM Platform">
-          <div class="capan-emblem-wrap">
-            <div class="capan-emblem-inner">
-              <i data-lucide="crosshair" style="width:22px;height:22px;"></i>
-            </div>
+          <div class="capan-emblem-wrap" style="background:#ffffff;border:1px solid #e2e8f0;padding:2px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <img src="assets/logo.svg" alt="DOANTM Logo" style="width:36px;height:36px;border-radius:8px;object-fit:contain;" />
           </div>
           <div class="capan-brand-text">
             <span class="capan-brand-sub">NGHIÊN CỨU MẪU ĐIỆN TỬ • AI LAB</span>
@@ -56,7 +55,6 @@
           </div>
         </a>
 
-        <!-- Center Navigation Pills -->
         <nav class="capan-nav" aria-label="Điều hướng cổng dịch vụ công">
           <button type="button" class="capan-nav-item" data-main-tab="utilities" onclick="switchMainTab('utilities', 'ct01')">
             <i data-lucide="file-Spreadsheet" class="capan-nav-icon"></i>
@@ -80,7 +78,6 @@
           </a>
         </nav>
 
-        <!-- Right Actions -->
         <div class="capan-header-actions">
           <a href="index.html" class="capan-auth-btn">
             <i data-lucide="arrow-left" style="width:15px;height:15px;"></i>
@@ -88,14 +85,12 @@
           </a>
         </div>
 
-        <!-- Mobile Hamburger Button -->
         <button type="button" class="capan-hamburger-btn" id="mobile-drawer-toggle" aria-label="Mở menu">
           <i data-lucide="menu" style="width:20px;height:20px;color:#dc2626;"></i>
         </button>
 
       </div>
 
-      <!-- Mobile Navigation Drawer -->
       <div class="capan-mobile-drawer" id="mobile-drawer">
         <nav class="capan-mobile-drawer-nav">
           <button type="button" class="capan-drawer-item active" data-mobile-tab="utilities" onclick="switchMainTab('utilities')">
@@ -122,17 +117,12 @@
       </div>
     </header>
 
-    <!-- =====================================================================
-         2. MAIN CONTENT AREA
-         ===================================================================== -->
+    <!-- 2. Main Content Area -->
     <div class="capan-main-content">
 
-      <!-- ===================================================================
-           VIEW A: TIỆN ÍCH (KÊ KHAI MẪU ĐƠN & HƯỚNG DẪN NỘP HỒ SƠ)
-           =================================================================== -->
+      <!-- View A: Tiện ích kê khai mẫu đơn -->
       <div id="view-utilities" class="capan-utilities-container">
 
-        <!-- Utility Sub-Tabs Bar -->
         <div class="capan-utility-nav-bar no-print">
           <div class="capan-utility-tabs">
             <button type="button" class="capan-tab-btn active" id="util-tab-ct01" onclick="switchUtilityTab('ct01')">
@@ -149,12 +139,10 @@
           </div>
         </div>
 
-        <!-- -----------------------------------------------------------------
-             SUB-VIEW A1: KÊ KHAI MẪU ĐƠN (5 FORM CARDS + WORKSPACE)
-             ----------------------------------------------------------------- -->
+        <!-- Sub-view A1: Kê khai mẫu đơn -->
         <div id="subview-ct01" class="capan-forms-container">
 
-          <!-- 5-Card Forms Selector Navigation Card -->
+          <!-- Danh mục 5 mẫu đơn -->
           <div class="capan-forms-nav-card no-print">
             <div class="capan-forms-nav-header">
               <div class="title-area">
@@ -170,7 +158,6 @@
             </div>
 
             <div class="capan-forms-selector-grid">
-              <!-- Card 1: CT01 -->
               <button type="button" class="capan-form-tab-card active" data-form-key="ct01" onclick="selectFormCard('ct01')">
                 <div class="form-tab-badge-row">
                   <span class="form-code-badge">Đăng kí Tạm trú</span>
@@ -178,7 +165,6 @@
                 </div>
               </button>
 
-              <!-- Card 2: CT02 (Đơn cớ mất) -->
               <button type="button" class="capan-form-tab-card" data-form-key="ct02" onclick="selectFormCard('ct02')">
                 <div class="form-tab-badge-row">
                   <span class="form-code-badge">Điền Đơn Cớ Mất</span>
@@ -186,7 +172,6 @@
                 </div>
               </button>
 
-              <!-- Card 3: CT03 (Xác nhận hạnh kiểm) -->
               <button type="button" class="capan-form-tab-card" data-form-key="ct03" onclick="selectFormCard('ct03')">
                 <div class="form-tab-badge-row">
                   <span class="form-code-badge">Điền Xác Nhận Hạnh Kiểm</span>
@@ -194,7 +179,6 @@
                 </div>
               </button>
 
-              <!-- Card 4: Đăng kí Thường Trú -->
               <button type="button" class="capan-form-tab-card" data-form-key="ct04" onclick="selectFormCard('ct04')">
                 <div class="form-tab-badge-row">
                   <span class="form-code-badge">Đăng kí Thường Trú</span>
@@ -202,7 +186,6 @@
                 </div>
               </button>
 
-              <!-- Card 5: Điền hồ sơ tạm trú theo số lượng -->
               <button type="button" class="capan-form-tab-card" data-form-key="ct07" onclick="selectFormCard('ct07')">
                 <div class="form-tab-badge-row">
                   <span class="form-code-badge">Điền hồ sơ tạm trú theo số lượng</span>
@@ -217,12 +200,9 @@
             </div>
           </div>
 
-          <!-- ===============================================================
-               FORM WORKSPACE 1: CT01 & HỢP ĐỒNG CƯ TRÚ (TẠM TRÚ & THƯỜNG TRÚ)
-               =============================================================== -->
+          <!-- Khung làm việc 1: Kê khai CT01 & Hợp đồng cư trú -->
           <div id="form-workspace-ct01" class="capan-ct01-workspace">
 
-            <!-- Steps Intro & 3-Step Progress Card -->
             <div class="capan-steps-card no-print">
               <div class="capan-steps-intro">
                 <h3>
@@ -232,10 +212,8 @@
               </div>
             </div>
 
-            <!-- Dual QR Action Panel (Chủ nhà Bên A & Người kê khai Bên B) -->
             <div class="capan-qr-action-panel no-print">
 
-              <!-- Left Card: Chủ nhà (Bên A) -->
               <div class="capan-qr-card landlord-card">
                 <div>
                   <div class="qr-card-header">
@@ -265,7 +243,6 @@
                     </div>
                   </div>
 
-                  <!-- Optional Inline Manual Input Drawer for Landlord -->
                   <div id="manual-drawer-landlord" class="qr-manual-drawer" hidden>
                     <div>
                       <label for="manual-landlordName">Họ và tên</label>
@@ -287,7 +264,6 @@
                 </div>
               </div>
 
-              <!-- Right Card: Người kê khai (Bên B) -->
               <div class="capan-qr-card tenant-card">
                 <div>
                   <div class="qr-card-header">
@@ -317,7 +293,6 @@
                     </div>
                   </div>
 
-                  <!-- Optional Inline Manual Input Drawer for Tenant -->
                   <div id="manual-drawer-tenant" class="qr-manual-drawer" hidden>
                     <div>
                       <label for="manual-fullName">Họ và tên</label>
@@ -350,10 +325,8 @@
 
             </div>
 
-            <!-- Main Preview & Editor Card -->
             <div class="capan-preview-card">
 
-              <!-- Card Header -->
               <div class="capan-preview-card-head no-print">
                 <div class="capan-panel-header">
                   <i data-lucide="file-check-2" class="panel-icon"></i>
@@ -369,10 +342,8 @@
                 </div>
               </div>
 
-              <!-- Card Body -->
               <div class="capan-preview-card-body">
 
-                <!-- Fieldset 10: Nội dung đề nghị -->
                 <fieldset class="ct01-fieldset no-print">
                   <legend>10. Nội dung đề nghị</legend>
 
@@ -387,7 +358,6 @@
                     </label>
                   </div>
 
-                  <!-- Khối gộp: Điền thông tin căn nhà (Bấm để mở rộng) -->
                   <div class="capan-collapsible-house-wrap" style="margin-top:14px;">
                     <button type="button" class="capan-house-toggle-btn" id="btn-toggle-house-info" onclick="toggleHouseInfoDrawer()">
                       <div style="display:flex;align-items:center;gap:10px;">
@@ -444,7 +414,6 @@
                   </div>
                 </fieldset>
 
-                <!-- Fieldset 11: Những thành viên trong hộ gia đình cùng thay đổi -->
                 <fieldset class="ct01-members-editor no-print">
                   <legend>11. Những thành viên trong hộ gia đình cùng thay đổi</legend>
                   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
@@ -460,12 +429,9 @@
                   <div id="members-summary-list"></div>
                 </fieldset>
 
-                <!-- ===========================================================
-                     LIVE A4 DOCUMENT PREVIEW WRAPPER (2 A4 PAGES + SIG PADS)
-                     =========================================================== -->
+                <!-- Bản xem trước tài liệu A4 -->
                 <div class="doc-preview-wrapper" id="doc-preview-wrapper">
 
-                  <!-- Responsive Scale Toolbar (Shown on mobile/narrow viewports) -->
                   <div class="doc-mobile-toolbar no-print" id="doc-scale-toolbar" hidden>
                     <div class="doc-mobile-toolbar-info">
                       <span class="doc-mobile-badge" id="doc-scale-badge">📄 Bản xem trước chuẩn A4 (100%)</span>
@@ -476,12 +442,9 @@
                     </div>
                   </div>
 
-                  <!-- A4 Scaler Container -->
                   <div class="a4-page-scaler" id="a4-page-scaler">
 
-                    <!-- =======================================================
-                         PAGE 1: MẪU CT01 - TỜ KHAI THAY ĐỔI THÔNG TIN CƯ TRÚ
-                         ======================================================= -->
+                    <!-- A4 Trang 1: Mẫu CT01 - Tờ khai thay đổi thông tin cư trú -->
                     <article class="a4-page ct01-doc-page" id="ct01-doc-page-print">
                       <div class="ct01-sub-header">
                         <p>Mẫu CT01 ban hành kèm theo Thông tư số 116/2026/TT-BCA</p>
@@ -517,7 +480,6 @@
                         <div class="ct01-id-line">
                           <span class="id-label">4. Số định danh cá nhân:</span>
                           <div class="ct01-boxes-group" id="a4-ct01-tenant-id-boxes">
-                            <!-- 12 Digit Cells Rendered by JS -->
                           </div>
                         </div>
 
@@ -542,7 +504,6 @@
                         <div class="ct01-id-line">
                           <span class="id-label">9. Số định danh cá nhân của chủ hộ:</span>
                           <div class="ct01-boxes-group" id="a4-ct01-landlord-id-boxes">
-                            <!-- 12 Digit Cells Rendered by JS -->
                           </div>
                         </div>
 
@@ -567,14 +528,11 @@
                               </tr>
                             </thead>
                             <tbody id="a4-ct01-members-tbody">
-                              <!-- 9 Rows Rendered by JS -->
                             </tbody>
                           </table>
                         </div>
 
-                        <!-- 4-Column Signatures Container -->
                         <div class="ct01-signatures-container">
-                          <!-- Col 1: Ý KIẾN CỦA CHỦ HỘ (3) -->
                           <div class="ct01-sig-col">
                             <div class="sig-header-zone">
                               <p class="sig-date-placeholder" id="a4-sig-date-1">An Nhơn, ngày.......tháng....năm.......</p>
@@ -587,7 +545,6 @@
                             <div class="sig-notes-zone empty"></div>
                           </div>
 
-                          <!-- Col 2: Ý KIẾN CỦA CHỦ SỞ HỮU CHỖ Ở HỢP PHÁP (4) -->
                           <div class="ct01-sig-col">
                             <div class="sig-header-zone">
                               <p class="sig-date-placeholder" id="a4-sig-date-2">An Nhơn, ngày.....tháng....năm...</p>
@@ -603,7 +560,6 @@
                             </div>
                           </div>
 
-                          <!-- Col 3: Ý KIẾN CỦA CHA HOẶC MẸ HOẶC NGƯỜI GIÁM HỘ (5) -->
                           <div class="ct01-sig-col">
                             <div class="sig-header-zone">
                               <p class="sig-date-placeholder" id="a4-sig-date-3">An Nhơn, ngày.......tháng....năm...</p>
@@ -617,7 +573,6 @@
                             </div>
                           </div>
 
-                          <!-- Col 4: NGƯỜI KÊ KHAI (6) -->
                           <div class="ct01-sig-col">
                             <div class="sig-header-zone">
                               <p class="sig-date-placeholder" id="a4-sig-date-4">An Nhơn, ngày....tháng...năm...</p>
@@ -633,9 +588,7 @@
                       </div>
                     </article>
 
-                    <!-- =======================================================
-                         PAGE 2: HỢP ĐỒNG CHO THUÊ, MƯỢN, Ở NHỜ
-                         ======================================================= -->
+                    <!-- A4 Trang 2: Hợp đồng cho thuê, mượn, ở nhờ -->
                     <article class="a4-page contract-doc-page" id="contract-doc-page-print">
                       <div class="contract-national-header">
                         <h3 class="national-country">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h3>
@@ -651,7 +604,6 @@
                         </p>
                         <p class="contract-intro-line">Chúng tôi gồm:</p>
 
-                        <!-- BÊN A -->
                         <div class="contract-party-block">
                           <p class="party-role-head"><strong>I. ĐẠI DIỆN BÊN CHO THUÊ, MƯỢN, Ở NHỜ (Gọi tắt là bên A).</strong></p>
                           <div class="party-flex-row">
@@ -663,7 +615,6 @@
                           <p class="party-info-row">Là chủ sở hữu của căn nhà: <span class="contract-long-value" id="a4-contract-propertyAddress">.</span></p>
                         </div>
 
-                        <!-- BÊN B -->
                         <div class="contract-party-block">
                           <p class="party-role-head"><strong>II.ĐẠI DIỆN BÊN THUÊ, MƯỢN, Ở NHỜ (Gọi tắt là bên B).</strong></p>
                           <div class="party-flex-row">
@@ -688,7 +639,6 @@
                           <p>Hợp đồng này lập thành 02 bản có giá trị tương đương, có hiệu lực kể từ ngày kí và chấm dứt khi hai bên cùng thỏa thuận. Mỗi bên giữ 01 bản để thực hiện.</p>
                         </div>
 
-                        <!-- Contract Signatures -->
                         <div class="contract-signature-table">
                           <div class="contract-sig-cell">
                             <strong class="sig-head-title">ĐẠI DIỆN BÊN A</strong>
@@ -706,14 +656,11 @@
 
                   </div>
 
-                  <!-- =========================================================
-                       INTERACTIVE DUAL SIGNATURE PADS PANEL
-                       ========================================================= -->
+                  <!-- Bảng ký chữ ký điện tử (Chủ nhà & Người kê khai) -->
                   <div class="interactive-signatures-panel no-print">
                     <h3>Ký trực tuyến văn bản A4</h3>
                     <div class="sig-pads-grid">
 
-                      <!-- Pad A: Bên A - Chủ nhà -->
                       <div class="sig-block">
                         <div class="sig-label">
                           <i data-lucide="pen-tool" style="width:16px;height:16px;color:#dc2626;"></i>
@@ -735,7 +682,6 @@
                         </div>
                       </div>
 
-                      <!-- Pad B: Bên B - Người kê khai -->
                       <div class="sig-block">
                         <div class="sig-label">
                           <i data-lucide="pen-tool" style="width:16px;height:16px;color:#0284c7;"></i>
@@ -762,7 +708,6 @@
 
                 </div>
 
-                <!-- Bottom Export Actions Bar -->
                 <div class="capan-preview-bottom-actions no-print" id="bottom-export-bar">
                   <div class="capan-output-copy">
                     <strong>Xuất hồ sơ</strong>
@@ -788,9 +733,7 @@
 
           </div>
 
-          <!-- ===============================================================
-               FORM WORKSPACE 2: CT02 (ĐƠN CỚ MẤT) & CT03 (XÁC NHẬN HẠNH KIỂM)
-               =============================================================== -->
+          <!-- Khung làm việc 2: Đơn cớ mất (CT02) & Xác nhận hạnh kiểm (CT03) -->
           <div id="form-workspace-citizen-app" class="citizen-application-workspace" hidden>
             <div class="citizen-application-toolbar no-print">
               <div class="citizen-application-toolbar-content">
@@ -829,7 +772,6 @@
                 <div class="doc-preview-wrapper">
                   <div class="a4-page-scaler" id="citizen-app-scaler">
                     <article class="a4-page citizen-application-page" id="citizen-app-a4-page">
-                      <!-- Populated dynamically by JS -->
                     </article>
                   </div>
                 </div>
@@ -837,12 +779,9 @@
             </div>
           </div>
 
-          <!-- ===============================================================
-               FORM WORKSPACE 4: ĐIỀN HỒ SƠ TẠM TRÚ THEO SỐ LƯỢNG (BATCH)
-               =============================================================== -->
+          <!-- Khung làm việc 4: Điền hồ sơ tạm trú theo số lượng lớn (Batch) -->
           <div id="form-workspace-batch" class="capan-batch-workspace" hidden>
 
-            <!-- Top Hero Banner Card -->
             <div class="capan-batch-hero-card no-print">
               <div class="batch-hero-header">
                 <div class="batch-hero-badge-wrap">
@@ -855,7 +794,6 @@
               </div>
             </div>
 
-            <!-- STEP 1: CHỌN SỐ LƯỢNG NGƯỜI ĐĂNG KÝ TẠM TRÚ -->
             <div class="capan-batch-card no-print">
               <div class="batch-card-head">
                 <div class="batch-step-badge">1</div>
@@ -877,7 +815,6 @@
                     <span class="batch-qty-unit">người</span>
                   </div>
 
-                  <!-- Quick Chips -->
                   <div class="batch-qty-chips" id="batch-qty-chips">
                     <button type="button" class="batch-chip-btn" onclick="setBatchTenantCount(1)">1 người</button>
                     <button type="button" class="batch-chip-btn" onclick="setBatchTenantCount(2)">2 người</button>
@@ -891,7 +828,6 @@
               </div>
             </div>
 
-            <!-- STEP 2: THÔNG TIN CHỦ NHÀ & CĂN NHÀ CHO THUÊ -->
             <div class="capan-batch-card no-print">
               <div class="batch-card-head">
                 <div class="batch-step-badge">2</div>
@@ -901,7 +837,6 @@
               </div>
 
               <div class="batch-card-body" style="display:flex;flex-direction:column;gap:18px;">
-                <!-- Card Chủ nhà (Bên A) - Phong cách chuẩn card QR màu Hổ phách (Amber) -->
                 <div class="capan-qr-card landlord-card">
                   <div>
                     <div class="qr-card-header">
@@ -935,7 +870,6 @@
                       </div>
                     </div>
 
-                    <!-- Inline Manual Input Drawer for Batch Landlord -->
                     <div id="manual-drawer-batch-landlord" class="qr-manual-drawer" hidden>
                       <div>
                         <label for="batch-landlord-name">Họ và tên <span style="color:#dc2626;">*</span></label>
@@ -957,7 +891,6 @@
                   </div>
                 </div>
 
-                <!-- Địa chỉ căn nhà / phòng trọ cho thuê -->
                 <div class="batch-property-card" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;padding:16px;">
                   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
                     <div style="display:flex;align-items:center;gap:10px;">
@@ -995,7 +928,6 @@
                   </div>
                 </div>
 
-                <!-- CHỮ KÝ ĐIỆN TỬ CHỦ NHÀ (BÊN A) -->
                 <div class="batch-landlord-sig-panel">
                   <div style="background:linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);border:1.5px solid #fdba74;border-radius:14px;padding:14px 16px;">
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
@@ -1012,7 +944,6 @@
                       </span>
                     </div>
 
-                    <!-- Canvas Wrapper -->
                     <div class="sig-canvas-wrapper" id="batch-sig-wrapper-landlord">
                       <canvas id="batch-sig-canvas-landlord"></canvas>
                       <div class="sig-placeholder" id="batch-sig-placeholder-landlord">
@@ -1038,7 +969,6 @@
               </div>
             </div>
 
-            <!-- STEP 3: QUÉT CCCD TỪNG NGƯỜI THUÊ THEO SỐ LƯỢNG -->
             <div class="capan-batch-card no-print">
               <div class="batch-card-head">
                 <div class="batch-step-badge">3</div>
@@ -1058,14 +988,11 @@
               </div>
 
               <div class="batch-card-body">
-                <!-- Tenants Dynamic Container -->
                 <div id="batch-tenants-list-container" class="batch-tenants-grid">
-                  <!-- Rendered dynamically by JS -->
                 </div>
               </div>
             </div>
 
-            <!-- STEP 4: XUẤT VÀ TẢI VỀ FILE .ZIP -->
             <div class="capan-batch-card batch-export-card no-print">
               <div class="batch-card-head" style="border-bottom:none;padding-bottom:0;">
                 <div class="batch-step-badge" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%);">4</div>
@@ -1075,7 +1002,6 @@
               </div>
 
               <div class="batch-card-body">
-                <!-- Export Progress Indicator (Hidden by default) -->
                 <div id="batch-export-progress-wrap" class="batch-progress-box" hidden>
                   <div class="batch-progress-bar-bg">
                     <div id="batch-progress-bar-fill" class="batch-progress-bar-fill" style="width: 0%;"></div>
@@ -1083,7 +1009,6 @@
                   <p id="batch-progress-text" class="batch-progress-status">Đang chuẩn bị dữ liệu xuất hồ sơ...</p>
                 </div>
 
-                <!-- Signature Status Checklist in Step 4 -->
                 <div class="batch-export-summary-box" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;">
                   <div style="display:flex;align-items:center;gap:8px;">
                     <i data-lucide="shield-check" style="width:18px;height:18px;color:#10b981;"></i>
@@ -1095,7 +1020,6 @@
                   </div>
                 </div>
 
-                <!-- Action Button -->
                 <div class="batch-export-action-row">
                   <button type="button" id="btn-export-batch-zip" class="capan-btn-coral-large batch-big-btn" onclick="exportBatchZip()">
                     <i data-lucide="archive" style="width:20px;height:20px;"></i>
@@ -1107,9 +1031,7 @@
 
           </div>
 
-          <!-- ===============================================================
-               FORM WORKSPACE 3: DEVELOPING (CT04 / CT07)
-               =============================================================== -->
+          <!-- Khung làm việc 3: Mẫu đơn khác (CT04 / CT07) -->
           <div id="form-workspace-developing" class="capan-form-developing-card" hidden>
             <div class="developing-inner-card">
               <div class="developing-content">
@@ -1134,9 +1056,7 @@
 
         </div>
 
-        <!-- -----------------------------------------------------------------
-             SUB-VIEW A2: TRA CỨU TIẾN ĐỘ HỒ SƠ
-             ----------------------------------------------------------------- -->
+        <!-- Sub-view A2: Tra cứu tiến độ hồ sơ -->
         <div id="subview-lookup" class="capan-lookup-workspace" hidden>
           <div class="capan-lookup-card">
             <div class="capan-lookup-header">
@@ -1158,9 +1078,7 @@
           </div>
         </div>
 
-        <!-- -----------------------------------------------------------------
-             SUB-VIEW A3: LIÊN HỆ CSKV (31 KHU VỰC)
-             ----------------------------------------------------------------- -->
+        <!-- Sub-view A3: Liên hệ CSKV (31 khu vực) -->
         <div id="subview-appointment" hidden>
           <div class="capan-officer-header-box">
             <div class="capan-officer-search-inputs">
@@ -1181,9 +1099,7 @@
 
       </div>
 
-      <!-- ===================================================================
-           VIEW B: KHAI BÁO CƯ TRÚ NHANH
-           =================================================================== -->
+      <!-- View B: Khai báo cư trú nhanh -->
       <div id="view-declaration" hidden>
         <div style="max-width:780px;margin:0 auto;">
           <button type="button" class="btn-link" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;font-size:14px;" onclick="switchMainTab('utilities', 'ct01')">
@@ -1227,9 +1143,7 @@
         </div>
       </div>
 
-      <!-- ===================================================================
-           VIEW C: SỔ TAY HƯỚNG DẪN SỬ DỤNG
-           =================================================================== -->
+      <!-- View C: Sổ tay hướng dẫn sử dụng -->
       <div id="view-guide" class="capan-guide" hidden>
         <div class="capan-guide-intro">
           <span>SỔ TAY HƯỚNG DẪN CÔNG DÂN &amp; CÁN BỘ</span>
@@ -1287,9 +1201,7 @@
 
     </div>
 
-    <!-- =====================================================================
-         3. FOOTER
-         ===================================================================== -->
+    <!-- 3. Footer -->
     <footer class="capan-footer-wrap no-print">
       <div style="max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;">
         <div>
@@ -1304,13 +1216,10 @@
 
   </main>
 
-  <!-- =======================================================================
-       MODAL 1: QUÉT MÃ QR THẺ CCCD (CAMERA + KHOANH VÙNG ẢNH + DỮ LIỆU MẪU)
-       ======================================================================= -->
+  <!-- Modal 1: Quét mã QR thẻ CCCD -->
   <div class="capan-modal-backdrop no-print" id="qr-scanner-modal" hidden>
     <div class="capan-modal-box">
 
-      <!-- Modal Header -->
       <div class="capan-modal-header">
         <div class="qr-scanner-heading">
           <span class="qr-scanner-title-icon">
@@ -1325,10 +1234,8 @@
         </button>
       </div>
 
-      <!-- Modal Body -->
       <div class="capan-modal-body" style="display:flex;flex-direction:column;gap:12px;">
 
-        <!-- 1. QUÉT MÃ QR CĂN CƯỚC -->
         <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
             <div style="display:flex;align-items:center;gap:8px;">
@@ -1340,12 +1247,10 @@
                 <i data-lucide="camera" style="width:14px;height:14px;"></i>
                 <span>Quét QR căn cước</span>
               </button>
-              <!-- Hidden fallback input -->
               <input type="file" id="qr-file-input" accept="image/*,.heic,.heif" hidden onchange="handleAiImageUpload(event)" />
             </div>
           </div>
 
-          <!-- Live Camera Viewport -->
           <div class="camera-viewport-wrapper" id="qr-camera-wrapper" style="margin:0;">
             <div class="camera-viewport" id="qr-camera-viewport" title="Chạm để lấy nét">
               <video id="qr-camera-video" playsinline webkit-playsinline autoplay muted class="camera-video"></video>
@@ -1364,10 +1269,8 @@
             </div>
           </div>
 
-          <!-- Camera Warning Box (if camera unavailable) -->
           <div id="qr-camera-warning" style="background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:10px 12px;border-radius:8px;font-size:12px;" hidden></div>
 
-          <!-- Image Cropper Panel (When user uploads an image) -->
           <div class="qr-upload-crop-panel" id="qr-crop-panel" hidden style="margin:0;">
             <div style="display:flex;align-items:center;justify-content:space-between;">
               <span style="font-size:12px;font-weight:600;color:#0f172a;">Khoanh vùng mã QR hoặc quét cả ảnh:</span>
@@ -1395,7 +1298,6 @@
           </div>
         </div>
 
-        <!-- 2. ĐỌC DỮ LIỆU TRÊN CĂN CƯỚC BẰNG AI -->
         <div id="ai-vision-panel" style="background:linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);border:1px solid #7dd3fc;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
             <div style="display:flex;align-items:center;gap:8px;">
@@ -1406,15 +1308,12 @@
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:6px;">
-              <!-- Nút Chụp từ Camera đang chạy (nếu người dùng đang bật camera ở mục 1) -->
               <button type="button" id="btn-ai-camera-snap" class="capan-btn-coral-large" onclick="triggerAiVisionFromCamera()" style="display:none;height:32px;font-size:12px;padding:0 12px;background:linear-gradient(135deg,#0284c7,#0d9488);border:none;align-items:center;gap:6px;">
                 <i data-lucide="camera" style="width:14px;height:14px;"></i>
                 <span>Chụp & Đọc AI</span>
               </button>
-              <!-- Input file AI độc lập, ẩn an toàn trong DOM để không bao giờ bị ghi đè -->
               <input type="file" id="ai-file-input" accept="image/*,.heic,.heif" style="display:none;" onchange="handleAiImageUpload(event)" />
 
-              <!-- Nút chính: Bấm vào cho phép Chụp ảnh / Tải hình / Chọn tệp ngay trên mọi thiết bị -->
               <button type="button" id="btn-trigger-ai-vision" class="capan-btn-coral-large" onclick="triggerAiFileInput()" style="height:32px;font-size:12px;padding:0 14px;background:linear-gradient(135deg,#0284c7,#0d9488);border:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer;" title="Chụp ảnh hoặc chọn tệp ảnh CCCD để AI đọc chữ">
                 <i data-lucide="sparkles" style="width:14px;height:14px;"></i>
                 <span id="btn-trigger-ai-vision-text">Đọc bằng AI</span>
@@ -1422,14 +1321,12 @@
             </div>
           </div>
 
-          <!-- AI Status Indicator during scan -->
           <div id="ai-vision-status-indicator" style="display:none;background:#ffffff;border:1px dashed #0284c7;border-radius:8px;padding:8px 12px;font-size:12px;color:#0369a1;align-items:center;gap:8px;">
             <span class="animate-spin"><i data-lucide="loader-2" style="width:14px;height:14px;"></i></span>
             <span id="ai-vision-status-text">Đang phân tích hình ảnh CCCD bằng AI...</span>
           </div>
         </div>
 
-        <!-- 3. NHẬP CHUỖI DỮ LIỆU THEO ĐỊNH DẠNG -->
         <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;">
           <div style="display:flex;align-items:center;gap:8px;">
             <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#64748b;color:#fff;font-size:12px;font-weight:700;">3</span>
@@ -1444,7 +1341,6 @@
           </div>
         </div>
 
-        <!-- KẾT QUẢ ĐÃ QUÉT -->
         <section class="scanned-card" id="qr-scanned-result-card" hidden aria-live="polite">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
             <div style="display:flex;align-items:center;gap:8px;">
@@ -1475,7 +1371,6 @@
               <dd id="scanned-res-address"></dd>
             </div>
           </dl>
-          <!-- Nút áp dụng dữ liệu trực tiếp trong thẻ kết quả để luôn thấy ngay -->
           <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #bbf7d0;">
             <button type="button" class="capan-btn-coral-large" id="btn-apply-qr-data-card" style="width:100%;height:44px;font-size:14px;background:linear-gradient(135deg, #16a34a 0%, #15803d 100%);box-shadow:0 4px 14px rgba(22, 163, 74, 0.3);" onclick="confirmApplyScannedQr()">
               <i data-lucide="check-circle-2" style="width:18px;height:18px;"></i>
@@ -1486,7 +1381,6 @@
 
       </div>
 
-      <!-- Modal Footer -->
       <div class="capan-modal-footer">
         <button type="button" class="capan-btn-outline" onclick="closeQrScannerModal()" style="min-width:110px;">Đóng</button>
       </div>
@@ -1494,9 +1388,7 @@
     </div>
   </div>
 
-  <!-- =======================================================================
-       MODAL 2: THÊM / SỬA THÀNH VIÊN CÙNG THAY ĐỔI (MỤC 11 CT01)
-       ======================================================================= -->
+  <!-- Modal 2: Thêm / Sửa thành viên cùng thay đổi (Mục 11 CT01) -->
   <div class="capan-modal-backdrop no-print" id="member-modal" hidden>
     <div class="capan-modal-box" style="max-width:540px;">
       <div class="capan-modal-header">
@@ -1515,7 +1407,6 @@
 
       <form id="member-form" onsubmit="saveMemberForm(event)">
         <div class="capan-modal-body">
-          <!-- Hero scan action button -->
           <div class="member-scan-action-wrap">
             <button type="button" class="btn-scan-member-hero" onclick="openQrScannerModal('member')">
               <span class="btn-scan-member-icon">
@@ -1568,9 +1459,7 @@
     </div>
   </div>
 
-  <!-- =======================================================================
-       MODAL 3: NHẬP THÔNG TIN ĐƠN CỚ MẤT (CT02) / XÁC NHẬN HẠNH KIỂM (CT03)
-       ======================================================================= -->
+  <!-- Modal 3: Đơn cớ mất (CT02) & Xác nhận hạnh kiểm (CT03) -->
   <div class="capan-modal-backdrop no-print" id="citizen-app-modal" hidden>
     <div class="capan-modal-box" style="max-width:760px;">
       <div class="capan-modal-header">
@@ -1589,7 +1478,6 @@
 
       <div class="capan-modal-body">
         <div id="citizen-app-fields-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;">
-          <!-- Dynamic fields rendered by JS -->
         </div>
       </div>
 
@@ -1600,9 +1488,7 @@
     </div>
   </div>
 
-  <!-- =======================================================================
-       MODAL 4: TẢI 02 ẢNH HỒ SƠ A4 (CT01 & HỢP ĐỒNG CHO IPHONE / SAFARI & PC)
-       ======================================================================= -->
+  <!-- Modal 4: Tải 02 ảnh hồ sơ A4 (CT01 & Hợp đồng) -->
   <div class="capan-modal-backdrop no-print" id="export-images-modal" hidden>
     <div class="capan-modal-box" style="max-width:720px;">
       <div class="capan-modal-header">
@@ -1628,11 +1514,7 @@
           </div>
         </div>
 
-
-
-        <!-- 2 Khung xem trước A4 chuẩn cân đối -->
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;">
-          <!-- Card Trang 1: CT01 -->
           <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;text-align:center;">
             <strong style="font-size:14px;color:#0f172a;">Trang 1: Tờ khai CT01</strong>
             <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:6px;max-height:300px;overflow:hidden;display:flex;justify-content:center;align-items:center;">
@@ -1644,7 +1526,6 @@
             </a>
           </div>
 
-          <!-- Card Trang 2: Hợp đồng -->
           <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;text-align:center;">
             <strong style="font-size:14px;color:#0f172a;">Trang 2: Hợp đồng cư trú</strong>
             <div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:6px;max-height:300px;overflow:hidden;display:flex;justify-content:center;align-items:center;">
@@ -1674,9 +1555,7 @@
     </div>
   </div>
 
-  <!-- =======================================================================
-       MODAL 5: KẾT QUẢ XUẤT HỒ SƠ TẠM TRÚ THEO SỐ LƯỢNG (IPHONE / SAFARI & PC)
-       ======================================================================= -->
+  <!-- Modal 5: Kết quả xuất hồ sơ tạm trú theo số lượng lớn -->
   <div class="capan-modal-backdrop no-print" id="batch-export-modal" hidden>
     <div class="capan-modal-box" style="max-width:840px;">
       <div class="capan-modal-header">
@@ -1696,7 +1575,6 @@
 
       <div class="capan-modal-body" style="display:flex;flex-direction:column;gap:16px;max-height:calc(85vh - 130px);overflow-y:auto;">
         
-        <!-- Hướng dẫn cho iPhone / Safari & PC -->
         <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px 14px;color:#1e40af;font-size:13px;line-height:1.5;display:flex;align-items:flex-start;gap:10px;">
           <i data-lucide="info" style="width:18px;height:18px;color:#2563eb;flex-shrink:0;margin-top:2px;"></i>
           <div>
@@ -1706,7 +1584,6 @@
           </div>
         </div>
 
-        <!-- Thanh nút tải toàn bộ file ZIP & Chia sẻ -->
         <div style="background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:14px;padding:14px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;">
           <div>
             <strong style="display:block;font-size:14px;color:#0f172a;">Tập tin nén (.ZIP):</strong>
@@ -1724,14 +1601,12 @@
           </div>
         </div>
 
-        <!-- Danh sách từng người thuê với đường link tải riêng CT01 & Hợp đồng -->
         <div>
           <div style="font-size:13.5px;font-weight:700;color:#0f172a;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
             <i data-lucide="users" style="width:16px;height:16px;color:#dc2626;"></i>
             <span>DANH SÁCH FILE TỪNG NGƯỜI THUÊ:</span>
           </div>
           <div id="batch-export-results-list" style="display:flex;flex-direction:column;gap:12px;">
-            <!-- Rendered dynamically by JS -->
           </div>
         </div>
 
@@ -1743,7 +1618,7 @@
     </div>
   </div>
         
-  <!-- Main Controller Script (Deferred with cache busting) -->
+  <!-- Scripts -->
   <script defer src="js/ct01.js?v=20261023c"></script>
 </body>
 </html>

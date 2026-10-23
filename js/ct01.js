@@ -2008,7 +2008,7 @@ async function executeAiVisionOcr() {
 
     // BƯỚC 2: Thử gọi Cloud AI Backend Proxy (/api/scan-cccd)
     if (!parsedData) {
-      if (statusText) statusText.textContent = '🤖 Đang kết nối AI để đọc chữ trên thẻ...';
+      if (statusText) statusText.textContent = '🤖 Đang kết nối Airku AI trực tiếp...';
       let backendUrl = '/api/scan-cccd';
       if (window.location.protocol === 'file:' || !window.location.host) {
         backendUrl = 'http://localhost:8000/api/scan-cccd';
@@ -2051,7 +2051,7 @@ async function executeAiVisionOcr() {
       const apiKey = getStoredGeminiKey() || DEFAULT_GEMINI_API_KEY;
       if (apiKey) {
         try {
-          if (statusText) statusText.textContent = '🤖 Đang kết nối Google Gemini AI trực tiếp...';
+          if (statusText) statusText.textContent = '🤖 Đang kết nối Airku AI trực tiếp...';
           const base64Data = base64Jpeg.replace(/^data:image\/[a-z]+;base64,/, '');
           const systemPrompt = `Bạn là hệ thống AI trích xuất thông tin Căn cước công dân (CCCD) Việt Nam.
 Hãy đọc các chữ in trên mặt trước (hoặc mặt sau) của thẻ CCCD trong ảnh và trả về một đối tượng JSON duy nhất có các trường:

@@ -5,14 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DOANTM Travel ✕ Goholic Travel | Thỏa Chí Xê Dịch - Hệ Thống Tour Quốc Tế Chính Thức</title>
   <meta name="description" content="DOANTM hợp tác liên kết chính thức cùng Goholic Travel – Thỏa chí xê dịch. Khám phá 26+ hành trình quốc tế: Hàn Quốc, Cáp Nhĩ Tân, Trung Hoa, Indonesia, Ma-rốc, Ai Cập, Thổ Nhĩ Kỳ, Sri Lanka, Iran - Pakistan. 10-15 khách/đoàn • Dịch vụ cao cấp • Tour No Shopping." />
+  <!-- Website Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg?v=20261023b" />
+  <link rel="icon" type="image/png" href="assets/logo.png?v=20261023b" />
+  <link rel="shortcut icon" href="favicon.ico?v=20261023b" />
+  <link rel="apple-touch-icon" href="assets/logo.png?v=20261023b" />
 
-  <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -41,7 +44,6 @@
     }
   </script>
 
-  <!-- Lucide Icons -->
   <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 
   <!-- Custom CSS -->
@@ -50,21 +52,16 @@
 
 <body class="bg-[#F8FAFC] text-slate-800 antialiased selection:bg-[#31c0cc] selection:text-white min-h-screen flex flex-col justify-between">
 
-  <!-- =========================================================================
-       1. TOP NAVIGATION BAR (DOANTM x GOHOLIC TRAVEL CO-BRANDED HEADER)
-       ========================================================================= -->
+  <!-- 1. Top Navigation Bar (DOANTM x Goholic) -->
   <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-slate-200/90 shadow-sm transition-all duration-300">
     <div class="capan-header-top-bar" style="height:3px;background:linear-gradient(90deg, #dc2626 0%, #ea580c 35%, #0284c7 70%, #10b981 100%);width:100%;"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20 gap-4">
         
-        <!-- Logo & Brand with Goholic Co-branding -->
         <a href="index.html" class="flex items-center space-x-3 group flex-shrink-0" title="DOANTM Travel - Goholic">
-          <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-red-600 to-red-950 flex items-center justify-center p-0.5 shadow-md shadow-red-600/30 group-hover:scale-105 transition-transform flex-shrink-0">
-            <div class="w-full h-full bg-[#0D0D0D] rounded-[10px] flex items-center justify-center">
-              <i data-lucide="compass" class="w-6 h-6 text-red-500"></i>
-            </div>
+          <div class="w-11 h-11 rounded-xl bg-white border border-slate-200 flex items-center justify-center p-1 shadow-sm group-hover:scale-105 transition-transform flex-shrink-0">
+            <img src="assets/logo.svg?v=20261023b" alt="DOANTM Logo" class="w-9 h-9 rounded-lg object-contain" />
           </div>
           <div class="flex items-center gap-3">
             <div>
@@ -75,14 +72,12 @@
               <p class="text-[11px] text-slate-500 font-medium whitespace-nowrap">Liên kết cùng Goholic Travel</p>
             </div>
 
-            <!-- Co-brand divider & Goholic Logo -->
             <div class="hidden sm:flex items-center pl-3 border-l border-slate-200 flex-shrink-0">
               <img src="assets/goholic-logo-badge.png" alt="Goholic Travel" class="h-9 rounded-lg object-contain border border-sky-200 shadow-xs" />
             </div>
           </div>
         </a>
 
-        <!-- Navigation Links (Single Row, No Wrapping) -->
         <nav class="hidden lg:flex items-center space-x-5 text-sm font-semibold text-slate-600 whitespace-nowrap">
           <a href="index.html" class="hover:text-slate-900 transition flex items-center gap-1.5 whitespace-nowrap">
             <i data-lucide="home" class="w-4 h-4 text-slate-400"></i>
@@ -105,12 +100,10 @@
           </button>
         </nav>
 
-        <!-- Mobile Hamburger Toggle -->
         <button type="button" id="tours-mobile-menu-btn" class="lg:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 transition" aria-label="Mở menu điều hướng">
           <i data-lucide="menu" class="w-5 h-5 text-slate-800"></i>
         </button>
 
-        <!-- Hotline & Call Action -->
         <div class="flex items-center space-x-2.5 flex-shrink-0">
           <button onclick="window.toursAppInstance.openLookupModal()" class="lg:hidden p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700">
             <i data-lucide="receipt" class="w-5 h-5 text-[#29aab4]"></i>
@@ -126,7 +119,6 @@
             </div>
     </div>
 
-    <!-- Mobile Navigation Drawer -->
     <div id="tours-mobile-nav" class="hidden lg:hidden bg-white/95 backdrop-blur-xl border-t border-slate-200 px-4 py-4 space-y-2 shadow-lg">
       <a href="#about-goholic" class="block py-2.5 px-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-[#29aab4] transition">
         Về Goholic ✕ DOANTM
@@ -149,13 +141,10 @@
     </div>
   </header>
 
-  <!-- =========================================================================
-       2. HERO SECTION & GOHOLIC SEARCH BAR
-       ========================================================================= -->
+  <!-- 2. Hero Section & Bộ lọc tìm kiếm Tour -->
   <section class="relative pt-12 pb-16 overflow-hidden border-b border-slate-200 bg-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
       
-      <!-- Goholic Partnership Endorsement Pill -->
       <div class="inline-flex flex-wrap items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200 text-xs font-semibold text-slate-700 shadow-xs mb-5">
         <span class="px-2 py-0.5 rounded-full bg-[#f8af22]/15 text-amber-800 font-extrabold text-[10px] uppercase tracking-wider">Đối Tác Liên Kết</span>
         <span class="text-slate-700 font-bold">DOANTM Platform</span>
@@ -172,11 +161,9 @@
         Khám phá 26+ hành trình du lịch quốc tế đặc sắc liên kết cùng <strong>Goholic Travel</strong>. Cam kết: <strong class="text-[#0f2454]">10 - 15 khách/đoàn • Dịch vụ cao cấp • 100% Tour No Shopping</strong>.
       </p>
 
-      <!-- Goholic 4-Column Search & Filter Box -->
       <div class="mt-8 max-w-5xl mx-auto bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/90 shadow-lg">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           
-          <!-- 1. Từ khóa -->
           <div class="relative lg:col-span-2">
             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
               <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
@@ -189,7 +176,6 @@
             />
           </div>
 
-          <!-- 2. Điểm đến -->
           <div>
             <select id="filter-destination-select" class="w-full px-3.5 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#31c0cc] text-xs sm:text-sm text-slate-700 font-semibold outline-none">
               <option value="">📍 Điểm đến (Tất cả)</option>
@@ -205,7 +191,6 @@
             </select>
           </div>
 
-          <!-- 3. Thời lượng -->
           <div>
             <select id="filter-duration-select" class="w-full px-3.5 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#31c0cc] text-xs sm:text-sm text-slate-700 font-semibold outline-none">
               <option value="">🕒 Thời lượng</option>
@@ -215,7 +200,6 @@
             </select>
           </div>
 
-          <!-- 4. Nút Tìm kiếm ngay -->
           <div>
             <button onclick="window.toursAppInstance.applyAdvancedFilters(); document.getElementById('tours-section').scrollIntoView({behavior:'smooth'});" class="w-full h-full py-3 px-4 rounded-xl bg-[#31c0cc] hover:bg-[#28a8b3] text-white font-extrabold text-xs sm:text-sm shadow-md shadow-cyan-500/20 transition flex items-center justify-center gap-2">
               <i data-lucide="search" class="w-4 h-4"></i>
@@ -225,7 +209,6 @@
 
         </div>
 
-        <!-- Category Filter Pills -->
         <div class="flex items-center justify-center flex-wrap gap-2 pt-3 mt-3 border-t border-slate-100">
           <button data-filter="all" class="tour-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition border border-[#31c0cc] bg-[#31c0cc] text-white shadow-sm">
             Tất cả 26 Tour
@@ -266,14 +249,11 @@
     </div>
   </section>
 
-  <!-- =========================================================================
-       2.5 ABOUT SECTION ("CÔNG TY DU LỊCH HÀNG ĐẦU: GOHOLIC – ĐỒNG HÀNH TRÊN MỌI HÀNH TRÌNH")
-       ========================================================================= -->
+  <!-- 2.5 Giới thiệu đối tác Goholic & DOANTM -->
   <section id="about-goholic" class="py-14 bg-white border-b border-slate-200/80">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
         
-        <!-- Left Text Content (Exact Goholic Copy + DOANTM Partnership Note) -->
         <div class="lg:col-span-7 space-y-5">
           <div class="inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.2em] text-[#29aab4]">
             <span>Công ty du lịch hàng đầu</span>
@@ -289,7 +269,6 @@
             Bạn khao khát những chuyến đi tự do, đậm chất trải nghiệm nhưng vẫn đảm bảo sự tiện nghi và an toàn? Hãy để <strong>Goholic</strong> đồng hành cùng bạn! Với những hành trình được thiết kế tinh tế, dịch vụ tận tâm và những điểm đến độc đáo, chúng tôi mang đến cho bạn cơ hội khám phá thế giới theo cách trọn vẹn nhất. Đi xa hơn, cảm nhận nhiều hơn – cùng Goholic viết nên những kỷ niệm đáng nhớ!
           </p>
 
-          <!-- DOANTM Official Affiliate Highlight Box -->
           <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-50/80 via-white to-cyan-50/80 border border-cyan-200/80 flex items-start gap-3.5 shadow-xs">
             <img src="assets/goholic-logo-badge.png" alt="Goholic Travel" class="h-11 rounded-xl object-contain border border-sky-200 flex-shrink-0 mt-0.5" />
             <div class="text-xs sm:text-[13px] text-slate-700 leading-relaxed">
@@ -298,7 +277,6 @@
             </div>
           </div>
 
-          <!-- 3 Core Checkmarks from Goholic Homepage -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2">
             <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
               <div class="w-8 h-8 rounded-full bg-[#31c0cc]/15 text-[#29aab4] flex items-center justify-center flex-shrink-0">
@@ -323,7 +301,6 @@
           </div>
         </div>
 
-        <!-- Right Image Frame from Goholic Homepage -->
         <div class="lg:col-span-5">
           <div class="relative mx-auto max-w-md lg:max-w-none">
             <div class="absolute -inset-3 rounded-3xl bg-gradient-to-tr from-[#f8af22]/30 via-[#31c0cc]/30 to-emerald-400/20 blur-xl pointer-events-none"></div>
@@ -344,13 +321,10 @@
     </div>
   </section>
 
-  <!-- =========================================================================
-       3. TOURS LIST GRID SECTION ("CHỌN NƠI BẠN MUỐN KHÁM PHÁ - CÁC TOUR NỔI BẬT")
-       ========================================================================= -->
+  <!-- 3. Danh sách tour nổi bật -->
   <section id="tours-section" class="py-14 bg-[#F8FAFC] flex-1">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
-      <!-- Section Header matching Goholic's exact headings & colors -->
       <div class="flex flex-col md:flex-row md:items-end justify-between pb-6 mb-8 border-b border-slate-200 gap-4">
         <div>
           <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.18em] text-[#f8af22] mb-1">
@@ -375,17 +349,13 @@
         </div>
       </div>
 
-      <!-- Tour Cards Container (Grid 3 columns like Goholic screenshot) -->
       <div id="tours-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-        <!-- Rendered dynamically by js/tours.js -->
       </div>
 
     </div>
   </section>
 
-  <!-- =========================================================================
-       3.5 GOHOLIC STATS BANNER (199 Chuyến bay | 68 Resort | 39 Tour biển | 168 Khách sạn)
-       ========================================================================= -->
+  <!-- 3.5 Goholic Stats Banner -->
   <section class="py-12 bg-gradient-to-r from-[#0f2454] via-[#13316e] to-[#0f4c5c] text-white relative overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
@@ -426,9 +396,7 @@
     </div>
   </section>
 
-  <!-- =========================================================================
-       3.6 TRAVEL BLOG SECTION ("TRẢI NGHIỆM DU LỊCH - TRAVEL BLOG")
-       ========================================================================= -->
+  <!-- 3.6 Travel Blog - Cẩm nang du lịch -->
   <section id="blog-section" class="py-14 bg-white border-t border-slate-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="mb-8">
@@ -441,28 +409,22 @@
       </div>
 
       <div id="goholic-blogs-grid" class="grid grid-cols-1 md:grid-cols-3 gap-7">
-        <!-- Rendered dynamically by js/tours.js -->
       </div>
     </div>
   </section>
 
-  <!-- =========================================================================
-       4. MODAL 1: BÀI VIẾT & LỊCH TRÌNH CHI TIẾT TOUR GOHOLIC
-       ========================================================================= -->
+  <!-- Modal 1: Chi tiết tour & Lịch trình -->
   <div id="modal-tour-detail" class="modal-backdrop fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
     <div class="bg-white border border-slate-200 text-slate-800 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
       
-      <!-- Header with Hero Image Banner (Tỉ lệ 16:9 sắc nét, không bị che chữ) -->
       <div class="relative w-full aspect-video max-h-[380px] bg-slate-950 overflow-hidden flex-shrink-0" style="aspect-ratio: 16/9;">
         <img id="detail-hero-img" src="" alt="Tour Banner" class="w-full h-full object-contain sm:object-cover" />
 
-        <!-- Close button -->
         <button onclick="window.toursAppInstance.closeTourDetail()" class="absolute top-3.5 right-3.5 z-20 w-10 h-10 rounded-full bg-black/75 hover:bg-black/95 backdrop-blur-md text-white flex items-center justify-center transition border border-white/20 shadow-lg" aria-label="Đóng">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <!-- Top details Bar bên dưới banner (Đầy đủ thông tin, không che hình) -->
       <div class="px-6 py-4 bg-slate-900 text-white border-b border-slate-800 space-y-2 flex-shrink-0">
         <div class="flex flex-wrap items-center gap-2">
           <span id="detail-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-[#31c0cc] text-white uppercase tracking-wider shadow"></span>
@@ -472,7 +434,6 @@
         <h2 id="detail-title" class="text-lg sm:text-xl font-extrabold text-white leading-snug uppercase"></h2>
       </div>
 
-      <!-- Quick Metadata Bar -->
       <div class="px-6 py-3.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-600 gap-3">
         <div class="flex items-center gap-2">
           <i data-lucide="plane" class="w-4 h-4 text-[#29aab4]"></i>
@@ -489,7 +450,6 @@
         </div>
       </div>
 
-      <!-- Tabs Navigation -->
       <div class="px-6 pt-3 bg-white border-b border-slate-200 flex gap-6 text-xs sm:text-sm font-bold overflow-x-auto">
         <button data-tab="highlights" class="detail-tab-btn pb-3 border-b-2 border-[#31c0cc] text-[#29aab4] transition whitespace-nowrap">
           Giới thiệu &amp; Trải nghiệm đặc biệt
@@ -502,12 +462,9 @@
         </button>
       </div>
 
-      <!-- Modal Body (Scrollable Article) -->
       <div class="p-6 overflow-y-auto flex-1 space-y-6 text-sm">
         
-        <!-- PANE 1: HIGHLIGHTS & GIỚI THIỆU -->
         <div id="tab-pane-highlights" class="detail-tab-pane space-y-5">
-          <!-- Goholic Partner Endorsement Box -->
           <div class="p-3.5 rounded-2xl bg-gradient-to-r from-cyan-50 via-white to-amber-50 border border-cyan-200 flex items-center gap-3.5 shadow-xs">
             <img src="assets/goholic-logo-badge.png" alt="Goholic Travel" class="h-10 rounded-lg object-contain border border-sky-200 shadow-xs flex-shrink-0" />
             <div class="text-xs">
@@ -516,7 +473,6 @@
             </div>
           </div>
 
-          <!-- Head Meta Badges -->
           <div id="detail-head-meta" class="flex flex-wrap gap-2"></div>
 
           <div>
@@ -530,11 +486,9 @@
               Những trải nghiệm đặc biệt trong chuyến đi
             </h4>
             <ul id="detail-highlights-list" class="space-y-2.5">
-              <!-- Rendered by js/tours.js -->
             </ul>
           </div>
 
-          <!-- Gallery Images from Goholic -->
           <div id="detail-gallery-wrap" class="space-y-2.5 hidden">
             <h4 class="text-xs font-extrabold text-[#0f2454] uppercase tracking-wider flex items-center gap-2">
               <i data-lucide="images" class="w-4 h-4 text-[#31c0cc]"></i>
@@ -544,18 +498,15 @@
           </div>
         </div>
 
-        <!-- PANE 2: LỊCH TRÌNH CHI TIẾT TỪNG NGÀY -->
         <div id="tab-pane-itinerary" class="detail-tab-pane hidden space-y-4">
           <div class="flex items-center justify-between pb-2 border-b border-slate-200 text-xs text-slate-500">
             <span>Chương trình chi tiết từng ngày chuẩn Goholic Travel</span>
             <span class="text-[#29aab4] font-bold">Tour No Shopping • Dịch vụ cao cấp</span>
           </div>
           <div id="detail-itinerary-list" class="space-y-2 pt-2">
-            <!-- Rendered by js/tours.js -->
           </div>
         </div>
 
-        <!-- PANE 3: DỊCH VỤ BAO GỒM / KHÔNG BAO GỒM -->
         <div id="tab-pane-services" class="detail-tab-pane hidden space-y-5">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             
@@ -577,7 +528,6 @@
 
           </div>
 
-          <!-- Visa Guide Notice -->
           <div class="p-5 rounded-2xl bg-amber-50 border border-amber-200 space-y-2">
             <h5 class="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
               <i data-lucide="shield-check" class="w-4 h-4 text-amber-600"></i>
@@ -589,7 +539,6 @@
 
       </div>
 
-      <!-- Footer Action -->
       <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-4">
         <button onclick="window.toursAppInstance.closeTourDetail()" class="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-300 transition shadow-xs">
           Đóng
@@ -605,9 +554,7 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       4.5 MODAL BLOG READER: ĐỌC BÀI VIẾT TRAVEL BLOG GOHOLIC
-       ========================================================================= -->
+  <!-- Modal 2: Đọc bài viết Travel Blog -->
   <div id="modal-blog-detail" class="modal-backdrop fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
     <div class="bg-white border border-slate-200 text-slate-800 rounded-3xl shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
       <div class="relative h-60 sm:h-72 overflow-hidden flex-shrink-0">
@@ -627,7 +574,6 @@
       </div>
 
       <div id="blog-detail-content" class="p-6 overflow-y-auto flex-1 space-y-4">
-        <!-- Rendered by js/tours.js -->
       </div>
 
       <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
@@ -642,13 +588,10 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       5. MODAL 2: FORM ĐẶT TOUR (LIGHT THEME)
-       ========================================================================= -->
+  <!-- Modal 3: Đặt tour -->
   <div id="modal-booking" class="modal-backdrop fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
     <div class="bg-white border border-slate-200 text-slate-800 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
       
-      <!-- Header -->
       <div class="px-6 py-4 bg-gradient-to-r from-[#31c0cc] to-emerald-600 text-white flex items-center justify-between">
         <div class="flex items-center space-x-3">
           <div class="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
@@ -664,10 +607,8 @@
         </button>
       </div>
 
-      <!-- Form Body -->
       <form id="booking-form" class="p-6 overflow-y-auto flex-1 space-y-5 text-xs sm:text-sm">
         
-        <!-- Selected Tour Summary Card -->
         <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex gap-4 items-center">
           <img id="booking-tour-img" src="" alt="Tour" class="w-20 h-20 rounded-xl object-cover flex-shrink-0" />
           <div class="space-y-1">
@@ -681,7 +622,6 @@
           </div>
         </div>
 
-        <!-- Section 1: Customer Contact Info -->
         <div class="space-y-3">
           <h4 class="text-xs font-bold text-[#29aab4] uppercase tracking-wider flex items-center gap-1.5">
             <i data-lucide="user" class="w-4 h-4"></i>
@@ -713,7 +653,6 @@
           </div>
         </div>
 
-        <!-- Section 2: Passengers count -->
         <div class="space-y-3 pt-2 border-t border-slate-200">
           <h4 class="text-xs font-bold text-[#29aab4] uppercase tracking-wider flex items-center gap-1.5">
             <i data-lucide="users" class="w-4 h-4"></i>
@@ -739,7 +678,6 @@
           </div>
         </div>
 
-        <!-- Section 3: Payment Type Selection -->
         <div class="space-y-3 pt-2 border-t border-slate-200">
           <h4 class="text-xs font-bold text-[#29aab4] uppercase tracking-wider flex items-center gap-1.5">
             <i data-lucide="credit-card" class="w-4 h-4"></i>
@@ -768,7 +706,6 @@
           </div>
         </div>
 
-        <!-- Section 3.5: Mã Voucher & Ưu đãi mặc định nền tảng DOANTM -->
         <div class="space-y-2.5 pt-2 border-t border-slate-200">
           <div class="flex items-center justify-between">
             <h4 class="text-xs font-bold text-[#29aab4] uppercase tracking-wider flex items-center gap-1.5">
@@ -780,7 +717,6 @@
             </span>
           </div>
 
-          <!-- Default DOANTM Platform Discount Banner -->
           <div class="p-3 rounded-xl bg-gradient-to-r from-emerald-50 via-teal-50/70 to-cyan-50 border border-emerald-200 flex items-center justify-between gap-2">
             <div class="flex items-center gap-2 text-xs text-emerald-950">
               <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 flex-shrink-0"></i>
@@ -789,7 +725,6 @@
             <span class="font-extrabold text-xs sm:text-sm text-emerald-700 whitespace-nowrap">-500.000 đ</span>
           </div>
 
-          <!-- Voucher Code Input Box -->
           <div class="flex gap-2">
             <div class="relative flex-1">
               <input
@@ -811,13 +746,11 @@
           <p id="voucher-feedback-msg" class="text-[11px] text-slate-500 hidden"></p>
         </div>
 
-        <!-- Special Request Note -->
         <div>
           <label class="block text-slate-700 text-xs mb-1 font-semibold">Ghi chú yêu cầu đặc biệt (tùy chọn)</label>
           <textarea id="book-note" rows="2" placeholder="Ví dụ: Ăn chay, yêu cầu phòng ngủ riêng, xuất phát từ Hà Nội / TP.HCM, cần tư vấn Visa..." class="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-300 text-slate-900 focus:border-[#31c0cc] focus:outline-none"></textarea>
         </div>
 
-        <!-- Dynamic Price Summary Box -->
         <div class="p-4 rounded-2xl bg-cyan-50/70 border border-cyan-200 space-y-2">
           <div class="flex justify-between text-xs text-slate-600">
             <span>Tiền vé người lớn:</span>
@@ -827,12 +760,10 @@
             <span>Tiền vé trẻ em:</span>
             <span id="calc-children-total" class="text-slate-900 font-semibold">0 đ</span>
           </div>
-          <!-- Mặc định giảm giá mua tour qua nền tảng DOANTM 500.000đ -->
           <div class="flex justify-between text-xs text-emerald-700 font-bold">
             <span>Giảm giá mua tour qua nền tảng DOANTM (Mặc định):</span>
             <span id="calc-platform-discount">-500.000 đ</span>
           </div>
-          <!-- Dòng giảm thêm khi nhập mã Voucher -->
           <div id="calc-voucher-badge" class="hidden flex justify-between text-xs text-amber-700 font-bold">
             <span>Mã Voucher ưu đãi (<span id="calc-voucher-code-label"></span>):</span>
             <span id="calc-voucher-amount">-0 đ</span>
@@ -864,13 +795,10 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       6. MODAL 3: THANH TOÁN CHUYỂN KHOẢN VIETQR (LIGHT THEME)
-       ========================================================================= -->
+  <!-- Modal 4: Thanh toán chuyển khoản VietQR -->
   <div id="modal-payment-qr" class="modal-backdrop fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
     <div class="bg-white border border-slate-200 text-slate-800 rounded-3xl shadow-2xl w-full max-w-xl max-h-[95vh] flex flex-col overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
       
-      <!-- Header -->
       <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
         <div class="flex items-center space-x-3">
           <div class="w-9 h-9 rounded-xl bg-[#31c0cc] flex items-center justify-center text-white">
@@ -886,7 +814,6 @@
         </button>
       </div>
 
-      <!-- Payment Body -->
       <div class="p-6 overflow-y-auto flex-1 space-y-5 text-xs sm:text-sm">
         
         <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
@@ -897,7 +824,6 @@
           <span id="pay-type-badge" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"></span>
         </div>
 
-        <!-- VietQR Dynamic Image Card -->
         <div class="p-5 rounded-2xl bg-white text-slate-900 flex flex-col items-center justify-center shadow-md border border-slate-200">
           <div class="flex items-center justify-between w-full mb-3 px-2">
             <div class="flex items-center gap-2">
@@ -922,7 +848,6 @@
           </div>
         </div>
 
-        <!-- Bank Details Table -->
         <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
           <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Thông tin tài khoản nhận tiền:</h4>
           
@@ -966,7 +891,6 @@
 
       </div>
 
-      <!-- Action Buttons -->
       <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
         <button onclick="window.toursAppInstance.closePaymentModal()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-300 shadow-xs">
           Quay lại chỉnh sửa
@@ -981,9 +905,7 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       7. MODAL 4: XÁC NHẬN ĐẶT TOUR THÀNH CÔNG
-       ========================================================================= -->
+  <!-- Modal 5: Xác nhận đặt tour thành công -->
   <div id="modal-booking-success" class="modal-backdrop fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
     <div class="bg-white border border-slate-200 text-slate-800 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden my-auto p-6 sm:p-8 text-center space-y-5 animate-in fade-in zoom-in-95 duration-200">
       
@@ -1038,9 +960,7 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       8. MODAL 5: TRA CỨU LỊCH SỬ ĐƠN TOUR
-       ========================================================================= -->
+  <!-- Modal 6: Tra cứu lịch sử đơn tour -->
   <div id="modal-lookup-bookings" class="modal-backdrop fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
     <div class="bg-white border border-slate-200 text-slate-800 rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
       
@@ -1057,7 +977,6 @@
       <div class="p-6 overflow-y-auto flex-1 space-y-3">
         <p class="text-xs text-slate-500">Danh sách các tour Goholic Travel bạn đã đăng ký qua DOANTM trên thiết bị này:</p>
         <div id="lookup-history-container" class="space-y-3">
-          <!-- Rendered dynamically -->
         </div>
       </div>
 
@@ -1070,13 +989,10 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-       9. FOOTER (GOHOLIC TRAVEL OFFICIAL INFO x DOANTM AFFILIATE PARTNER)
-       ========================================================================= -->
+  <!-- Footer (Goholic Travel x DOANTM) -->
   <footer class="bg-[#0f2454] text-slate-200 py-12 text-xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
       
-      <!-- Top Contact Cards from Goholic Footer -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pb-8 border-b border-white/10">
         <div class="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3.5">
           <div class="w-10 h-10 rounded-xl bg-[#31c0cc] text-white flex items-center justify-center flex-shrink-0">
@@ -1160,8 +1076,6 @@
   <!-- Scripts -->
   <script defer src="js/tours.js"></script>
 
-
-  <!-- Mobile Menu Drawer Toggle Script for Tours -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('tours-mobile-menu-btn');

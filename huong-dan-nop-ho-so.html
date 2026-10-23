@@ -5,13 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cẩm Nang Hướng Dẫn Nộp Hồ Sơ Dịch Vụ Công Trực Tuyến | DOANTM</title>
   <meta name="description" content="Hướng dẫn chi tiết từng bước nộp hồ sơ Đăng ký Tạm trú, Thường trú, Đơn cớ mất, Giấy xác nhận hạnh kiểm trên Cổng Dịch vụ công Bộ Công An và VNeID bằng biểu mẫu chuẩn DOANTM." />
+  <!-- Website Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg?v=20261023b" />
+  <link rel="icon" type="image/png" href="assets/logo.png?v=20261023b" />
+  <link rel="shortcut icon" href="favicon.ico?v=20261023b" />
+  <link rel="apple-touch-icon" href="assets/logo.png?v=20261023b" />
 
-  <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -36,10 +39,9 @@
     }
   </script>
 
-  <!-- Lucide Icons -->
   <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 
-  <!-- Custom CSS files -->
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/ct01.css" />
 
@@ -269,19 +271,14 @@
 
 <body class="guide-page-bg text-slate-800 antialiased selection:bg-red-600 selection:text-white">
 
-  <!-- =======================================================================
-       1. GLOBAL PLATFORM HEADER (CONSISTENT WITH DOANTM DVC)
-       ======================================================================= -->
+  <!-- 1. Header Navigation -->
   <header class="capan-header no-print">
     <div class="capan-header-top-bar" style="height:3px;background:linear-gradient(90deg, #dc2626 0%, #ea580c 35%, #0284c7 70%, #10b981 100%);width:100%;"></div>
     <div class="capan-header-container">
 
-      <!-- Left Branding -->
       <a href="index.html" class="capan-brand" aria-label="DOANTM Dịch Vụ Công">
-        <div class="capan-emblem-wrap">
-          <div class="capan-emblem-inner">
-            <i data-lucide="shield-check" style="width:22px;height:22px;color:#ef4444;"></i>
-          </div>
+        <div class="capan-emblem-wrap" style="background:#ffffff;border:1px solid #e2e8f0;padding:2px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          <img src="assets/logo.svg?v=20261023b" alt="DOANTM Logo" style="width:34px;height:34px;border-radius:8px;object-fit:contain;" />
         </div>
         <div class="capan-brand-text">
           <span class="capan-brand-sub">NỀN TẢNG CÔNG DÂN SỐ</span>
@@ -292,7 +289,6 @@
         </div>
       </a>
 
-      <!-- Center Navigation Items -->
       <nav class="capan-nav" aria-label="Điều hướng">
         <a href="ct01.html" class="capan-nav-item">
           <i data-lucide="file-spreadsheet" class="capan-nav-icon"></i>
@@ -312,7 +308,6 @@
         </a>
       </nav>
 
-      <!-- Right Header Actions -->
       <div class="capan-header-actions">
         <a href="ct01.html" class="capan-btn-coral-large" style="height:38px;padding:0 16px;font-size:13.5px;text-decoration:none;">
           <i data-lucide="edit-3" style="width:15px;height:15px;"></i>
@@ -320,14 +315,12 @@
         </a>
       </div>
 
-      <!-- Mobile Hamburger Button -->
       <button type="button" class="capan-hamburger-btn" id="mobile-drawer-toggle" aria-label="Mở menu">
         <i data-lucide="menu" style="width:20px;height:20px;color:#dc2626;"></i>
       </button>
 
     </div>
 
-    <!-- Mobile Navigation Drawer -->
     <div class="capan-mobile-drawer" id="mobile-drawer">
       <nav class="capan-mobile-drawer-nav">
         <a href="ct01.html" class="capan-drawer-item">
@@ -350,11 +343,8 @@
     </div>
   </header>
 
-  <!-- =======================================================================
-       2. HERO BANNER & SEARCH BAR
-       ======================================================================= -->
+  <!-- 2. Hero Banner & Search -->
   <section class="max-w-6xl mx-auto px-4 pt-10 pb-6 text-center">
-    <!-- Breadcrumb -->
     <div class="flex items-center justify-center gap-2 text-xs font-semibold text-slate-500 mb-4">
       <a href="index.html" class="hover:text-red-600 transition-colors">Trang chủ</a>
       <i data-lucide="chevron-right" style="width:13px;height:13px;"></i>
@@ -363,7 +353,6 @@
       <span class="text-slate-800">Hướng dẫn nộp hồ sơ</span>
     </div>
 
-    <!-- Headline (Anti-Slop: No Eyebrows, Clean Two-Line Measure) -->
     <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight max-w-4xl mx-auto mb-4">
       Hướng dẫn nộp hồ sơ Dịch vụ công <span class="text-red-600">Trực tuyến</span>
     </h1>
@@ -372,7 +361,6 @@
       Tổng hợp các bài viết hướng dẫn từng bước chi tiết kèm lưu ý thực tế khi nộp hồ sơ Đăng ký Tạm trú, Thường trú, Đơn cớ mất, Giấy xác nhận hạnh kiểm trên Cổng DVC Bộ Công An và VNeID bằng file xuất từ <strong>DOANTM</strong>.
     </p>
 
-    <!-- Interactive Search Bar -->
     <div class="max-w-2xl mx-auto relative mb-8">
       <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" style="width:20px;height:20px;"></i>
       <input
@@ -393,7 +381,6 @@
       </button>
     </div>
 
-    <!-- Category Filter Pills -->
     <div class="flex items-center justify-center gap-2.5 flex-wrap">
       <button type="button" class="guide-filter-btn active" data-category="all" onclick="filterGuideCategory('all')">
         <i data-lucide="layers" style="width:15px;height:15px;"></i>
@@ -426,18 +413,13 @@
     </div>
   </section>
 
-  <!-- =======================================================================
-       3. MAIN GUIDE ARTICLES CONTAINER
-       ======================================================================= -->
+  <!-- 3. Cẩm nang hướng dẫn Dịch vụ công -->
   <main class="max-w-6xl mx-auto px-4 py-8 space-y-12" id="guides-container">
 
-    <!-- -------------------------------------------------------------------
-         ARTICLE 1: ĐĂNG KÝ TẠM TRÚ TRỰC TUYẾN (CT01 + HỢP ĐỒNG CƯ TRÚ)
-         ------------------------------------------------------------------- -->
+    <!-- Bài 1: Đăng ký tạm trú trực tuyến (CT01 + Hợp đồng cư trú) -->
     <article class="guide-article-card" id="article-tam-tru" data-category="tam-tru">
       <div class="guide-card-accent-bar accent-gradient-blue"></div>
 
-      <!-- Article Header -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
         <div>
           <div class="flex items-center gap-2 mb-2">
@@ -467,10 +449,8 @@
         </div>
       </div>
 
-      <!-- Article Body -->
       <div class="mt-6 space-y-6">
 
-        <!-- Info Callout -->
         <div class="guide-callout callout-info">
           <i data-lucide="info" style="width:20px;height:20px;flex-shrink:0;color:#0284c7;"></i>
           <div>
@@ -478,10 +458,8 @@
           </div>
         </div>
 
-        <!-- Steps Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          <!-- Step 1 -->
           <div class="guide-step-card">
             <div class="flex items-center gap-3 mb-2">
               <div class="guide-step-number">1</div>
@@ -496,7 +474,6 @@
             </ul>
           </div>
 
-          <!-- Step 2 -->
           <div class="guide-step-card">
             <div class="flex items-center gap-3 mb-2">
               <div class="guide-step-number">2</div>
@@ -511,7 +488,6 @@
             </ul>
           </div>
 
-          <!-- Step 3 -->
           <div class="guide-step-card">
             <div class="flex items-center gap-3 mb-2">
               <div class="guide-step-number">3</div>
@@ -526,7 +502,6 @@
             </ul>
           </div>
 
-          <!-- Step 4 -->
           <div class="guide-step-card">
             <div class="flex items-center gap-3 mb-2">
               <div class="guide-step-number">4</div>
@@ -544,7 +519,6 @@
 
         </div>
 
-        <!-- Fees & Output Notice -->
         <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs md:text-sm text-slate-700">
           <div class="flex items-center gap-2">
             <i data-lucide="credit-card" style="width:18px;height:18px;color:#059669;"></i>
@@ -559,13 +533,10 @@
       </div>
     </article>
 
-    <!-- -------------------------------------------------------------------
-         ARTICLE 2: ĐĂNG KÝ THƯỜNG TRÚ TRỰC TUYẾN
-         ------------------------------------------------------------------- -->
+    <!-- Bài 2: Đăng ký thường trú trực tuyến -->
     <article class="guide-article-card" id="article-thuong-tru" data-category="thuong-tru">
       <div class="guide-card-accent-bar accent-gradient-emerald"></div>
 
-      <!-- Article Header -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
         <div>
           <div class="flex items-center gap-2 mb-2">
@@ -596,10 +567,8 @@
         </div>
       </div>
 
-      <!-- Article Body -->
       <div class="mt-6 space-y-6">
 
-        <!-- Conditions Checklist -->
         <div class="bg-emerald-50/60 border border-emerald-200 rounded-xl p-5">
           <h3 class="font-bold text-emerald-950 text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
             <i data-lucide="check-circle-2" style="width:16px;height:16px;color:#10b981;"></i>
@@ -625,7 +594,6 @@
           </div>
         </div>
 
-        <!-- Step-by-Step -->
         <div class="space-y-4">
           <div class="guide-step-card">
             <div class="flex items-center gap-3 mb-1.5">
@@ -661,13 +629,10 @@
       </div>
     </article>
 
-    <!-- -------------------------------------------------------------------
-         ARTICLE 3: HƯỚNG DẪN ĐIỀN & NỘP ĐƠN CỚ MẤT (CT02)
-         ------------------------------------------------------------------- -->
+    <!-- Bài 3: Hướng dẫn điền & nộp đơn cớ mất (CT02) -->
     <article class="guide-article-card" id="article-co-mat" data-category="co-mat">
       <div class="guide-card-accent-bar accent-gradient-amber"></div>
 
-      <!-- Article Header -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
         <div>
           <div class="flex items-center gap-2 mb-2">
@@ -697,7 +662,6 @@
         </div>
       </div>
 
-      <!-- Article Body -->
       <div class="mt-6 space-y-6">
 
         <div class="guide-callout callout-warn">
@@ -710,7 +674,6 @@
           </div>
         </div>
 
-        <!-- 3 Simple Steps -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="guide-step-card">
             <div class="flex items-center gap-2.5 mb-2">
@@ -746,13 +709,10 @@
       </div>
     </article>
 
-    <!-- -------------------------------------------------------------------
-         ARTICLE 4: HƯỚNG DẪN XÁC NHẬN HẠNH KIỂM (MẪU CT03)
-         ------------------------------------------------------------------- -->
+    <!-- Bài 4: Hướng dẫn xác nhận hạnh kiểm (Mẫu CT03) -->
     <article class="guide-article-card" id="article-hanh-kiem" data-category="hanh-kiem">
       <div class="guide-card-accent-bar accent-gradient-purple"></div>
 
-      <!-- Article Header -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
         <div>
           <div class="flex items-center gap-2 mb-2">
@@ -782,7 +742,6 @@
         </div>
       </div>
 
-      <!-- Article Body -->
       <div class="mt-6 space-y-6">
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -816,13 +775,10 @@
       </div>
     </article>
 
-    <!-- -------------------------------------------------------------------
-         ARTICLE 5: KÊ KHAI TẠM TRÚ THEO SỐ LƯỢNG LỚN (CHỦ TRỌ & DOANH NGHIỆP)
-         ------------------------------------------------------------------- -->
+    <!-- Bài 5: Kê khai tạm trú theo số lượng lớn (Chủ trọ & Doanh nghiệp) -->
     <article class="guide-article-card" id="article-so-luong" data-category="so-luong">
       <div class="guide-card-accent-bar accent-gradient-amber" style="background: linear-gradient(90deg, #f59e0b 0%, #ef4444 100%);"></div>
 
-      <!-- Article Header -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
         <div>
           <div class="flex items-center gap-2 mb-2">
@@ -850,7 +806,6 @@
         </div>
       </div>
 
-      <!-- Article Body -->
       <div class="mt-6 space-y-6">
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -888,13 +843,10 @@
       </div>
     </article>
 
-    <!-- -------------------------------------------------------------------
-         ARTICLE 6: CÁC LƯU Ý VÀNG & 4 LỖI THƯỜNG BỊ TỪ CHỐI HỒ SƠ
-         ------------------------------------------------------------------- -->
+    <!-- Bài 6: Lưu ý quan trọng & 4 lỗi thường bị từ chối hồ sơ -->
     <article class="guide-article-card" id="article-luu-y" data-category="luu-y">
       <div class="guide-card-accent-bar accent-gradient-red"></div>
 
-      <!-- Article Header -->
       <div class="pb-6 border-b border-slate-100">
         <div class="flex items-center gap-2 mb-2">
           <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide bg-red-50 text-red-700 border border-red-200">
@@ -910,10 +862,8 @@
         </p>
       </div>
 
-      <!-- Mistakes Grid -->
       <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        <!-- Error 1 -->
         <div class="p-5 rounded-2xl bg-red-50/60 border border-red-200">
           <div class="flex items-center gap-2 text-red-700 font-bold text-base mb-2">
             <i data-lucide="x-circle" style="width:20px;height:20px;color:#dc2626;"></i>
@@ -928,7 +878,6 @@
           </div>
         </div>
 
-        <!-- Error 2 -->
         <div class="p-5 rounded-2xl bg-amber-50/60 border border-amber-200">
           <div class="flex items-center gap-2 text-amber-800 font-bold text-base mb-2">
             <i data-lucide="x-circle" style="width:20px;height:20px;color:#d97706;"></i>
@@ -943,7 +892,6 @@
           </div>
         </div>
 
-        <!-- Error 3 -->
         <div class="p-5 rounded-2xl bg-sky-50/60 border border-sky-200">
           <div class="flex items-center gap-2 text-sky-800 font-bold text-base mb-2">
             <i data-lucide="x-circle" style="width:20px;height:20px;color:#0284c7;"></i>
@@ -958,7 +906,6 @@
           </div>
         </div>
 
-        <!-- Error 4 -->
         <div class="p-5 rounded-2xl bg-purple-50/60 border border-purple-200">
           <div class="flex items-center gap-2 text-purple-800 font-bold text-base mb-2">
             <i data-lucide="x-circle" style="width:20px;height:20px;color:#7c3aed;"></i>
@@ -979,12 +926,9 @@
 
   </main>
 
-  <!-- =======================================================================
-       4. BOTTOM CALL TO ACTION
-       ======================================================================= -->
+  <!-- 4. Hỗ trợ & Liên hệ -->
   <section class="max-w-5xl mx-auto px-4 py-12 text-center">
     <div class="p-8 md:p-12 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-zinc-900 text-white relative overflow-hidden shadow-2xl border border-slate-700">
-      <!-- Glow ambient light -->
       <div class="absolute -top-24 -left-24 w-72 h-72 bg-red-600/20 rounded-full blur-3xl pointer-events-none"></div>
       <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-sky-600/20 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -1020,9 +964,7 @@
     </div>
   </section>
 
-  <!-- =======================================================================
-       5. FOOTER
-       ======================================================================= -->
+  <!-- 5. Footer -->
   <footer class="border-t border-slate-200 bg-white/80 backdrop-blur py-8 text-center text-xs text-slate-500">
     <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-2 font-bold text-slate-800">
@@ -1035,9 +977,7 @@
     </div>
   </footer>
 
-  <!-- =======================================================================
-       6. SCRIPTS
-       ======================================================================= -->
+  <!-- 6. Scripts -->
   <script>
     // Initialize Lucide Icons
     document.addEventListener('DOMContentLoaded', () => {
