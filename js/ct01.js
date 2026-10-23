@@ -1349,7 +1349,9 @@ async function startQrCameraStream() {
   const warningEl = document.getElementById('qr-camera-warning');
   const videoEl = document.getElementById('qr-camera-video');
   const cameraWrapper = document.getElementById('qr-camera-wrapper');
+  const cameraViewport = document.getElementById('qr-camera-viewport');
   if (warningEl) warningEl.hidden = true;
+  if (cameraViewport) cameraViewport.style.display = '';
 
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     if (warningEl) {
@@ -1370,8 +1372,12 @@ async function startQrCameraStream() {
     });
     cameraStream = stream;
     if (videoEl) {
+      videoEl.setAttribute('playsinline', '');
+      videoEl.setAttribute('webkit-playsinline', '');
+      videoEl.setAttribute('autoplay', '');
+      videoEl.muted = true;
       videoEl.srcObject = stream;
-      await videoEl.play();
+      await videoEl.play().catch(e => console.warn('video play err:', e));
       scanCameraFrameLoop();
     }
     if (cameraWrapper) cameraWrapper.hidden = false;
@@ -1379,11 +1385,11 @@ async function startQrCameraStream() {
   } catch (err) {
     if (warningEl) {
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        warningEl.innerHTML = '🔒 <strong>Quyền truy cập Camera đang bị chặn.</strong> Vui lòng bấm vào biểu tượng ổ khóa/camera trên thanh địa chỉ trình duyệt, chọn <em>"Cho phép"</em> Camera rồi bấm lại nút <strong>"Quét QR căn cước"</strong>.';
+        warningEl.innerHTML = '🔒 <strong>Quyền truy cập Camera đang bị chặn.</strong><br/>Trên Safari iPhone: Chạm biểu tượng <strong>"aA"</strong> ở thanh địa chỉ URL &gt; <em>Cài đặt trang web</em> &gt; <em>Camera: Cho phép</em> rồi tải lại trang.';
       } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-        warningEl.innerHTML = '📷 <strong>Không tìm thấy thiết bị camera</strong> trên máy tính. Bạn hãy bấm nút <strong>Tải ảnh</strong> hoặc tính năng <strong>Đọc bằng AI</strong> bên dưới.';
+        warningEl.innerHTML = '📷 <strong>Không tìm thấy thiết bị camera</strong>. Bạn hãy bấm nút <strong>Tải ảnh</strong> hoặc tính năng <strong>Đọc bằng AI</strong> bên dưới.';
       } else {
-        warningEl.innerHTML = '⚠️ Không thể mở camera. Bạn có thể bấm lại <strong>"Quét QR căn cước"</strong> để thử lại hoặc bấm <strong>Tải ảnh</strong>.';
+        warningEl.innerHTML = `⚠️ Không thể mở camera (${err.message || 'Lỗi'}). Bạn có thể bấm nút <strong>Tải ảnh</strong> để chụp hoặc chọn ảnh CCCD từ máy.`;
       }
       warningEl.hidden = false;
     }
@@ -1411,11 +1417,17 @@ if (typeof window !== 'undefined' && 'BarcodeDetector' in window) {
   }
 }
 
+let lastCameraScanTime = 0;
+let _qrOffscreenCanvas = null;
+
 async function scanCameraFrameLoop() {
   const videoEl = document.getElementById('qr-camera-video');
   if (!cameraStream || !videoEl) return;
 
-  if (videoEl.readyState >= videoEl.HAVE_CURRENT_DATA && videoEl.videoWidth > 0) {
+  const now = Date.now();
+  // Giảm tần suất quét xuống 120ms/lần để tiết kiệm pin iPhone & tránh giật lag Safari WebKit
+  if (now - lastCameraScanTime > 120 && videoEl.readyState >= 2 && videoEl.videoWidth > 0) {
+    lastCameraScanTime = now;
     // 1. Thử BarcodeDetector phần cứng gốc của điện thoại (iOS 17+ & Android cực nhanh)
     if (nativeBarcodeDetector) {
       try {
@@ -1432,25 +1444,37 @@ async function scanCameraFrameLoop() {
       } catch (err) {}
     }
 
-    // 2. Fallback jsQR
+    // 2. Fallback jsQR: scale canvas xuống max 800px để quét nhanh & không rò rỉ RAM trên iOS
     if (window.jsQR) {
-      const canvas = document.createElement('canvas');
-      canvas.width = videoEl.videoWidth;
-      canvas.height = videoEl.videoHeight;
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      if (ctx) {
-        ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'attemptBoth' });
-        if (code && code.data) {
-          const parsed = parseCccdQrPayload(code.data);
-          if (parsed) {
-            setScannedQrResult(parsed);
-            showToast('Đã quét và nhận diện thành công mã QR CCCD!');
-            stopQrCameraStream();
-            return;
+      try {
+        const vw = videoEl.videoWidth;
+        const vh = videoEl.videoHeight;
+        const scale = Math.min(1, 800 / Math.max(vw, vh));
+        const cw = Math.round(vw * scale);
+        const ch = Math.round(vh * scale);
+
+        if (!_qrOffscreenCanvas) {
+          _qrOffscreenCanvas = document.createElement('canvas');
+        }
+        _qrOffscreenCanvas.width = cw;
+        _qrOffscreenCanvas.height = ch;
+        const ctx = _qrOffscreenCanvas.getContext('2d', { willReadFrequently: true });
+        if (ctx) {
+          ctx.drawImage(videoEl, 0, 0, cw, ch);
+          const imgData = ctx.getImageData(0, 0, cw, ch);
+          const code = jsQR(imgData.data, cw, ch, { inversionAttempts: 'attemptBoth' });
+          if (code && code.data) {
+            const parsed = parseCccdQrPayload(code.data);
+            if (parsed) {
+              setScannedQrResult(parsed);
+              showToast('Đã quét và nhận diện thành công mã QR CCCD!');
+              stopQrCameraStream();
+              return;
+            }
           }
         }
+      } catch (e) {
+        console.warn('QR camera frame scan error:', e);
       }
     }
   }
@@ -1461,39 +1485,100 @@ async function scanCameraFrameLoop() {
 function handleQrImageUpload(event) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
-  // Reset input value so selecting the same or new photo always fires on iOS Safari
+  // Reset input value để chọn lại ảnh cùng tên vẫn kích hoạt sự kiện trên iOS Safari
   try { event.target.value = ''; } catch(e) {}
   stopQrCameraStream();
 
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const img = new Image();
-    img.onload = () => {
+  showToast('Đang tải và tối ưu ảnh CCCD...', 'info');
+
+  const objectUrl = URL.createObjectURL(file);
+  const img = new Image();
+
+  img.onload = () => {
+    try {
+      const origW = img.naturalWidth || img.width;
+      const origH = img.naturalHeight || img.height;
+
+      // Giới hạn max 1600px để không bao giờ vượt ngưỡng bộ nhớ canvas của iPhone Safari
+      const maxDim = 1600;
+      let targetW = origW;
+      let targetH = origH;
+      if (targetW > maxDim || targetH > maxDim) {
+        if (targetW > targetH) {
+          targetH = Math.round((targetH * maxDim) / targetW);
+          targetW = maxDim;
+        } else {
+          targetW = Math.round((targetW * maxDim) / targetH);
+          targetH = maxDim;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = targetW;
+      canvas.height = targetH;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, targetW, targetH);
+
+      const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+
       uploadedQrImageObj = {
-        src: e.target.result,
-        width: img.naturalWidth || img.width,
-        height: img.naturalHeight || img.height,
-        element: img
+        src: optimizedDataUrl,
+        width: targetW,
+        height: targetH,
+        element: canvas
       };
+
       const uploadedImgEl = document.getElementById('qr-uploaded-img');
       const cropPanel = document.getElementById('qr-crop-panel');
       const cameraWrapper = document.getElementById('qr-camera-wrapper');
       const selectionBox = document.getElementById('qr-crop-selection-box');
       const btnScanCropped = document.getElementById('btn-scan-cropped');
 
-      if (uploadedImgEl) uploadedImgEl.src = e.target.result;
+      if (uploadedImgEl) uploadedImgEl.src = optimizedDataUrl;
       if (cameraWrapper) cameraWrapper.hidden = true;
       if (cropPanel) cropPanel.hidden = false;
       if (selectionBox) selectionBox.hidden = true;
       if (btnScanCropped) btnScanCropped.disabled = true;
       cropRect = null;
 
-      // Automatically attempt full-image scan first for convenience
-      scanUploadedImage(false, true);
-    };
-    img.src = e.target.result;
+      URL.revokeObjectURL(objectUrl);
+
+      // Tự động quét QR trước, nếu QR mờ sẽ chuyển sang AI Vision
+      scanUploadedImage(false, false);
+    } catch (err) {
+      console.error('Lỗi tối ưu ảnh:', err);
+      URL.revokeObjectURL(objectUrl);
+      showToast('Không thể xử lý ảnh trên thiết bị này. Vui lòng chụp lại ảnh khác.', 'error');
+    }
   };
-  reader.readAsDataURL(file);
+
+  img.onerror = () => {
+    URL.revokeObjectURL(objectUrl);
+    // Fallback FileReader nếu createObjectURL gặp sự cố
+    const reader = new FileReader();
+    reader.onload = (re) => {
+      const fbImg = new Image();
+      fbImg.onload = () => {
+        uploadedQrImageObj = {
+          src: re.target.result,
+          width: fbImg.naturalWidth || fbImg.width,
+          height: fbImg.naturalHeight || fbImg.height,
+          element: fbImg
+        };
+        const uploadedImgEl = document.getElementById('qr-uploaded-img');
+        const cropPanel = document.getElementById('qr-crop-panel');
+        const cameraWrapper = document.getElementById('qr-camera-wrapper');
+        if (uploadedImgEl) uploadedImgEl.src = re.target.result;
+        if (cameraWrapper) cameraWrapper.hidden = true;
+        if (cropPanel) cropPanel.hidden = false;
+        scanUploadedImage(false, false);
+      };
+      fbImg.src = re.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  img.src = objectUrl;
 }
 
 function setupQrCropperEvents() {
@@ -1558,27 +1643,61 @@ async function scanUploadedImage(useCrop, silentIfFail = false) {
   const sw = Math.max(1, Math.round(uploadedQrImageObj.width * region.width));
   const sh = Math.max(1, Math.round(uploadedQrImageObj.height * region.height));
 
-  const canvas = document.createElement('canvas');
-  canvas.width = sw;
-  canvas.height = sh;
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
-  ctx.drawImage(uploadedQrImageObj.element, sx, sy, sw, sh, 0, 0, sw, sh);
-
-  // 1. Try QR decoding first if jsQR is loaded
-  if (window.jsQR) {
-    const imgData = ctx.getImageData(0, 0, sw, sh);
-    const code = jsQR(imgData.data, sw, sh, { inversionAttempts: 'attemptBoth' });
-    const parsed = code && code.data ? parseCccdQrPayload(code.data) : null;
-
-    if (parsed) {
-      setScannedQrResult(parsed);
-      showToast('Đọc thành công mã QR từ ảnh CCCD!');
-      return;
+  // Giới hạn max 1280px để bảo vệ bộ nhớ Mobile Safari và tăng tốc quét
+  const maxDim = 1280;
+  let targetW = sw;
+  let targetH = sh;
+  if (targetW > maxDim || targetH > maxDim) {
+    if (targetW > targetH) {
+      targetH = Math.round((targetH * maxDim) / targetW);
+      targetW = maxDim;
+    } else {
+      targetW = Math.round((targetW * maxDim) / targetH);
+      targetH = maxDim;
     }
   }
 
-  // 2. TẦNG 2: MÃ QR BỊ MỜ -> MỞ THÔNG BÁO LÝ DO ẢNH MỜ & HƯỚNG DẪN CHUYỂN KHOẢN PHÍ CÔNG NGHỆ AI VISION
-  showToast('Ảnh mã QR bị mờ! Đang chuyển sang công nghệ AI Vision...', 'info');
+  const canvas = document.createElement('canvas');
+  canvas.width = targetW;
+  canvas.height = targetH;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(uploadedQrImageObj.element, sx, sy, sw, sh, 0, 0, targetW, targetH);
+
+  // 1. Thử BarcodeDetector phần cứng gốc của điện thoại trước
+  if (typeof window !== 'undefined' && 'BarcodeDetector' in window) {
+    try {
+      const detector = new window.BarcodeDetector({ formats: ['qr_code'] });
+      const barcodes = await detector.detect(canvas);
+      if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+        const parsed = parseCccdQrPayload(barcodes[0].rawValue);
+        if (parsed && (parsed.citizenId || parsed.fullName)) {
+          setScannedQrResult(parsed);
+          showToast('Đọc thành công mã QR từ ảnh CCCD!');
+          return;
+        }
+      }
+    } catch (e) {}
+  }
+
+  // 2. Thử jsQR trong khối try-catch an toàn tuyệt đối
+  if (window.jsQR) {
+    try {
+      const imgData = ctx.getImageData(0, 0, targetW, targetH);
+      const code = jsQR(imgData.data, targetW, targetH, { inversionAttempts: 'attemptBoth' });
+      const parsed = code && code.data ? parseCccdQrPayload(code.data) : null;
+
+      if (parsed) {
+        setScannedQrResult(parsed);
+        showToast('Đọc thành công mã QR từ ảnh CCCD!');
+        return;
+      }
+    } catch (qrErr) {
+      console.warn('Lỗi xử lý jsQR từ ảnh:', qrErr);
+    }
+  }
+
+  // 3. TẦNG 2: MÃ QR BỊ MỜ -> CHUYỂN SANG ĐỌC CHỮ BẰNG AI VISION
+  showToast('Mã QR bị mờ hoặc không có mã, đang chuyển sang đọc chữ bằng AI Vision...', 'info');
   executeAiVisionOcr();
   return;
 }
@@ -1739,30 +1858,39 @@ function saveGeminiApiKey() {
 
 function triggerAiVisionScan() {
   const videoEl = document.getElementById('qr-camera-video');
-  // Nếu đang mở camera và chưa có ảnh chọn từ trước, tự động chụp khung hình camera hiện tại
-  if (!uploadedQrImageObj && videoEl && cameraStream && videoEl.videoWidth > 0) {
+  const cameraWrapper = document.getElementById('qr-camera-wrapper');
+  const isCameraActive = cameraStream && videoEl && (!cameraWrapper || !cameraWrapper.hidden);
+
+  // Nếu đang mở camera, chụp ảnh khung hình camera hiện tại
+  if (isCameraActive && videoEl.readyState >= 2 && videoEl.videoWidth > 0) {
     try {
+      const vw = videoEl.videoWidth;
+      const vh = videoEl.videoHeight;
       const snapCanvas = document.createElement('canvas');
-      snapCanvas.width = videoEl.videoWidth;
-      snapCanvas.height = videoEl.videoHeight;
+      snapCanvas.width = vw;
+      snapCanvas.height = vh;
       const sCtx = snapCanvas.getContext('2d');
-      sCtx.drawImage(videoEl, 0, 0, snapCanvas.width, snapCanvas.height);
+      sCtx.drawImage(videoEl, 0, 0, vw, vh);
+
+      const snapDataUrl = snapCanvas.toDataURL('image/jpeg', 0.88);
+
       uploadedQrImageObj = {
         element: snapCanvas,
+        src: snapDataUrl,
         width: snapCanvas.width,
         height: snapCanvas.height
       };
+
       // Tạm dừng video để người dùng thấy ảnh đã được chụp
       stopQrCameraStream();
-      const cameraViewport = document.getElementById('qr-camera-viewport');
-      if (cameraViewport) cameraViewport.style.display = 'none';
+      if (cameraWrapper) cameraWrapper.hidden = true;
       const cropPanel = document.getElementById('qr-crop-panel');
       if (cropPanel) cropPanel.hidden = false;
-      const imgPreview = document.getElementById('qr-image-preview');
+      const imgPreview = document.getElementById('qr-uploaded-img');
       if (imgPreview) {
-        imgPreview.src = snapCanvas.toDataURL('image/jpeg', 0.9);
+        imgPreview.src = snapDataUrl;
       }
-      showToast('Đã chụp ảnh thẻ từ camera, đang phân tích thông tin...', 'info');
+      showToast('Đã chụp ảnh thẻ từ camera, AI đang phân tích dữ liệu...', 'info');
     } catch (camErr) {
       console.warn('Lỗi chụp từ camera stream:', camErr);
     }
@@ -1877,7 +2005,7 @@ async function executeAiVisionOcr() {
 
     // BƯỚC 2: Thử gọi Cloud AI Backend Proxy (/api/scan-cccd)
     if (!parsedData) {
-      if (statusText) statusText.textContent = '🤖 Đang kết nối AI Elonbu để đọc chữ trên thẻ...';
+      if (statusText) statusText.textContent = '🤖 Đang kết nối AI để đọc chữ trên thẻ...';
       let backendUrl = '/api/scan-cccd';
       if (window.location.protocol === 'file:' || !window.location.host) {
         backendUrl = 'http://localhost:8000/api/scan-cccd';
@@ -1885,11 +2013,16 @@ async function executeAiVisionOcr() {
 
       let backendErrorMsg = '';
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 25000);
+
         const proxyResp = await fetch(backendUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: base64Jpeg })
+          body: JSON.stringify({ image: base64Jpeg }),
+          signal: controller.signal
         });
+        clearTimeout(timeoutId);
 
         if (proxyResp.ok) {
           const json = await proxyResp.json();
@@ -1941,24 +2074,33 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
             }
           };
 
-          const clientModels = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3-flash-preview', 'gemini-3.5-flash-lite', 'gemini-flash-latest'];
+          const clientModels = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.5-flash'];
           let response = null;
           for (const cModel of clientModels) {
             try {
+              const cController = new AbortController();
+              const cTimeout = setTimeout(() => cController.abort(), 15000);
               response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${cModel}:generateContent?key=${encodeURIComponent(apiKey)}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
+                body: JSON.stringify(requestBody),
+                signal: cController.signal
               });
+              clearTimeout(cTimeout);
               if (response && response.ok) break;
             } catch (netErr) {}
           }
-          if (response.ok) {
+          if (response && response.ok) {
             const data = await response.json();
             const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
             let cleanJson = rawText.trim();
-            if (cleanJson.startsWith('```json')) cleanJson = cleanJson.replace(/^```json\s*/i, '').replace(/\s*```$/, '');
-            else if (cleanJson.startsWith('```')) cleanJson = cleanJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
+            const jsonMatch = cleanJson.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              cleanJson = jsonMatch[0];
+            } else {
+              if (cleanJson.startsWith('```json')) cleanJson = cleanJson.replace(/^```json\s*/i, '').replace(/\s*```$/, '');
+              else if (cleanJson.startsWith('```')) cleanJson = cleanJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
+            }
             parsedData = JSON.parse(cleanJson);
             scanMethodName = 'Google AI Vision (Trực tiếp)';
           }
@@ -2067,9 +2209,9 @@ function setScannedQrResult(parsed) {
 
   // Dừng camera và thu gọn khung camera để nhường không gian hiển thị kết quả & nút bấm
   stopQrCameraStream();
-  const cameraViewport = document.getElementById('qr-camera-viewport');
-  if (cameraViewport) {
-    cameraViewport.style.display = 'none';
+  const cameraWrapper = document.getElementById('qr-camera-wrapper');
+  if (cameraWrapper) {
+    cameraWrapper.hidden = true;
   }
 }
 

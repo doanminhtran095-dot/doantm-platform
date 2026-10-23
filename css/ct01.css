@@ -4,7 +4,7 @@
    Elevated with DOANTM Bright Luminous Light Mode Palette
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+/* Google Fonts are loaded via direct <link> in HTML <head> for zero-waterfall parallel loading */
 
 :root {
   --bg-main: #ffffff;

@@ -103,8 +103,8 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
     // Google Gemini API hỗ trợ query param ?key= cho cả token chuẩn và AQ/OAuth
     const headers = { 'Content-Type': 'application/json' };
 
-    // Danh sách model Google Gemini đang hoạt động chính thức (gemini-3.8-flash là model chuẩn mới nhất)
-    const models = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-flash-latest', 'gemini-3.5-flash'];
+    // Danh sách model Google Gemini chuẩn, ưu tiên gemini-2.0-flash phản hồi siêu tốc (~1-2s)
+    const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.5-flash', 'gemini-flash-latest'];
     let response = null;
     let lastError = '';
 
@@ -112,11 +112,16 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
       try {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
         response = await fetch(url, {
           method: 'POST',
           headers,
-          body: JSON.stringify(requestBody)
+          body: JSON.stringify(requestBody),
+          signal: controller.signal
         });
+        clearTimeout(timeoutId);
 
         if (response.ok) break;
         const errJson = await response.json().catch(() => ({}));
@@ -141,10 +146,15 @@ Chỉ trả về JSON thuần, không bọc markdown hay text giải thích nào
     }
 
     let cleanJson = rawText.trim();
-    if (cleanJson.startsWith('```json')) {
-      cleanJson = cleanJson.replace(/^```json\s*/i, '').replace(/\s*```$/, '');
-    } else if (cleanJson.startsWith('```')) {
-      cleanJson = cleanJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    const jsonMatch = cleanJson.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      cleanJson = jsonMatch[0];
+    } else {
+      if (cleanJson.startsWith('```json')) {
+        cleanJson = cleanJson.replace(/^```json\s*/i, '').replace(/\s*```$/, '');
+      } else if (cleanJson.startsWith('```')) {
+        cleanJson = cleanJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
+      }
     }
 
     const parsed = JSON.parse(cleanJson);
