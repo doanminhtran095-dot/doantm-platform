@@ -764,11 +764,10 @@ button, input, select, textarea {
 
 .qr-card-header {
   display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .qr-header-title {
@@ -3070,7 +3069,7 @@ input[type="date"].capan-input {
   .text-mobile, .preview-title-mobile, .tab-label-mobile {
     display: inline !important;
   }
-  .capan-qr-cards-grid {
+  .capan-qr-action-panel, .capan-qr-cards-grid {
     grid-template-columns: 1fr;
     gap: 14px;
   }
@@ -4030,4 +4029,35 @@ input[type="date"].capan-input {
   justify-content: center;
   box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25);
   flex-shrink: 0;
+}
+
+/* Extra Responsive Polish for Mobile & Tablet */
+@media (max-width: 768px) {
+  .capan-qr-action-panel {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  .capan-qr-card {
+    padding: 14px 16px !important;
+  }
+  .qr-card-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .qr-card-actions .capan-btn-manual-edit,
+  .qr-card-actions .capan-btn-scan-amber,
+  .qr-card-actions .capan-btn-scan-primary {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  .capan-workspace-split {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  #ct01-a4-scaler {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+  }
 }
