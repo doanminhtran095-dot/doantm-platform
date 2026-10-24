@@ -3627,29 +3627,33 @@ function renderBatchTenantsList() {
   const html = batchState.tenants.map((t, idx) => `
     <div class="capan-qr-card tenant-card" id="batch-tenant-card-${idx}">
       <div>
-        <div class="qr-card-header" style="display:flex;flex-direction:column;align-items:stretch;gap:12px;margin-bottom:14px;">
-          <div class="qr-header-title" style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:10px;">
-            <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">
-              <div class="qr-icon text-teal">
-                <i data-lucide="qr-code" style="width:22px;height:22px;"></i>
+        <div class="qr-card-header" style="display:flex !important; flex-direction:column !important; align-items:stretch !important; gap:12px !important; margin-bottom:14px !important;">
+          <div class="qr-header-title" style="display:flex !important; align-items:center !important; justify-content:space-between !important; width:100% !important; gap:10px !important;">
+            <div style="display:flex; align-items:center; gap:12px; min-width:0; flex:1;">
+              <div class="qr-icon text-teal" style="width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <i data-lucide="user" style="width:20px;height:20px;"></i>
               </div>
-              <div style="min-width:0;flex:1;">
-                <h4 style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px;font-weight:700;color:#0f172a;margin:0;">Người thuê #${idx + 1}${t.fullName ? ': ' + escapeHtml(t.fullName) : ''}</h4>
-                <span class="qr-sub-text" style="font-size:12px;color:#64748b;display:block;">${t.citizenId ? 'CCCD: ' + escapeHtml(t.citizenId) : 'Người kê khai (Bên B)'}</span>
+              <div style="min-width:0; flex:1;">
+                <h4 style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:15px; font-weight:700; color:#0f172a; margin:0;">
+                  Người thuê #${idx + 1}${t.fullName ? ': ' + escapeHtml(t.fullName) : ''}
+                </h4>
+                <span class="qr-sub-text" style="display:block; font-size:11.5px; color:#64748b; margin-top:2px;">
+                  ${t.citizenId ? 'CCCD: ' + escapeHtml(t.citizenId) : 'Người kê khai (Bên B)'}
+                </span>
               </div>
             </div>
             ${batchState.tenants.length > 1 ? `
-              <button type="button" class="batch-tenant-delete-btn" onclick="removeBatchTenant(${idx})" title="Xoá người này khỏi danh sách" style="flex-shrink:0;">
-                <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+              <button type="button" class="batch-tenant-delete-btn" onclick="removeBatchTenant(${idx})" title="Xoá người này khỏi danh sách" style="width:34px; height:34px; border-radius:8px; border:1px solid #fee2e2; background:#fef2f2; color:#ef4444; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;">
+                <i data-lucide="trash-2" style="width:15px;height:15px;"></i>
               </button>
             ` : ''}
           </div>
-          <div class="qr-card-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;">
-            <button type="button" class="capan-btn-manual-edit" onclick="toggleBatchTenantFields(${idx})" title="Nhập tay hoặc sửa thông tin Người thuê #${idx + 1}" style="width:100%;justify-content:center;height:38px;">
+          <div class="qr-card-actions" style="display:grid !important; grid-template-columns:1fr 1fr !important; gap:8px !important; width:100% !important; margin-top:4px !important;">
+            <button type="button" class="capan-btn-manual-edit" onclick="toggleBatchTenantFields(${idx})" title="Nhập tay hoặc sửa thông tin Người thuê #${idx + 1}" style="width:100% !important; height:38px !important; justify-content:center !important;">
               <i data-lucide="pencil" style="width:13px;height:13px;"></i>
               <span>Nhập tay</span>
             </button>
-            <button type="button" class="capan-btn-scan-primary" onclick="openQrScannerModal('batch-tenant-${idx}')" title="Quét QR hoặc tải ảnh CCCD" style="width:100%;justify-content:center;height:38px;">
+            <button type="button" class="capan-btn-scan-primary" onclick="openQrScannerModal('batch-tenant-${idx}')" title="Quét QR hoặc tải ảnh CCCD" style="width:100% !important; height:38px !important; justify-content:center !important;">
               <i data-lucide="qr-code" style="width:15px;height:15px;"></i>
               <span>Quét thẻ CCCD</span>
             </button>

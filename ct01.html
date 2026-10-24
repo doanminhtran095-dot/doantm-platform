@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" />
 
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="css/ct01.css" />
+  <link rel="stylesheet" href="css/ct01.css?v=20261024_fix_header" />
 
   <script defer src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
@@ -216,21 +216,22 @@
 
               <div class="capan-qr-card landlord-card">
                 <div>
-                  <div class="qr-card-header">
-                    <div class="qr-header-title">
-                      <div class="qr-icon text-amber">
-                        <i data-lucide="qr-code" style="width:22px;height:22px;"></i>
+                  <div class="qr-card-header" style="display:flex !important; flex-direction:column !important; align-items:stretch !important; gap:12px !important; margin-bottom:14px !important;">
+                    <div class="qr-header-title" style="display:flex !important; align-items:center !important; gap:12px !important; width:100% !important;">
+                      <div class="qr-icon text-amber" style="width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <i data-lucide="home" style="width:20px;height:20px;"></i>
                       </div>
-                      <div>
-                        <h4>Chủ nhà (Bên A)</h4>
+                      <div style="min-width:0; flex:1;">
+                        <h4 style="margin:0; font-size:15px; font-weight:700; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Chủ nhà (Bên A)</h4>
+                        <span class="qr-sub-text" style="display:block; font-size:11.5px; color:#64748b; margin-top:2px;">Người cho thuê / Chủ sở hữu</span>
                       </div>
                     </div>
-                    <div class="qr-card-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:10px;">
-                      <button type="button" class="capan-btn-manual-edit" onclick="toggleManualDrawer('landlord')" title="Nhập tay hoặc sửa thông tin Chủ nhà">
+                    <div class="qr-card-actions" style="display:grid !important; grid-template-columns:1fr 1fr !important; gap:8px !important; width:100% !important; margin-top:4px !important;">
+                      <button type="button" class="capan-btn-manual-edit" onclick="toggleManualDrawer('landlord')" title="Nhập tay hoặc sửa thông tin Chủ nhà" style="width:100% !important; height:38px !important; justify-content:center !important;">
                         <i data-lucide="pencil" style="width:13px;height:13px;"></i>
                         <span>Nhập tay</span>
                       </button>
-                      <button type="button" class="capan-btn-scan-amber" onclick="openQrScannerModal('landlord')">
+                      <button type="button" class="capan-btn-scan-amber" onclick="openQrScannerModal('landlord')" style="width:100% !important; height:38px !important; justify-content:center !important;">
                         <i data-lucide="qr-code" style="width:15px;height:15px;"></i>
                         <span>Quét thẻ CCCD</span>
                       </button>
@@ -266,21 +267,22 @@
 
               <div class="capan-qr-card tenant-card">
                 <div>
-                  <div class="qr-card-header">
-                    <div class="qr-header-title">
-                      <div class="qr-icon text-teal">
-                        <i data-lucide="qr-code" style="width:22px;height:22px;"></i>
+                  <div class="qr-card-header" style="display:flex !important; flex-direction:column !important; align-items:stretch !important; gap:12px !important; margin-bottom:14px !important;">
+                    <div class="qr-header-title" style="display:flex !important; align-items:center !important; gap:12px !important; width:100% !important;">
+                      <div class="qr-icon text-teal" style="width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <i data-lucide="user-check" style="width:20px;height:20px;"></i>
                       </div>
-                      <div>
-                        <h4>Người kê khai (Bên B)</h4>
+                      <div style="min-width:0; flex:1;">
+                        <h4 style="margin:0; font-size:15px; font-weight:700; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Người kê khai (Bên B)</h4>
+                        <span class="qr-sub-text" style="display:block; font-size:11.5px; color:#64748b; margin-top:2px;">Người thuê trọ / Đăng ký tạm trú</span>
                       </div>
                     </div>
-                    <div class="qr-card-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:10px;">
-                      <button type="button" class="capan-btn-manual-edit" onclick="toggleManualDrawer('tenant')" title="Nhập tay hoặc sửa thông tin Người kê khai">
+                    <div class="qr-card-actions" style="display:grid !important; grid-template-columns:1fr 1fr !important; gap:8px !important; width:100% !important; margin-top:4px !important;">
+                      <button type="button" class="capan-btn-manual-edit" onclick="toggleManualDrawer('tenant')" title="Nhập tay hoặc sửa thông tin Người kê khai" style="width:100% !important; height:38px !important; justify-content:center !important;">
                         <i data-lucide="pencil" style="width:13px;height:13px;"></i>
                         <span>Nhập tay</span>
                       </button>
-                      <button type="button" class="capan-btn-scan-primary" onclick="openQrScannerModal('tenant')">
+                      <button type="button" class="capan-btn-scan-primary" onclick="openQrScannerModal('tenant')" style="width:100% !important; height:38px !important; justify-content:center !important;">
                         <i data-lucide="qr-code" style="width:15px;height:15px;"></i>
                         <span>Quét thẻ CCCD</span>
                       </button>
@@ -838,27 +840,30 @@
               <div class="batch-card-body" style="display:flex;flex-direction:column;gap:18px;">
                 <div class="capan-qr-card landlord-card">
                   <div>
-                    <div class="qr-card-header">
-                      <div class="qr-header-title">
-                        <div class="qr-icon text-amber">
-                          <i data-lucide="qr-code" style="width:22px;height:22px;"></i>
+                    <div class="qr-card-header" style="display:flex !important; flex-direction:column !important; align-items:stretch !important; gap:12px !important; margin-bottom:14px !important;">
+                      <div class="qr-header-title" style="display:flex !important; align-items:center !important; justify-content:space-between !important; width:100% !important; gap:10px !important;">
+                        <div style="display:flex; align-items:center; gap:12px; min-width:0; flex:1;">
+                          <div class="qr-icon text-amber" style="width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            <i data-lucide="home" style="width:20px;height:20px;"></i>
+                          </div>
+                          <div style="min-width:0; flex:1;">
+                            <h4 style="margin:0; font-size:15px; font-weight:700; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Chủ nhà (Bên A)</h4>
+                            <span class="qr-sub-text" style="display:block; font-size:11.5px; color:#64748b; margin-top:2px;">Người cho thuê / Chủ cơ sở</span>
+                          </div>
                         </div>
-                        <div>
-                          <h4>Chủ nhà (Bên A)</h4>
-                        </div>
+                        <button type="button" class="capan-btn-sample" onclick="fillBatchLandlordSample()" title="Nạp nhanh mẫu thử chủ nhà" style="display:inline-flex; align-items:center; gap:5px; height:32px; padding:0 10px; border-radius:8px; font-size:12px; font-weight:600; color:#0284c7; background:#f0f9ff; border:1px solid #bae6fd; cursor:pointer; flex-shrink:0;">
+                          <i data-lucide="wand-2" style="width:13px;height:13px;color:#0284c7;"></i>
+                          <span>Mẫu thử</span>
+                        </button>
                       </div>
-                      <div class="qr-card-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:10px;">
-                        <button type="button" class="capan-btn-manual-edit" onclick="toggleManualDrawer('batch-landlord')" title="Nhập tay hoặc sửa thông tin Chủ nhà">
+                      <div class="qr-card-actions" style="display:grid !important; grid-template-columns:1fr 1fr !important; gap:8px !important; width:100% !important; margin-top:4px !important;">
+                        <button type="button" class="capan-btn-manual-edit" onclick="toggleManualDrawer('batch-landlord')" title="Nhập tay hoặc sửa thông tin Chủ nhà" style="width:100% !important; height:38px !important; justify-content:center !important;">
                           <i data-lucide="pencil" style="width:13px;height:13px;"></i>
                           <span>Nhập tay</span>
                         </button>
-                        <button type="button" class="capan-btn-scan-amber" onclick="openQrScannerModal('batch-landlord')">
+                        <button type="button" class="capan-btn-scan-amber" onclick="openQrScannerModal('batch-landlord')" style="width:100% !important; height:38px !important; justify-content:center !important;">
                           <i data-lucide="qr-code" style="width:15px;height:15px;"></i>
                           <span>Quét thẻ CCCD</span>
-                        </button>
-                        <button type="button" class="capan-btn-manual-edit" onclick="fillBatchLandlordSample()" title="Nạp nhanh mẫu thử chủ nhà">
-                          <i data-lucide="wand-2" style="width:13px;height:13px;color:#0284c7;"></i>
-                          <span>Mẫu thử</span>
                         </button>
                       </div>
                     </div>
@@ -1618,6 +1623,6 @@
   </div>
         
   <!-- Scripts -->
-  <script defer src="js/ct01.js?v=20261023c"></script>
+  <script defer src="js/ct01.js?v=20261024_fix_header"></script>
 </body>
 </html>

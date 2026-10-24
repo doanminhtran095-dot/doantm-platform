@@ -763,19 +763,21 @@ button, input, select, textarea {
 }
 
 .qr-card-header {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 12px;
-  margin-bottom: 14px;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  margin-bottom: 14px !important;
+  width: 100% !important;
 }
 
 .qr-header-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 0;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-width: 0 !important;
 }
 
 .qr-icon {
@@ -820,10 +822,11 @@ button, input, select, textarea {
 }
 
 .qr-card-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 8px !important;
+  width: 100% !important;
+  margin-top: 4px !important;
 }
 
 .capan-btn-scan-amber,
@@ -3074,26 +3077,34 @@ input[type="date"].capan-input {
     gap: 14px;
   }
   .qr-card-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-  .qr-header-title {
-    width: 100%;
-  }
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  margin-bottom: 14px !important;
+  width: 100% !important;
+}
+
+.qr-header-title {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
   .qr-card-actions {
-    width: 100%;
-    display: flex;
-    gap: 8px;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
   }
-  .qr-card-actions .capan-btn-manual-edit {
-    flex: 1;
-    justify-content: center;
-  }
+  .qr-card-actions .capan-btn-manual-edit,
   .qr-card-actions .capan-btn-scan-amber,
   .qr-card-actions .capan-btn-scan-primary {
-    flex: 1.35;
-    justify-content: center;
+    width: 100% !important;
+    height: 38px !important;
+    justify-content: center !important;
   }
   .sig-pads-grid,
   .ct01-address-inputs-grid,
